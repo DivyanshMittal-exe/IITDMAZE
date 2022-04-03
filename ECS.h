@@ -17,7 +17,7 @@ inline ComponentID getComponenetTypeID(){
 template <typename T> inline ComponentID getComponenetTypeID() noexcept
 {
     static ComponentID typeID = getComponenetTypeID();
-    return typeID();
+    return typeID;
 }
 
 constexpr std::size_t maxComponents = 32;
@@ -47,11 +47,13 @@ class Entity{
             for(auto&c: components) {
                 c->update();
             }
+            
+        }
+        void draw(){
             for(auto&c: components) {
                 c->draw();
             }
         }
-        void draw(){}
 
         bool isActive() const { return active;}
         bool destroy() { active = false;}
@@ -101,9 +103,24 @@ public:
     }
 
     void refresh(){ 
+        for (auto i = entities.begin(); i != entities.end(); i++)
+        {
+            if ((*i)-> isActive() == false)
+            {
+              entities.erase(i);
+            }   
+        }
         
     }
-}
+
+    Entity& addEntity(){
+        Entity* newEnt =  new Entity;
+        std::unique_ptr<Entity> newEntPtr(newEnt);
+        entities.emplace_back(std::move(newEntPtr));
+        return *newEnt;
+    }
+
+};
 
 
 
