@@ -1,8 +1,8 @@
 #OBJS specifies which files to compile as part of the project
 OBJS =  game.cpp  
 
-AUX_OBJS = gameObject.o Texture.o maze.o
-AUX_OBJS_cpp = gameObject.cpp Texture.cpp maze.cpp
+AUX_OBJS =  maze.o Vector2D.o Texture.o
+AUX_OBJS_cpp = maze.cpp Vector2D.cpp  Texture.cpp 
 
 #CC specifies which compiler we're using
 CC = g++

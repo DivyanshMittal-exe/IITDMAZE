@@ -3,6 +3,7 @@
 #include "SDL2/SDL_image.h"
 #include "maze.h"
 
+
 using namespace std;
 
 const int FPS = 60;

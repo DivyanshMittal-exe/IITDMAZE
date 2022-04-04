@@ -1,17 +1,21 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
-#include <iostream>
-#include "Texture.h"
-#include "gameObject.h"
+
 
 #pragma once
 
 class Maze
 {
+private:
+    bool is_running;
+    SDL_Window* window;
+
 public:
+    static SDL_Event event;
+    static SDL_Renderer *renderer;
+
     Maze();
     ~Maze();
 
@@ -22,12 +26,8 @@ public:
     void clean();
     bool running(){return is_running;}
 
-    SDL_Renderer *renderer;
 
 
-private:
-    bool is_running;
-    SDL_Window* window;
 };
 
 #endif

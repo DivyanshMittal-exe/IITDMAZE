@@ -1,19 +1,22 @@
 #include "maze.h"
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL.h"
+#include <iostream>
+#include "Texture.h"
+#include "PositionComponent.h"
+#include "SpriteComponent.h"
+#include "Vector2D.h"
+#include "ECS.h"
+#include "Controller.h"
 
 
+Manager manager;
+Entity& player1(manager.addEntity());
+SDL_Event Maze::event;
+SDL_Renderer* Maze::renderer;
 
-gameObject* player1; 
-
-Maze::Maze()
-{
-
-}
-
-Maze::~Maze()
-{
-
-}
-
+Maze::Maze(){}
+Maze::~Maze(){}
 
 void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
 
@@ -29,16 +32,18 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
             SDL_SetRenderDrawColor(renderer,255,255,255,255);
             std::cout << "Renderer made\n";
         }
+            player1.addComponent<PositionComponent>();
+            player1.addComponent<SpriteComponent>("assets/player1.png");
+            // std::cout << "Hello";
+            player1.addComponent<Controller>();
         is_running = true;
     }else{
         is_running = false;
     }
     
-    player1 = new gameObject("assets/player1.png",renderer,0,0);
 
 }
 void  Maze::handleEvents(){
-    SDL_Event event;
     SDL_PollEvent(&event);
     switch (event.type)
     {
@@ -52,13 +57,12 @@ void  Maze::handleEvents(){
 }
 
 void Maze::update(){
-    player1->update();
+    manager.refresh();
+    manager.update();
 }
 void Maze::render(){
     SDL_RenderClear(renderer);
-
-    player1->render();
-
+    manager.draw();
     SDL_RenderPresent(renderer);
 }
 void Maze::clean(){

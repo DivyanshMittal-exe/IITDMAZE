@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed Mar 30 11:06:50 2022
+# Make data base, printed on Mon Apr  4 13:37:05 2022
 
 # Variables
 
@@ -41,7 +41,7 @@ GDMSESSION = ubuntu
 # environment
 XMODIFIERS = @im=ibus
 # makefile
-CURDIR := /home/jsr/Codes/IITDMAZE
+CURDIR := /home/jsr/Codes/IITDMAZE (copy)
 # makefile
 SHELL = /bin/sh
 # environment
@@ -49,7 +49,7 @@ VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/share/code/code
 # environment
-JOURNAL_STREAM = 8:34339
+JOURNAL_STREAM = 8:32534
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # makefile (from 'Makefile', line 1)
@@ -69,23 +69,23 @@ VSCODE_VERBOSE_LOGGING = true
 # makefile (from 'Makefile', line 2)
 OBJS = game.cpp  
 # environment
-MANAGERPID = 1288
+MANAGERPID = 1278
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/jsr
 # makefile (from 'Makefile', line 5)
-AUX_OBJS_cpp = gameObject.cpp Texture.cpp maze.cpp
+AUX_OBJS_cpp = maze.cpp Vector2D.cpp  Texture.cpp 
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
 PATH = /home/jsr/.local/bin:/home/jsr/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # makefile (from 'Makefile', line 4)
-AUX_OBJS = gameObject.o Texture.o maze.o
+AUX_OBJS = maze.o Vector2D.o Texture.o
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1545,unix/jsr-VirtualBox:/tmp/.ICE-unix/1545
+SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1535,unix/jsr-VirtualBox:/tmp/.ICE-unix/1535
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -95,7 +95,7 @@ VSCODE_LOG_STACK = false
 # environment
 VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd&iid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd&sid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd","uploadToServer":true}
 # environment
-INVOCATION_ID = a487f6f4d5984c158d91a20381b4d1a4
+INVOCATION_ID = c3f344c0d7dc4bf6bb873394a76b5262
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -105,7 +105,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 3253
+GIO_LAUNCHED_DESKTOP_FILE_PID = 15036
 # automatic
 %F = $(notdir $%)
 # environment
@@ -113,11 +113,11 @@ DISPLAY = :0
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
-PWD = /home/jsr/Codes/IITDMAZE
+PWD = /home/jsr/Codes/IITDMAZE (copy)
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1497
+SSH_AGENT_PID = 1487
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # makefile (from 'Makefile', line 15)
@@ -159,7 +159,7 @@ CC = g++
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-a6d12bd5-dbd1-4173-b9d2-70e800e514ff.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-e3bc1f4c-6543-4f3d-a58f-5e9069ff9f46.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -225,7 +225,7 @@ OBJ_NAME = game.out
 # environment
 LANG = C
 # environment
-VSCODE_PID = 3253
+VSCODE_PID = 15036
 # variable set hash-table stats:
 # Load=108/1024=11%, Rehash=0, Collisions=16/137=12%
 
@@ -235,9 +235,9 @@ VSCODE_PID = 3253
 
 # Directories
 
-# . (device 2064, inode 566412): 19 files, no impossibilities.
+# . (device 2064, inode 589993): 23 files, no impossibilities.
 
-# 19 files, no impossibilities in 1 directories.
+# 23 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -285,7 +285,7 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-03-30 10:33:24.393212265
+#  Last modified 2022-04-04 13:12:44.148575
 #  File has been updated.
 #  Successfully updated.
 
@@ -325,12 +325,12 @@ clean:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 26 / storage = 227 B / avg = 8 B
-# current buf: size = 8162 B / used = 227 B / count = 26 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 30 / storage = 281 B / avg = 9 B
+# current buf: size = 8162 B / used = 281 B / count = 30 / avg = 9 B
 
-# strcache performance: lookups = 36 / hit rate = 27%
+# strcache performance: lookups = 40 / hit rate = 25%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/36=3%
-# Finished Make data base on Wed Mar 30 11:06:50 2022
+# Load=30/8192=0%, Rehash=0, Collisions=1/40=2%
+# Finished Make data base on Mon Apr  4 13:37:05 2022
 
  

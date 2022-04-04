@@ -67,7 +67,7 @@ class Entity{
         T& addComponent(TArgs&&... margs){
             T* c(new T(std::forward<TArgs>(margs)...));
             c->entity = this;
-            std::unique_ptr<Component> uPtr{c}
+            std::unique_ptr<Component> uPtr{c};
             components.emplace_back(std::move(uPtr));
 
             componentArray[getComponenetTypeID<T>()] = c;

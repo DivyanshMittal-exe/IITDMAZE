@@ -14,7 +14,8 @@ class SpriteComponent : public Component
 
     public:
         void setText(const char* path){
-            texture = TextureManager::LoadTexture(path);
+            std::cout << "Texture laga diya ";
+            texture = Texture::LoadTexture(path);
         }
         SpriteComponent() = default;
         SpriteComponent(const char* path){
@@ -28,12 +29,13 @@ class SpriteComponent : public Component
             destRect.w = destRect.y = 32;
         }
         void update() override{
-            destRect.x = position->x();;
-            destRect.y = position->y();;
+            destRect.x = position->position.x;
+            destRect.y = position->position.y;
 
         }
         void draw() override{
-            TextureManager::Draw(texture,srcRect,destRect);
+            // std::cout << "Drawing";
+            Texture::Draw(texture,srcRect,destRect);
         }
 
-}
+};
