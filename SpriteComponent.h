@@ -19,14 +19,16 @@ class SpriteComponent : public Component
         }
         SpriteComponent() = default;
         SpriteComponent(const char* path){
-            setText(path);            
+            std::cout << "Made";
+            texture = Texture::LoadTexture(path);            
         }
         
         void init() override{
             position = &entity -> getComponenet<PositionComponent>();
             srcRect.x = srcRect.y = 0;
-            srcRect.w = srcRect.y = 16;
-            destRect.w = destRect.y = 32;
+            srcRect.w = srcRect.h = 16;
+            destRect.w = destRect.h = 32;
+            // Change Collider too if you decide to change these values
         }
         void update() override{
             destRect.x = position->position.x;
@@ -34,7 +36,6 @@ class SpriteComponent : public Component
 
         }
         void draw() override{
-            // std::cout << "Drawing";
             Texture::Draw(texture,srcRect,destRect);
         }
 

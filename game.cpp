@@ -19,7 +19,7 @@ int main(){
     maze -> init("IITD Maze",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,800,600,false);
 
     while(maze->running()){
-
+        // std::cout << "Hello Game";
         frameTime = SDL_GetTicks();
         maze->handleEvents();
         maze->update();

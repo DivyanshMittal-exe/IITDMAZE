@@ -34,12 +34,12 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
         }
             player1.addComponent<PositionComponent>();
             player1.addComponent<SpriteComponent>("assets/player1.png");
-            // std::cout << "Hello";
             player1.addComponent<Controller>();
         is_running = true;
     }else{
         is_running = false;
     }
+    std::cout << is_running;
     
 
 }

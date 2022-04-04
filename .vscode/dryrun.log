@@ -1,7 +1,7 @@
 make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/jsr/Codes/IITDMAZE (copy)'
+make: Entering directory '/home/jsr/Codes/IITDMAZE'
 echo "Compiling"
 make clean
 make run
-make: Leaving directory '/home/jsr/Codes/IITDMAZE (copy)'
+make: Leaving directory '/home/jsr/Codes/IITDMAZE'
  
