@@ -1,8 +1,8 @@
 #OBJS specifies which files to compile as part of the project
 OBJS =  game.cpp  
 
-AUX_OBJS =  maze.o ECS.o Vector2D.o Texture.o
-AUX_OBJS_cpp = maze.cpp ECS.cpp Vector2D.cpp  Texture.cpp 
+AUX_OBJS =  ECS.o maze.o Vector2D.o Texture.o 
+AUX_OBJS_cpp = ECS.cpp maze.cpp  Vector2D.cpp  Texture.cpp 
 
 #CC specifies which compiler we're using
 CC = g++
@@ -25,8 +25,8 @@ all:
 	@make run
 
 run : $(OBJS)
-	$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c $(AUX_OBJS_cpp)
-	$(CC) $(AUX_OBJS) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+	$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c -g $(AUX_OBJS_cpp)
+	$(CC) $(AUX_OBJS) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -g -o $(OBJ_NAME)
 	./$(OBJ_NAME)
 
 

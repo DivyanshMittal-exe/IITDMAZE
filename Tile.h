@@ -2,6 +2,7 @@
 #include "ECS.h"
 #include "PositionComponent.h"
 #include "SpriteComponent.h"
+#include <iostream>
 
 class Tile : public Component
 {
@@ -19,9 +20,12 @@ public:
     ~Tile(){SDL_DestroyTexture(tex);}
     Tile(int x, int y,int w,int h, int id){
 
-        tex = Texture::LoadTexture("/Test_Map.png");
-        srcRect.x = id % 15;
-        srcRect.y = id / 15;
+        tex = Texture::LoadTexture("Test_Map.png");
+        srcRect.x = (id % 15)*16;
+        srcRect.y = (id / 15);
+        std::cout << id<<" ";
+        // std::cout << srcRect.y;
+        srcRect.y *= 16;
         srcRect.w = srcRect.h = 16;
         tile_rect.x = x;
         tile_rect.y = y;
@@ -32,15 +36,9 @@ public:
 
     void draw() override {
         Texture::Draw(tex,srcRect,tile_rect,SDL_FLIP_NONE);
+        // std::cout << srcRect.x << " ";
+        // std::cout << srcRect.y<< "\n";
     }
-
-    // void init override{
-    //     entity-> addComponent<PositionComponent>(tile_rect.x,tile_rect.y);
-    //     pos = &entity -> getComponenet<PositionComponent>();
-
-    //     entity-> addComponent<SpriteComponent>();
-    //     sprite = &entity -> getComponenet<SpriteComponent>();
-    // }
 };
 
 

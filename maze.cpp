@@ -11,35 +11,37 @@
 #include "Map.h"
 #include <bits/stdc++.h>
 
-
+#define gMap 0
+#define gPlayer 1
+#define gEntities 2
 // #define PORT 5050
 
 // Add group is different, not entity based, but manager based
 
 
-struct packet{
-    float packet_x;
-    float packet_y;
-    int packet_sprite;
-    int packet_orientation;
-};
+// struct packet{
+//     float packet_x;
+//     float packet_y;
+//     int packet_sprite;
+//     int packet_orientation;
+// };
 
 Manager manager;
 Entity& player1(manager.addEntity());
 // manager.addGroup(player1,gPlayer);
 Entity& player2(manager.addEntity());
 // manager.addGroup(player2,gPlayer);
-// SDL_Event Maze::event;
-// SDL_Renderer* Maze::renderer;
+SDL_Event Maze::event;
+SDL_Renderer* Maze::renderer;
 
 
 
 Maze::Maze(){}
 Maze::~Maze(){}
 
-enum groupName: std::size_t{
-    gMap,gPlayer,gEntities
-};
+// enum groupName: std::size_t{
+//     gMap,gPlayer,gEntities
+// }
 
 void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
 
@@ -64,7 +66,7 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
 
     // SDLNet_Init();
 
-    Map *tileMap = new Map("Maze.txt",25,22,manager,gMap);
+    Map *tileMap = new Map("Maze.txt",25,22,&manager,gMap);
 
     player1.addComponent<PositionComponent>();
     player1.addComponent<SpriteComponent>("assets/player1.png");
@@ -77,24 +79,6 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
     player2.addComponent<PositionComponent>();
     player2.addComponent<SpriteComponent>("assets/player1.png");
     player2.addGroup(gPlayer);
-
-    // if(am_i_server = true){
-    //     SDLNet_ResolveHost(&IP,NULL,PORT);
-    //     server = SDLNet_TCP_Open(&IP);
-
-    //     client = SDL_Net_TCP_Accept(server);
-
-        
-    // }else{
-    //     SDLNet_ResolveHost(&IP,Server_IP,PORT);
-    //     client = SDLNet_TCP_Open(&IP);
-    //     client = SDL_Net_TCP_Accept(server);
-
-
-    // }
-    
-
-    // player2.getComponenet<PositionComponent>().SetPosition(5,15);
 
 }
 void  Maze::handleEvents(){
@@ -111,13 +95,6 @@ void  Maze::handleEvents(){
 }
 
 void Maze::update(){
-    // if(am_i_server){
-    //     if(client){
-                
-    //     }
-    // }else{
-
-    // }
     manager.refresh();
     manager.update();
 }
@@ -127,13 +104,14 @@ auto& playerTile(manager.getGroup(gPlayer));
 
 void Maze::render(){
     SDL_RenderClear(renderer);
+    // std::cout <<mapTile.size();
     for(auto& x : mapTile){
-        x->draw();
+        x->draw();   
     }
     for(auto& x : playerTile){
         x->draw();
     }
-    manager.draw();
+    // manager.draw();
     SDL_RenderPresent(renderer);
 }
 void Maze::clean(){

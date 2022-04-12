@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int FPS = 60;
+const int FPS = 1;
 const int frameDelay = 1000/60;
 
 int frameTime;

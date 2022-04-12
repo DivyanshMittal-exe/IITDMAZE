@@ -24,9 +24,11 @@
         {
             for (auto i = groups[j].begin(); i != groups[j].end(); i++)
             {
-                if ((*i)-> isActive() == false||(*i)-> hasGroup(j) == false)
+                if ((*i)-> isActive() == false || (*i)-> hasGroup(j) == false)
                 {
-                groups[j].erase(i);
+                    groups[j].erase(i);
+                    std:: cout << "Hello";
+                    std:: cout << j;
                 }   
             } 
         }
@@ -43,7 +45,7 @@
 
     Entity& Manager::addEntity(){
         Entity* newEnt =  new Entity(*this);
-        std::unique_ptr<Entity> newEntPtr(newEnt);
+        // std::unique_ptr<Entity> newEntPtr(newEnt);
         // entities.emplace_back(std::move(newEntPtr));
         entities.emplace_back(newEnt);
         return *newEnt;
