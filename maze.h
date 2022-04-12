@@ -1,10 +1,17 @@
+#pragma once
+
 #ifndef MAZE_H
 #define MAZE_H
 
 #include "SDL2/SDL.h"
+#include <vector>
+#include "Collider.h"
+#include "SDL2/SDL_net.h"
+
+// Collider nhi chalte 
+// Unko sort karlena
 
 
-#pragma once
 
 class Maze
 {
@@ -15,6 +22,9 @@ private:
 public:
     static SDL_Event event;
     static SDL_Renderer *renderer;
+    static std::vector<Collider*> maze_colliders;
+    static bool am_i_server;
+    static IPaddress ip_add;
 
     Maze();
     ~Maze();

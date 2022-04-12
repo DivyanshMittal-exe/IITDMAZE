@@ -18,12 +18,16 @@ class PositionComponent: public Component
     }
     
     PositionComponent(){
-        SetPosition(0,0);
+        position.x  = 0;
+        position.y =  0;
         velocity.x = 0;
         velocity.y = 0;
     }
     PositionComponent(float x, float y){
-        SetPosition(x,y);
+        position.x  = x;
+        position.y =  y;
+        velocity.x = 0;
+        velocity.y = 0;
     }
     
     void init() override

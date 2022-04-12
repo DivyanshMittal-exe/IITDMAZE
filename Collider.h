@@ -1,26 +1,34 @@
 #include <string>
+#include "maze.h"
 #include "SDL2/SDL.h"
 #include "Vector2D.h"
 #include "PositionComponent.h"
 
 
 
-class Collider
+class Collider: public Component
 {
 
 public:
 
     SDL_Rect collider;
     std::string tag;
-
     PositionComponent *pos;
-    void init override {
+
+    Collider(std::string tagname){
+        tag = tagname;
+    } 
+
+    
+    void init() override {
         if (entity->hasComponent<PositionComponent>() == false)
         {
            entity-> addComponent<PositionComponent>();
         }
-        pos = entity-> getComponenet<PositionComponent>();
+        pos = &entity-> getComponenet<PositionComponent>();
+
         
+        // Maze::maze_colliders.push_back(this);
     }
     void update() override {
         collider.x = pos->position.x;

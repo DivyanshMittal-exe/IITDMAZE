@@ -12,8 +12,11 @@
 
 Manager manager;
 Entity& player1(manager.addEntity());
+Entity& player2(manager.addEntity());
 SDL_Event Maze::event;
 SDL_Renderer* Maze::renderer;
+
+
 
 Maze::Maze(){}
 Maze::~Maze(){}
@@ -32,15 +35,22 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
             SDL_SetRenderDrawColor(renderer,255,255,255,255);
             std::cout << "Renderer made\n";
         }
-            player1.addComponent<PositionComponent>();
-            player1.addComponent<SpriteComponent>("assets/player1.png");
-            player1.addComponent<Controller>();
+
         is_running = true;
     }else{
         is_running = false;
     }
     std::cout << is_running;
     
+    player1.addComponent<PositionComponent>();
+    player1.addComponent<SpriteComponent>("assets/player1.png");
+    player1.addComponent<Controller>();
+
+    player2.addComponent<PositionComponent>();
+    player2.addComponent<SpriteComponent>("assets/player1.png");
+    player2.addComponent<Controller>();
+
+    player2.getComponenet<PositionComponent>().SetPosition(5,15);
 
 }
 void  Maze::handleEvents(){
