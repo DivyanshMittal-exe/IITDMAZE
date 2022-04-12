@@ -9,6 +9,10 @@
 #include "ECS.h"
 #include "Controller.h"
 
+#define PORT 5050
+
+
+
 
 Manager manager;
 Entity& player1(manager.addEntity());
@@ -41,16 +45,37 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
         is_running = false;
     }
     std::cout << is_running;
-    
+
+    SDLNet_Init();
+
+
+
     player1.addComponent<PositionComponent>();
     player1.addComponent<SpriteComponent>("assets/player1.png");
     player1.addComponent<Controller>();
 
+    me->packet_x = player1.getComponenet<PositionComponent>().position.x;
+    me->packet_y = player1.getComponenet<PositionComponent>().position.y;
+
     player2.addComponent<PositionComponent>();
     player2.addComponent<SpriteComponent>("assets/player1.png");
-    player2.addComponent<Controller>();
+    if(am_i_server = true){
+        SDLNet_ResolveHost(&IP,NULL,PORT);
+        server = SDLNet_TCP_Open(&IP);
 
-    player2.getComponenet<PositionComponent>().SetPosition(5,15);
+        client = SDL_Net_TCP_Accept(server);
+
+        
+    }else{
+        SDLNet_ResolveHost(&IP,Server_IP,PORT);
+        client = SDLNet_TCP_Open(&IP);
+        client = SDL_Net_TCP_Accept(server);
+
+
+    }
+    
+
+    // player2.getComponenet<PositionComponent>().SetPosition(5,15);
 
 }
 void  Maze::handleEvents(){
@@ -67,6 +92,13 @@ void  Maze::handleEvents(){
 }
 
 void Maze::update(){
+    if(am_i_server){
+        if(client){
+                
+        }
+    }else{
+
+    }
     manager.refresh();
     manager.update();
 }

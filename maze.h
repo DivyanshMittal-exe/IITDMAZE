@@ -5,12 +5,18 @@
 
 #include "SDL2/SDL.h"
 #include <vector>
+#include <string>
 #include "Collider.h"
 #include "SDL2/SDL_net.h"
 
 // Collider nhi chalte 
 // Unko sort karlena
-
+struct packet{
+    float packet_x;
+    float packet_y;
+    int packet_sprite;
+    int packet_orientation;
+};
 
 
 class Maze
@@ -23,8 +29,14 @@ public:
     static SDL_Event event;
     static SDL_Renderer *renderer;
     static std::vector<Collider*> maze_colliders;
-    static bool am_i_server;
-    static IPaddress ip_add;
+    bool am_i_server;
+    std::string Server_IP;
+    IPaddress IP;
+    TCPsocket server;
+    TCPsocket client;
+
+    packet* me;
+    packet* opponent;
 
     Maze();
     ~Maze();
