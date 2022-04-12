@@ -17,7 +17,7 @@ class SpriteComponent : public Component
             std::cout << "Texture laga diya ";
             texture = Texture::LoadTexture(path);
         }
-        SpriteComponent() = default;
+        SpriteComponent(){}
         SpriteComponent(const char* path){
             std::cout << "Made";
             texture = Texture::LoadTexture(path);            
@@ -36,7 +36,7 @@ class SpriteComponent : public Component
 
         }
         void draw() override{
-            Texture::Draw(texture,srcRect,destRect);
+            Texture::Draw(texture,srcRect,destRect, SDL_FLIP_NONE);
         }
 
 };

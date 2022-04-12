@@ -1,29 +1,49 @@
+#pragma once
+
 #ifndef ECS_H
 #define ECS_H
 
-#include <bits/stdc++.h>
 
+#include <bits/stdc++.h>
+// #include <array>
+
+using ComponentID = std::size_t;
+using Group = std::size_t;
 
 class Component;
 class Entity;
 
-using ComponentID = std::size_t;
+class Manager{
+    private:
+        // std::vector<std::unique_ptr<Entity>> entities;
+        std::vector<Entity*> entities;
+        std::vector<Entity*> groups[32];
 
-inline ComponentID getComponenetTypeID(){
+    public:
+    void update();
+    void draw();
+    void refresh();
+    void addGroup(Entity * ent, Group g);
+    std::vector<Entity*>& getGroup( Group g);
+    Entity& addEntity();
+};
+
+
+inline ComponentID getNewComponenetTypeID(){
     static ComponentID lastID = 0;
     return lastID++;
 }
 
 template <typename T> inline ComponentID getComponenetTypeID() noexcept
 {
-    static ComponentID typeID = getComponenetTypeID();
+    static ComponentID typeID = getNewComponenetTypeID();
     return typeID;
 }
 
-constexpr std::size_t maxComponents = 32;
 
-using ComponentBitset = std::bitset<maxComponents>;
-using ComponentArray = std::array<Component*,maxComponents>;
+using ComponentBitset = std::bitset<32>;
+using GroupBitset = std::bitset<32>;
+using ComponentArray = std::array<Component*,32>;
 
 class Component{
     public:
@@ -36,13 +56,16 @@ class Component{
 
 class Entity{
     private:
+        Manager& manager;   
         bool active = true;
         std::vector<std::unique_ptr<Component>> components;
 
         ComponentArray componentArray;
         ComponentBitset componentBitset;
+        GroupBitset groupBitset;
 
     public:
+        Entity(Manager& m): manager(m){}
         void update(){
             for(auto&c: components) {
                 c->update();
@@ -57,6 +80,20 @@ class Entity{
 
         bool isActive() const { return active;}
         bool destroy() { active = false;}
+
+        bool hasGroup(Group g){
+            return groupBitset[g];
+        }
+
+        void addGroup(Group g){
+            groupBitset[g] = true;
+            manager.addGroup(this,g);
+        }
+
+        void delGroup(Group g){
+            groupBitset[g] = false;
+        }
+        
 
         template <typename T> bool hasComponent() const {
             return componentBitset[getComponenetTypeID<T>()];
@@ -85,44 +122,5 @@ class Entity{
 };
 
 
-class Manager{
-
-private:
-    std::vector<std::unique_ptr<Entity>> entities;
-
-public:
-    void update(){
-        for(auto&c: entities){
-            c->update();
-        }
-    }
-    void draw(){
-        for(auto&c: entities){
-            c->draw();
-        }
-    }
-
-    void refresh(){ 
-        for (auto i = entities.begin(); i != entities.end(); i++)
-        {
-            if ((*i)-> isActive() == false)
-            {
-              entities.erase(i);
-            }   
-        }
-        
-    }
-
-    Entity& addEntity(){
-        Entity* newEnt =  new Entity;
-        std::unique_ptr<Entity> newEntPtr(newEnt);
-        entities.emplace_back(std::move(newEntPtr));
-        return *newEnt;
-    }
-
-};
-
-
-
-
+   
 #endif

@@ -9,11 +9,11 @@ SDL_Texture* Texture::LoadTexture(const char* filename){
     return texture;
 }
 
-void Texture::Draw(SDL_Texture * texture, SDL_Rect source_rect, SDL_Rect destination_rect)
+void Texture::Draw(SDL_Texture * texture, SDL_Rect source_rect, SDL_Rect destination_rect,SDL_RendererFlip flip = SDL_FLIP_NONE)
 {
     // std::cout << "Drawing";
 
-	SDL_RenderCopyEx(Maze::renderer, texture, &source_rect, &destination_rect, NULL, NULL,SDL_FLIP_NONE);
+	SDL_RenderCopyEx(Maze::renderer, texture, &source_rect, &destination_rect, NULL, NULL,flip);
 }
 
 // SDL_Texture* Texture::LoadTexture(const char* filename, SDL_Renderer* ren){

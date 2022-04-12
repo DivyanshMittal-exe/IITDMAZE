@@ -16,13 +16,13 @@ Maze *maze = nullptr;
 int main(int argc, char* argv[]){
 
     maze = new Maze();
-    if(argc = 1){
-        maze->am_i_server = true;
-    }
-    else {
-        maze->am_i_server = false;
-    }
-    
+    // if(argc = 1){
+    //     maze->am_i_server = true;
+    // }
+    // else {
+    //     maze->am_i_server = false;
+    // }
+
     maze -> init("IITD Maze",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,800,600,false);
 
     
