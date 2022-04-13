@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include "Collider.h"
+#include <enet/enet.h>
+
 // #include "SDL2/SDL_net.h"
 
 // Collider nhi chalte 
@@ -12,6 +14,7 @@
 
 #define gameH 600
 #define gameW 800
+#define PORT 6666
 
 class Maze
 {
@@ -25,8 +28,14 @@ public:
     static std::vector<Collider*> maze_colliders;
 
     static SDL_Rect cam;
-    // bool am_i_server;
-    // std::string Server_IP;
+    bool am_i_server;
+    std::string Server_IP;
+    ENetHost* server;
+    ENetHost* client;
+    ENetAddress address;
+    ENetEvent enet_event;
+    ENetPeer* peer;
+
     // // IPaddress IP;
     // // TCPsocket server;
     // // TCPsocket client;

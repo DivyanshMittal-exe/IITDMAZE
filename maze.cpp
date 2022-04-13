@@ -11,6 +11,8 @@
 #include "Map.h"
 #include <bits/stdc++.h>
 
+
+
 #define gMap 0
 #define gPlayer 1
 #define gEntities 2
@@ -19,12 +21,13 @@
 // Add group is different, not entity based, but manager based
 
 
-// struct packet{
-//     float packet_x;
-//     float packet_y;
-//     int packet_sprite;
-//     int packet_orientation;
-// };
+struct pack{
+    int type;
+    float packet_x;
+    float packet_y;
+    int packet_sprite;
+    int packet_orientation;
+};
 
 Manager manager;
 Entity& player1(manager.addEntity());
@@ -66,6 +69,39 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
 
     // SDLNet_Init();
 
+    if (enet_initialize () != 0)
+    {
+        std::cout << "Initialization failed";
+    }
+
+    if (!am_i_server)
+    {
+        client = enet_host_create(NULL,1,1,0,0);
+        if(client == NULL){
+            std::cout << "Client Not made";
+        }
+
+        enet_address_set_host(&address,Server_IP.c_str());
+        address.port = PORT;
+
+        peer = enet_host_connect(client,&address,1,0);
+        if(peer == NULL){
+            std::cout << "Peer not available";
+        }
+
+        if(enet_host_service(client,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
+            std::cout << "Connected";
+        }
+    }else{
+        address.host = ENET_HOST_ANY;
+        address.port = PORT;
+        server = enet_host_create(&address,2,1,0,0);
+        if(server == NULL){
+            std::cout << "Server failed";
+        }
+    }
+    
+
     Map *tileMap = new Map("Maze.txt",25,22,&manager,gMap);
 
     player1.addComponent<PositionComponent>();
@@ -98,6 +134,29 @@ void  Maze::handleEvents(){
 }
 
 void Maze::update(){
+    while(enet_host_service(client,&enet_event,0)>0){
+            switch (enet_event.type)
+            {
+            case ENET_EVENT_TYPE_RECEIVE:
+                printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
+                    enet_event.packet -> dataLength,
+                    enet_event.packet -> data,
+                    enet_event.peer -> data,
+                    enet_event.channelID);
+                break;
+            default:
+                break;
+            }
+        }
+
+    pack playerData = { 0,
+                        player1.getComponenet<PositionComponent>().position.x,
+                        player1.getComponenet<PositionComponent>().position.y,
+                        0,
+                        0};
+    ENetPacket * packet = enet_packet_create (&playerData, sizeof(playerData), 0);
+    enet_peer_send (peer, 0, packet);
+
     manager.refresh();
     manager.update();
 
@@ -136,6 +195,31 @@ void Maze::clean(){
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
+
+
+    if (!am_i_server)
+    {
+        enet_peer_disconnect(peer,0);
+
+        while(enet_host_service(client,&enet_event,3000)>0){
+            switch (enet_event.type)
+            {
+            case ENET_EVENT_TYPE_RECEIVE:
+                enet_packet_destroy(enet_event.packet);
+                /* code */
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                std::cout << "Disconnected server";
+                break;
+            default:
+                break;
+            }
+        }
+        
+    }else{
+        
+    }
+
     std::cout << "Game quit succesful\n";
 }
 

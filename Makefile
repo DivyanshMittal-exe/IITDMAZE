@@ -12,7 +12,7 @@ CC = g++
 COMPILER_FLAGS = -w
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL2 -lSDL2_image
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lenet
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = game.out
@@ -23,11 +23,18 @@ all:
 	@echo "Compiling"
 	@make clean
 	@make run
+	./$(OBJ_NAME)
+
+host:
+	@echo "Compiling"
+	@make clean
+	@make run
+	./$(OBJ_NAME) 10.0.2.15
 
 run : $(OBJS)
 	$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c -g $(AUX_OBJS_cpp)
 	$(CC) $(AUX_OBJS) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -g -o $(OBJ_NAME)
-	./$(OBJ_NAME)
+	
 
 
 # maze.o: maze.cpp
