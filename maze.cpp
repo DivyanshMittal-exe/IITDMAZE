@@ -95,15 +95,15 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
     }else{
         address.host = ENET_HOST_ANY;
         address.port = PORT;
-        server = enet_host_create(&address,2,1,0,0);
+        server = enet_host_create(&address,4,1,0,0);
         if(server == NULL){
             std::cout << "Server failed";
         }else{
             std::cout << "Server made";
         }
-        if(enet_host_service(server,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
-            std::cout << "Connected";
-        }
+        // if(enet_host_service(server,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
+        //     std::cout << "Connected";
+        // }
     }
     
 
@@ -139,6 +139,8 @@ void  Maze::handleEvents(){
 }
 
 void Maze::update(){
+    if (!am_i_server)
+    {
     while(enet_host_service(client,&enet_event,0)>0){
             switch (enet_event.type)
             {
@@ -153,6 +155,26 @@ void Maze::update(){
                 break;
             }
         }
+    }else{
+        while(enet_host_service(server,&enet_event,0)>0){
+            switch (enet_event.type)
+            {
+            case ENET_EVENT_TYPE_CONNECT:
+                std::cout << "Connected";
+                break;
+            case ENET_EVENT_TYPE_RECEIVE:
+                printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
+                    enet_event.packet -> dataLength,
+                    enet_event.packet -> data,
+                    enet_event.peer -> data,
+                    enet_event.channelID);
+                break;
+            default:
+                break;
+            }
+        }
+
+    }
 
     pack playerData = { 0,
                         player1.getComponenet<PositionComponent>().position.x,

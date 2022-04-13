@@ -17,7 +17,7 @@ int main(int argc, char* argv[]){
 
     maze = new Maze();
     std::cout<<argc;
-    if(argc = 1){
+    if(argc == 1){
 
         maze->am_i_server = true;
     }
