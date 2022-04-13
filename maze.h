@@ -34,7 +34,15 @@ public:
     // ENetHost* client;
     ENetAddress address;
     ENetEvent enet_event;
-    ENetPeer* peer;
+    static ENetPeer* peer;
+
+    int gameMode;
+
+    bool am_i_ready = false;
+    bool is_opp_ready = false;
+
+    bool am_i_done = false;
+    bool is_opp_done = false;
 
     // // IPaddress IP;
     // // TCPsocket server;
