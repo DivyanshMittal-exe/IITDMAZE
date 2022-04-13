@@ -34,7 +34,7 @@ Entity& player2(manager.addEntity());
 SDL_Event Maze::event;
 SDL_Renderer* Maze::renderer;
 
-
+SDL_Rect Maze::cam = {0,0,gameW,gameH};
 
 Maze::Maze(){}
 Maze::~Maze(){}
@@ -80,6 +80,9 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
     player2.addComponent<SpriteComponent>("assets/player1.png");
     player2.addGroup(gPlayer);
 
+    player1.getComponenet<PositionComponent>().position.x = gameW/2;
+    player1.getComponenet<PositionComponent>().position.y = gameH/2;
+
 }
 void  Maze::handleEvents(){
     SDL_PollEvent(&event);
@@ -97,6 +100,21 @@ void  Maze::handleEvents(){
 void Maze::update(){
     manager.refresh();
     manager.update();
+
+    cam.x = player1.getComponenet<PositionComponent>().position.x - gameW/2;
+    cam.y = player1.getComponenet<PositionComponent>().position.y - gameH/2;
+    if(cam.x < 0){
+        cam.x = 0;
+    }
+    if(cam.y < 0){
+        cam.y = 0;
+    }
+    if (cam.x > cam.w){
+        cam.x = cam.w;
+    }
+     if (cam.y > cam.h){
+        cam.y = cam.h;
+    }
 }
 
 auto& mapTile(manager.getGroup(gMap));

@@ -12,11 +12,11 @@ public:
         std::fstream map;
         map.open(map_path);
         int tileID;
-        for(int i = 0;i < x; i++){
-            for(int j = 0; j < y; j++){
+        for(int i = 0;i < y; i++){
+            for(int j = 0; j < x; j++){
                 map >> tileID;
                 auto& tile (manager->addEntity());
-                tile.addComponent<Tile>(i*16,j*16,16,16,tileID);
+                tile.addComponent<Tile>(j*16,i*16,16,16,tileID);
                 // manager->addGroup(&tile,g);
                 tile.addGroup(g);
             }

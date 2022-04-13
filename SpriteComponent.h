@@ -31,8 +31,8 @@ class SpriteComponent : public Component
             // Change Collider too if you decide to change these values
         }
         void update() override{
-            destRect.x = position->position.x;
-            destRect.y = position->position.y;
+            destRect.x = position->position.x - Maze::cam.x;
+            destRect.y = position->position.y - Maze::cam.y;
 
         }
         void draw() override{

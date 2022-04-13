@@ -1,4 +1,5 @@
 #include "SDL2/SDL.h"
+#include "Collider.h"
 
 class Collision
 {
@@ -11,5 +12,9 @@ public:
             (a.y + a.h >= b.y) &&
             (b.y + b.h >= a.y) 
         );
+    }
+
+    static bool AABB(const Collider& a,const Collider& b){
+        return AABB(a.collider,b.collider);
     }
 };

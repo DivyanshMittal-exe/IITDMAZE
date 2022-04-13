@@ -23,7 +23,7 @@ int main(int argc, char* argv[]){
     //     maze->am_i_server = false;
     // }
 
-    maze -> init("IITD Maze",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,800,600,false);
+    maze -> init("IITD Maze",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,gameW,gameH,false);
 
     
 

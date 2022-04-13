@@ -10,6 +10,9 @@
 // Collider nhi chalte 
 // Unko sort karlena
 
+#define gameH 600
+#define gameW 800
+
 class Maze
 {
 private:
@@ -20,6 +23,8 @@ public:
     static SDL_Event event;
     static SDL_Renderer *renderer;
     static std::vector<Collider*> maze_colliders;
+
+    static SDL_Rect cam;
     // bool am_i_server;
     // std::string Server_IP;
     // // IPaddress IP;
