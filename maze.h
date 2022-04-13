@@ -30,8 +30,8 @@ public:
     static SDL_Rect cam;
     bool am_i_server;
     std::string Server_IP;
-    ENetHost* server;
-    ENetHost* client;
+    ENetHost* client_server;
+    // ENetHost* client;
     ENetAddress address;
     ENetEvent enet_event;
     ENetPeer* peer;

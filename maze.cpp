@@ -76,41 +76,51 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
 
     if (!am_i_server)
     {
-        client = enet_host_create(NULL,1,1,0,0);
-        if(client == NULL){
-            std::cout << "Client Not made";
+        client_server = enet_host_create(NULL,1,1,0,0);
+        if(client_server == NULL){
+            std::cout << "client_server Not made";
         }
 
         enet_address_set_host(&address,Server_IP.c_str());
         address.port = PORT;
 
-        peer = enet_host_connect(client,&address,1,0);
+        peer = enet_host_connect(client_server,&address,1,0);
         if(peer == NULL){
             std::cout << "Peer not available";
         }
 
-        if(enet_host_service(client,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
+        if(enet_host_service(client_server,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
             std::cout << "Connected";
         }
     }else{
         address.host = ENET_HOST_ANY;
         address.port = PORT;
-        server = enet_host_create(&address,4,1,0,0);
-        if(server == NULL){
-            std::cout << "Server failed";
+        client_server = enet_host_create(&address,4,1,0,0);
+        if(client_server == NULL){
+            std::cout << "client_server failed";
         }else{
-            std::cout << "Server made";
+            std::cout << "client_server made";
         }
-        // if(enet_host_service(server,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
-        //     std::cout << "Connected";
-        // }
+        if(enet_host_service(client_server,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
+            peer = enet_event.peer;
+            std::cout << "Connected";
+        }
     }
     
 
     Map *tileMap = new Map("Maze.txt",25,22,&manager,gMap);
 
     player1.addComponent<PositionComponent>();
-    player1.addComponent<SpriteComponent>("assets/player1.png");
+    if (am_i_server)
+    {
+        player1.addComponent<SpriteComponent>("assets/player1.png");
+        player2.addComponent<SpriteComponent>("assets/player2.png");
+    }else{
+        player1.addComponent<SpriteComponent>("assets/player2.png"); 
+        player2.addComponent<SpriteComponent>("assets/player1.png"); 
+    }
+    
+    
     player1.addComponent<Controller>();
     player1.addGroup(gPlayer);
 
@@ -118,11 +128,13 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
     // me->packet_y = player1.getComponenet<PositionComponent>().position.y;
 
     player2.addComponent<PositionComponent>();
-    player2.addComponent<SpriteComponent>("assets/player1.png");
     player2.addGroup(gPlayer);
 
     player1.getComponenet<PositionComponent>().position.x = gameW/2;
     player1.getComponenet<PositionComponent>().position.y = gameH/2;
+
+    player2.getComponenet<PositionComponent>().position.x = gameW/2;
+    player2.getComponenet<PositionComponent>().position.y = gameH/2;
 
 }
 void  Maze::handleEvents(){
@@ -139,42 +151,25 @@ void  Maze::handleEvents(){
 }
 
 void Maze::update(){
-    if (!am_i_server)
-    {
-    while(enet_host_service(client,&enet_event,0)>0){
+    pack* dat;
+    while(enet_host_service(client_server,&enet_event,0)>0){
             switch (enet_event.type)
             {
             case ENET_EVENT_TYPE_RECEIVE:
-                printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
-                    enet_event.packet -> dataLength,
-                    enet_event.packet -> data,
-                    enet_event.peer -> data,
-                    enet_event.channelID);
+                    dat = (pack*)(enet_event.packet -> data);
+                    if(dat->type == 0){
+                        player2.getComponenet<PositionComponent>().position.x = dat->packet_x;
+                        player2.getComponenet<PositionComponent>().position.y = dat->packet_y;
+                    }
+                    
+                    // std::cout << dat->packet_x;
+                    
                 break;
             default:
                 break;
             }
         }
-    }else{
-        while(enet_host_service(server,&enet_event,0)>0){
-            switch (enet_event.type)
-            {
-            case ENET_EVENT_TYPE_CONNECT:
-                std::cout << "Connected";
-                break;
-            case ENET_EVENT_TYPE_RECEIVE:
-                printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
-                    enet_event.packet -> dataLength,
-                    enet_event.packet -> data,
-                    enet_event.peer -> data,
-                    enet_event.channelID);
-                break;
-            default:
-                break;
-            }
-        }
-
-    }
+    
 
     pack playerData = { 0,
                         player1.getComponenet<PositionComponent>().position.x,
@@ -224,11 +219,9 @@ void Maze::clean(){
     SDL_Quit();
 
 
-    if (!am_i_server)
-    {
         enet_peer_disconnect(peer,0);
 
-        while(enet_host_service(client,&enet_event,3000)>0){
+        while(enet_host_service(client_server,&enet_event,3000)>0){
             switch (enet_event.type)
             {
             case ENET_EVENT_TYPE_RECEIVE:
@@ -236,36 +229,16 @@ void Maze::clean(){
                 /* code */
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
-                std::cout << "Disconnected server";
+                std::cout << "Disconnected client_server";
                 break;
             default:
                 break;
             }
         }
 
-        enet_host_destroy(client);
+        enet_host_destroy(client_server);
         enet_deinitialize();
 
-        
-    }else{
-
-        // while(enet_host_service(server,&enet_event,3000)>0){
-        //     switch (enet_event.type)
-        //     {
-        //     case ENET_EVENT_TYPE_RECEIVE:
-        //         enet_packet_destroy(enet_event.packet);
-        //         /* code */
-        //         break;
-        //     case ENET_EVENT_TYPE_DISCONNECT:
-        //         std::cout << "Disconnected server";
-        //         break;
-        //     default:
-        //         break;
-        //     }
-        // }
-
-        enet_host_destroy(server);
-        enet_deinitialize();
 
     }
 
