@@ -111,16 +111,6 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
     Map *tileMap = new Map("Maze.txt",25,22,&manager,gMap);
 
     player1.addComponent<PositionComponent>();
-    if (am_i_server)
-    {
-        player1.addComponent<SpriteComponent>("assets/player1.png");
-        player2.addComponent<SpriteComponent>("assets/player2.png");
-    }else{
-        player1.addComponent<SpriteComponent>("assets/player2.png"); 
-        player2.addComponent<SpriteComponent>("assets/player1.png"); 
-    }
-    
-    
     player1.addComponent<Controller>();
     player1.addGroup(gPlayer);
 
@@ -129,6 +119,14 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
 
     player2.addComponent<PositionComponent>();
     player2.addGroup(gPlayer);
+
+    if(am_i_server){
+        player1.addComponent<SpriteComponent>("assets/player1.png");
+        player2.addComponent<SpriteComponent>("assets/player2.png");
+    }else{
+        player1.addComponent<SpriteComponent>("assets/player2.png");
+        player2.addComponent<SpriteComponent>("assets/player1.png");
+    }
 
     player1.getComponenet<PositionComponent>().position.x = gameW/2;
     player1.getComponenet<PositionComponent>().position.y = gameH/2;
@@ -238,9 +236,6 @@ void Maze::clean(){
 
         enet_host_destroy(client_server);
         enet_deinitialize();
-
-
-    }
 
     std::cout << "Game quit succesful\n";
 }
