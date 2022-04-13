@@ -98,6 +98,11 @@ void Maze::init(const char* title, int xpos,int ypos,int w,int h, bool fs){
         server = enet_host_create(&address,2,1,0,0);
         if(server == NULL){
             std::cout << "Server failed";
+        }else{
+            std::cout << "Server made";
+        }
+        if(enet_host_service(server,&enet_event,50000)>0 && enet_event.type == ENET_EVENT_TYPE_CONNECT){
+            std::cout << "Connected";
         }
     }
     
