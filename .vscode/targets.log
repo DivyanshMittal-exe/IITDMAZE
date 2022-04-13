@@ -1,43 +1,24 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # GNU Make 4.2.1
- 
 # Built for x86_64-pc-linux-gnu
- 
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
- 
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
- 
 # This is free software: you are free to change and redistribute it.
- 
 # There is NO WARRANTY, to the extent permitted by law.
- 
 
- 
-# Make data base, printed on Wed Apr 13 00:33:33 2022
- 
+# Make data base, printed on Wed Apr 13 16:27:47 2022
 
 # Variables
- 
 
- 
 # 'override' directive
- 
 GNUMAKEFLAGS := 
- 
 # automatic
- 
 <D = $(patsubst %/,%,$(dir $<))
- 
 # automatic
- 
 ?F = $(notdir $?)
- 
 # environment
- 
 MKL_THREADING_LAYER = GNU
- 
 # environment
- 
 DESKTOP_SESSION = ubuntu
 # default
 .SHELLFLAGS := -c
@@ -68,7 +49,7 @@ VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/share/code/code
 # environment
-JOURNAL_STREAM = 8:32583
+JOURNAL_STREAM = 8:33620
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # makefile (from 'Makefile', line 1)
@@ -88,7 +69,7 @@ VSCODE_VERBOSE_LOGGING = true
 # makefile (from 'Makefile', line 2)
 OBJS = game.cpp  
 # environment
-MANAGERPID = 1278
+MANAGERPID = 1277
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -104,7 +85,7 @@ AUX_OBJS = ECS.o maze.o Vector2D.o Texture.o
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1535,unix/jsr-VirtualBox:/tmp/.ICE-unix/1535
+SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1532,unix/jsr-VirtualBox:/tmp/.ICE-unix/1532
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -114,7 +95,7 @@ VSCODE_LOG_STACK = false
 # environment
 VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd&iid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd&sid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd","uploadToServer":true}
 # environment
-INVOCATION_ID = 63ee4fef9fcb4088ae1b9b2d66571cdc
+INVOCATION_ID = b3a1c1f2c17648c89c9ada2cecc222e9
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -124,7 +105,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 5162
+GIO_LAUNCHED_DESKTOP_FILE_PID = 3804
 # automatic
 %F = $(notdir $%)
 # environment
@@ -136,11 +117,11 @@ PWD = /home/jsr/Codes/IITDMAZE
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1484
+SSH_AGENT_PID = 1486
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # makefile (from 'Makefile', line 15)
-LINKER_FLAGS = -lSDL2 -lSDL2_image
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lenet
 # environment
 GTK_MODULES = gail:atk-bridge:appmenu-gtk-module
 # environment
@@ -178,7 +159,7 @@ CC = g++
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-68d865c8-11e1-4494-9147-1afeda09e726.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-05274701-946f-4d61-b7f0-be11bbfd3afc.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -244,9 +225,9 @@ OBJ_NAME = game.out
 # environment
 LANG = C
 # environment
-VSCODE_PID = 5162
+VSCODE_PID = 3804
 # variable set hash-table stats:
-# Load=108/1024=11%, Rehash=0, Collisions=16/137=12%
+# Load=108/1024=11%, Rehash=0, Collisions=16/138=12%
 
 # Pattern-specific Variable Values
 
@@ -288,14 +269,16 @@ all:
 # automatic
 # ? := 
 # variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/11=9%
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
 #  recipe to execute (from 'Makefile', line 23):
 	@echo "Compiling"
 	@make clean
 	@make run
+	./$(OBJ_NAME)
 
 # Not a target:
 .SUFFIXES:
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -303,7 +286,7 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-04-13 00:31:17.803279507
+#  Last modified 2022-04-13 15:45:04.192679783
 #  File has been updated.
 #  Successfully updated.
 
@@ -316,7 +299,6 @@ game.cpp:
 # Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
- 
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -324,32 +306,42 @@ run: game.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 28):
+#  recipe to execute (from 'Makefile', line 35):
 	$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c -g $(AUX_OBJS_cpp)
 	$(CC) $(AUX_OBJS) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -g -o $(OBJ_NAME)
-	./$(OBJ_NAME)
+	
 
 clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 44):
+#  recipe to execute (from 'Makefile', line 51):
 	@rm -rf *.o *.out
 
+host:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 29):
+	@echo "Compiling"
+	@make clean
+	@make run
+	./$(OBJ_NAME) 192.168.0.102
+
 # files hash-table stats:
-# Load=7/1024=1%, Rehash=0, Collisions=0/20=0%
+# Load=8/1024=1%, Rehash=0, Collisions=0/21=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 39 / storage = 362 B / avg = 9 B
-# current buf: size = 8162 B / used = 362 B / count = 39 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 40 / storage = 367 B / avg = 9 B
+# current buf: size = 8162 B / used = 367 B / count = 40 / avg = 9 B
 
-# strcache performance: lookups = 49 / hit rate = 20%
+# strcache performance: lookups = 51 / hit rate = 21%
 # hash-table stats:
-# Load=39/8192=0%, Rehash=0, Collisions=1/49=2%
-# Finished Make data base on Wed Apr 13 00:33:33 2022
+# Load=40/8192=0%, Rehash=0, Collisions=1/51=2%
+# Finished Make data base on Wed Apr 13 16:27:47 2022
 
  

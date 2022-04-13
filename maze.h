@@ -14,7 +14,7 @@
 
 #define gameH 600
 #define gameW 800
-#define PORT 6666
+#define PORT 6667
 
 class Maze
 {
