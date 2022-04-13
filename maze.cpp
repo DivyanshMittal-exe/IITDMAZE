@@ -220,9 +220,31 @@ void Maze::clean(){
                 break;
             }
         }
+
+        enet_host_destroy(client);
+        enet_deinitialize();
+
         
     }else{
-        
+
+        // while(enet_host_service(server,&enet_event,3000)>0){
+        //     switch (enet_event.type)
+        //     {
+        //     case ENET_EVENT_TYPE_RECEIVE:
+        //         enet_packet_destroy(enet_event.packet);
+        //         /* code */
+        //         break;
+        //     case ENET_EVENT_TYPE_DISCONNECT:
+        //         std::cout << "Disconnected server";
+        //         break;
+        //     default:
+        //         break;
+        //     }
+        // }
+
+        enet_host_destroy(server);
+        enet_deinitialize();
+
     }
 
     std::cout << "Game quit succesful\n";
