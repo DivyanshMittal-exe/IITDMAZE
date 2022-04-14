@@ -120,7 +120,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         }
     }
 
-    Map *tileMap = new Map("Maze.txt", 25, 22, &manager, gMap);
+    Map *tileMap = new Map(225, 84, &manager, gMap);
 
     player1.addComponent<PositionComponent>();
     player1.addComponent<Controller>();
