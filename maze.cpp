@@ -22,11 +22,11 @@
 
 struct pack
 {
-    int type;
-    float packet_x;
-    float packet_y;
-    int packet_sprite;
-    int packet_orientation;
+int type;
+float packet_x;
+float packet_y;
+int packet_sprite;
+int packet_orientation;
 };
 
 Manager manager;
@@ -41,6 +41,12 @@ SDL_Renderer* Maze::renderer;
 ENetPeer* Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
+
+SDL_Texture* strtpage = Texture::LoadTexture("assets/Waiting.png");
+SDL_Texture* mazePage = Texture::LoadTexture("assets/maze.png");
+SDL_Rect strtsrc = {0, 0, gameW, gameH};
+
+std::vector<std::pair<std::string,Vector2D>> questions;
 
 Maze::Maze() {}
 Maze::~Maze() {}
@@ -78,6 +84,10 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         std::cout << "Initialization failed";
     }
 
+        strtpage = Texture::LoadTexture("assets/Waiting.png");
+        mazePage = Texture::LoadTexture("assets/maze.png");
+        strtsrc = {0, 0, gameW, gameH};
+
     if (!am_i_server)
     {
         client_server = enet_host_create(NULL, 1, 1, 0, 0);
@@ -102,6 +112,13 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     }
     else
     {
+        SDL_RenderClear(renderer);
+        // strtpage = Texture::LoadTexture("assets/Waiting.png");
+        // mazePage = Texture::LoadTexture("assets/maze.png");
+        // strtsrc = {0, 0, gameW, gameH};
+        Texture::Draw(strtpage,strtsrc,strtsrc, SDL_FLIP_NONE);
+        SDL_RenderPresent(renderer);
+
         address.host = ENET_HOST_ANY;
         address.port = PORT;
         client_server = enet_host_create(&address, 4, 1, 0, 0);
@@ -127,6 +144,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     player1.addGroup(gPlayer);
     player2.addComponent<PositionComponent>();
     player2.addGroup(gPlayer);
+
+    flag1.addGroup(gEntities);
+    flag2.addGroup(gEntities);
 
     if (am_i_server)
     {
@@ -176,12 +196,13 @@ void gameMode1(bool am_i_done,bool is_opp_done)
         }
     }
     else
-    {
+    {   
+        // std::cout << "Game Model 1";
         if (Maze::event.type == SDL_KEYDOWN)
         {
             switch (Maze::event.key.keysym.sym)
             {
-            case SDLK_1:
+            case SDLK_i:
                 if (flag1.hasComponent<PositionComponent>() == false)
                 {
                     flag1.addComponent<PositionComponent>();
@@ -190,7 +211,7 @@ void gameMode1(bool am_i_done,bool is_opp_done)
 
                 flag1.getComponenet<PositionComponent>().position = player1.getComponenet<PositionComponent>().position;
                 break;
-            case SDLK_2:
+            case SDLK_o:
                 if (flag2.hasComponent<PositionComponent>() == false)
                 {
                     flag2.addComponent<PositionComponent>();
@@ -219,7 +240,11 @@ void Maze::update()
             {
                 player2.getComponenet<PositionComponent>().position.x = dat->packet_x;
                 player2.getComponenet<PositionComponent>().position.y = dat->packet_y;
+            }else if(dat->type == 1)
+            {
+                 is_opp_done = true;
             }
+            
 
             // std::cout << dat->packet_x;
 
@@ -267,6 +292,8 @@ void Maze::update()
 
 auto &mapTile(manager.getGroup(gMap));
 auto &playerTile(manager.getGroup(gPlayer));
+auto &entTile(manager.getGroup(gEntities));
+
 
 void Maze::render()
 {
@@ -280,7 +307,35 @@ void Maze::render()
     {
         x->draw();
     }
+    for (auto &x : entTile)
+    {
+        x->draw();
+    }
     // manager.draw();
+    if(!am_i_ready){
+        Texture::Draw(mazePage,strtsrc,strtsrc, SDL_FLIP_NONE);
+        if (Maze::event.type == SDL_KEYDOWN)
+        {   
+            ENetPacket *packet;
+            pack ready = {1,0,0,0,0};
+            switch (Maze::event.key.keysym.sym)
+            {
+                case SDLK_RETURN:
+                    am_i_ready = true;
+                    packet = enet_packet_create(&ready, sizeof(ready), 0);
+                    enet_peer_send(peer, 0, packet);
+                    break;
+                default:
+                    break;
+            } 
+        }
+
+
+    }else if(!is_opp_done){
+        std::cout << "Here";
+        Texture::Draw(strtpage,strtsrc,strtsrc, SDL_FLIP_NONE);
+        }
+
     SDL_RenderPresent(renderer);
 }
 void Maze::clean()

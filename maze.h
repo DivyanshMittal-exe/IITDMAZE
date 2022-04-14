@@ -6,6 +6,8 @@
 #include <string>
 #include "Collider.h"
 #include <enet/enet.h>
+#include "Texture.h"
+
 
 // #include "SDL2/SDL_net.h"
 
@@ -31,7 +33,6 @@ public:
     bool am_i_server;
     std::string Server_IP;
     ENetHost* client_server;
-    // ENetHost* client;
     ENetAddress address;
     ENetEvent enet_event;
     static ENetPeer* peer;
@@ -43,13 +44,6 @@ public:
 
     bool am_i_done = false;
     bool is_opp_done = false;
-
-    // // IPaddress IP;
-    // // TCPsocket server;
-    // // TCPsocket client;
-
-    // packet* me;
-    // packet* opponent;
 
     Maze();
     ~Maze();
