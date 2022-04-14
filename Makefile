@@ -29,7 +29,7 @@ host:
 	@echo "Compiling"
 	@make clean
 	@make run
-	./$(OBJ_NAME) 192.168.0.102
+	./$(OBJ_NAME) 127.0.0.1
 
 run : $(OBJS)
 	$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c -g $(AUX_OBJS_cpp)

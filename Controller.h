@@ -8,10 +8,11 @@
 class Controller : public Component{
     public:
         PositionComponent *pos;
+        SpriteComponent *sprite;
 
         void init() override{
             pos = &entity-> getComponenet<PositionComponent>();
-
+            sprite = &entity-> getComponenet<SpriteComponent>();
             }
         void update() override {
             if (Maze::event.type == SDL_KEYDOWN)
@@ -20,15 +21,19 @@ class Controller : public Component{
                 {
                 case SDLK_w:
                     pos->velocity.y = -1;
+                    sprite-> Play("WalkN");
                     break;
                 case SDLK_a:
                     pos->velocity.x = -1;
+                    sprite-> Play("WalkW");
                     break;
                 case SDLK_s:
                     pos->velocity.y = 1;
+                    sprite-> Play("WalkS");
                     break;
                 case SDLK_d:
                     pos->velocity.x = 1;
+                    sprite-> Play("WalkE");
                     break;
                 
                 default:
@@ -40,15 +45,19 @@ class Controller : public Component{
                 {
                 case SDLK_w:
                     pos->velocity.y = 0;
+                    sprite-> Play("Idle");
                     break;
                 case SDLK_a:
                     pos->velocity.x = 0;
+                    sprite-> Play("Idle");
                     break;
                 case SDLK_s:
                     pos->velocity.y = 0;
+                    sprite-> Play("Idle");
                     break;
                 case SDLK_d:
                     pos->velocity.x = 0;
+                    sprite-> Play("Idle");
                     break;
                 
                 default:
