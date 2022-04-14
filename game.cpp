@@ -16,7 +16,6 @@ Maze *maze = nullptr;
 int main(int argc, char* argv[]){
 
     maze = new Maze();
-    std::cout<<argc;
     if(argc == 1){
 
         maze->am_i_server = true;
@@ -32,9 +31,9 @@ int main(int argc, char* argv[]){
     
 
     while(maze->running()){
-        // std::cout << "Hello Game";
         frameTime = SDL_GetTicks();
         maze->handleEvents();
+        maze->recievePackets();
         maze->update();
         maze->render();
         frameTime = SDL_GetTicks() - frameTime ;

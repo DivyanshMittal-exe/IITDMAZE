@@ -26,17 +26,14 @@ class SpriteComponent : public Component
         std::map<const char*, Animation> animations;
 
         void setText(const char* path){
-            std::cout << "Texture laga diya ";
             texture = Texture::LoadTexture(path);
         }
         SpriteComponent(){}
         SpriteComponent(const char* path){
-            std::cout << "Made";
             texture = Texture::LoadTexture(path);            
         }
 
         SpriteComponent(const char* path, bool isAnim){
-            std::cout << "Animated Made";
             animated = isAnim;
 
             Animation idle = Animation(0, 1, 100);
@@ -85,23 +82,9 @@ class SpriteComponent : public Component
         }
 
         void Play(const char* animationName) {
-            // std::cout << "Hurrah" << std::endl;
-            // for (const auto& [key, value] : animations) {
-            //     std::cout << '[' << key << "] = " << std::endl;
-            //     if (key == "WalkN") {
-            //         std::cout << "Hiiiii" << std::endl;
-            //     }
-            // }
-
-
-
-            
             frames = animations[animationName].frames;
-            // std::cout << "Hur;h1" << std::endl;
             animationInd = animations[animationName].index;
-            // std::cout << "Hurrah2" << std::endl;
             speed = animations[animationName].speed;
-            // std::cout << "Hurrah3" << std::endl;
         }
 
 };

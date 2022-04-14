@@ -37,7 +37,6 @@ class PositionComponent: public Component
     }
 
     void update() override{
-        // std::cout << "Updating pos";
         position.x += velocity.x *speed;
         position.y += velocity.y *speed;
     }

@@ -27,8 +27,6 @@
                 if ((*i)-> isActive() == false || (*i)-> hasGroup(j) == false)
                 {
                     groups[j].erase(i);
-                    std:: cout << "Hello";
-                    std:: cout << j;
                 }   
             } 
         }

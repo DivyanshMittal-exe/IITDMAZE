@@ -18,7 +18,7 @@
 #define TileScale 5
 #define gameH 600
 #define gameW 800
-#define PORT 6667
+#define PORT 6666
 
 class Maze
 {
@@ -40,12 +40,8 @@ public:
     static ENetPeer* peer;
 
     int gameMode;
-
-    bool am_i_ready = false;
-    bool is_opp_ready = false;
-
-    bool am_i_done = false;
-    bool is_opp_done = false;
+    char opState;
+    char myState;
 
 
     Maze();
@@ -53,6 +49,7 @@ public:
 
     void init(const char* title, int xpos,int ypos,int w,int h, bool fs);
     void handleEvents();
+    void recievePackets();
     void update();
     void render();
     void clean();

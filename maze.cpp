@@ -8,10 +8,12 @@
 #include "Vector2D.h"
 #include "ECS.h"
 #include "Controller.h"
-// #include "Map.h"
+#include "SDL2/SDL_ttf.h"
 #include <bits/stdc++.h>
 #include "Tile.h"
- #include "map/iitd_map.h"
+#include "map/iitd_map.h"
+#include <stdlib.h>
+#include <time.h>
 
 #define MULTIMODE
 
@@ -24,11 +26,16 @@
 
 struct pack
 {
-int type;
-float packet_x;
-float packet_y;
-int packet_sprite;
-int packet_orientation;
+    int type;
+    float packet_x;
+    float packet_y;
+    int packet_sprite;
+    int packet_orientation;
+};
+
+struct gameState
+{
+    char gameS;
 };
 
 Manager manager;
@@ -39,26 +46,48 @@ Entity &flag1(manager.addEntity());
 Entity &flag2(manager.addEntity());
 
 SDL_Event Maze::event;
-SDL_Renderer* Maze::renderer;
-ENetPeer* Maze::peer;
+SDL_Renderer *Maze::renderer;
+ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-SDL_Texture* strtpage = Texture::LoadTexture("assets/Waiting.png");
-SDL_Texture* mazePage = Texture::LoadTexture("assets/maze.png");
+SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
+SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
+SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
-std::vector<std::pair<std::string,Vector2D>> questions;
+Tile *map_tiles[84][225];
 
-Tile* map_tiles[84][225];
+TTF_Font *abd, *blx, *krm, *prt;
 
+float myMarks;
+float oppMarks;
+int find1, find2;
 
+std::vector<std::pair<std::string, std::pair<float, float>>> questions{
+    {"The unofficial pizza \n place of IIT Delhi", {72, 48}},
+    {"Your first photo was \n probably taken here ", {150, 20}},
+    {"The department where you \n will see fancy suits", {72, 75}},
+    {"People sitting outside, cant find a spot.\n But the seats are empty inside and you got no money", {143, 25}},
+    {"Married to the idea of staying \n on campus a bit more. Or in general", {55, 52}},
+    {"The coolest building in town", {131, 59}},
+    {"Finally, I can hope \n for an empty court", {112, 43}},
+    {"Highest yet youngest of the 13", {92, 11}},
+    {"Shakes ?", {42, 15}},
+    {"Weaving dreams into reality", {66, 27}},
+    {"IC", {41, 36}},
+    {"The vintage car that everyone loves", {136, 23}},
+    {"Guests stay here. New faculty doesn't", {200, 21}},
+    {"Got hurt ?", {101, 28}},
+    {"Where do these young kids study?\n They can barely speak, let alone give JEE!", {95, 18}}};
+
+std::vector<std::string> instrPgText;
 Maze::Maze() {}
 Maze::~Maze() {}
 
 void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
-
+    srand(time(NULL));
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
         std::cout << "Maze initialised \n";
@@ -80,25 +109,32 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     {
         is_running = false;
     }
-    std::cout << is_running;
-
-    // SDLNet_Init();
 
     if (enet_initialize() != 0)
     {
-        std::cout << "Initialization failed";
+        std::cout << "Initialization failed" << std::endl;
     }
 
-        strtpage = Texture::LoadTexture("assets/Waiting.png");
-        mazePage = Texture::LoadTexture("assets/maze.png");
-        strtsrc = {0, 0, gameW, gameH};
+    TTF_Init();
+    abd = TTF_OpenFont("fonts/abduct.ttf", 16);
+    blx = TTF_OpenFont("fonts/Blox.ttf", 16);
+    krm = TTF_OpenFont("fonts/Karma.ttf", 16);
+    prt = TTF_OpenFont("fonts/Prototype.ttf", 16);
+
+    w8page = Texture::LoadTexture("assets/Waiting.png");
+    mazePage = Texture::LoadTexture("assets/maze.png");
+    instrPage = Texture::LoadTexture("assets/general_image.png");
+
+    instrPgText.push_back("Your goal is simple\n Look at the hints below and try locating these famous locations on campus\n Press i to place the flag for q1 and o to place flag for q2.\n Once you are satisfied, press Enter to finish your attempt");
+
+    strtsrc = {0, 0, gameW, gameH};
 
     if (!am_i_server)
     {
         client_server = enet_host_create(NULL, 1, 1, 0, 0);
         if (client_server == NULL)
         {
-            std::cout << "client_server Not made";
+            std::cout << "client_server Not made" << std::endl;
         }
 
         enet_address_set_host(&address, Server_IP.c_str());
@@ -107,21 +143,18 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         peer = enet_host_connect(client_server, &address, 1, 0);
         if (peer == NULL)
         {
-            std::cout << "Peer not available";
+            std::cout << "Peer not available" << std::endl;
         }
 
         if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
-            std::cout << "Connected";
+            std::cout << "Connected" << std::endl;
         }
     }
     else
     {
         SDL_RenderClear(renderer);
-        // strtpage = Texture::LoadTexture("assets/Waiting.png");
-        // mazePage = Texture::LoadTexture("assets/maze.png");
-        // strtsrc = {0, 0, gameW, gameH};
-        Texture::Draw(strtpage,strtsrc,strtsrc, SDL_FLIP_NONE);
+        Texture::Draw(w8page, strtsrc, strtsrc, SDL_FLIP_NONE);
         SDL_RenderPresent(renderer);
 
         address.host = ENET_HOST_ANY;
@@ -129,38 +162,51 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         client_server = enet_host_create(&address, 4, 1, 0, 0);
         if (client_server == NULL)
         {
-            std::cout << "client_server failed";
+            std::cout << "client_server failed" << std::endl;
         }
         else
         {
-            std::cout << "client_server made";
+            std::cout << "client_server made" << std::endl;
         }
         if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             peer = enet_event.peer;
-            std::cout << "Connected";
+            std::cout << "Connected" << std::endl;
         }
+        find1 = rand() % (questions.size());
+        find2 = rand() % (questions.size());
+        while (find1 == find2)
+        {
+            find1 = rand() % (questions.size());
+            find2 = rand() % (questions.size());
+        }
+        pack tr_locs = {-1,
+                        find1,
+                        find2,
+                        0,
+                        0};
+
+        ENetPacket *packet = enet_packet_create(&tr_locs, sizeof(tr_locs), 0);
+        enet_peer_send(peer, 0, packet);
+        instrPgText.push_back(questions[find1].first);
+        instrPgText.push_back(questions[find2].first);
     }
 
-    // Map *tileMap = new Map(225, 84, &manager, gMap);
-    // for(int i = 0;i < 84; i++){
-    //     for(int j = 0; j < 225; j++){
-    //             // tileID = iit_map[i][j];
-    //         map_tiles[i][j] = new Tile(j*16,i*16,16,16,iit_map[i][j]);
-    //     }
-    // }
-
     player1.addComponent<PositionComponent>();
-    
     player1.addGroup(gPlayer);
     player2.addComponent<PositionComponent>();
     player2.addGroup(gPlayer);
+
+    // Start from main gate
+    player1.getComponenet<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
+    player1.getComponenet<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
 
     flag1.addGroup(gEntities);
     flag2.addGroup(gEntities);
 
     if (am_i_server)
     {
+
         player1.addComponent<SpriteComponent>("assets/player1animated.png", true);
         player2.addComponent<SpriteComponent>("assets/player2animated.png", true);
     }
@@ -171,14 +217,45 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     }
     player1.addComponent<Controller>();
 
-    player1.getComponenet<PositionComponent>().position.x = gameW / 2;
-    player1.getComponenet<PositionComponent>().position.y = gameH / 2;
-
-    player2.getComponenet<PositionComponent>().position.x = gameW / 2;
-    player2.getComponenet<PositionComponent>().position.y = gameH / 2;
-
     gameMode = 1;
+    myState = 0;
+    opState = 0;
 }
+
+float calcuatePoint()
+{
+    float p1, p2;
+    if (flag1.hasComponent<PositionComponent>() == true)
+    {
+        Vector2D f1loc = flag1.getComponenet<PositionComponent>().position;
+        std::pair<float, float> l1 = questions[find1].second;
+        float l1x = l1.first * 16 * TileScale + 8 * TileScale - f1loc.x;
+        float l1y = l1.second * 16 * TileScale + 8 * TileScale - f1loc.y;
+
+        p1 = 100 / ((l1x * l1x + l1y * l1y) + 10);
+    }
+    else
+    {
+        p1 = 0;
+    }
+
+    if (flag2.hasComponent<PositionComponent>() == true)
+    {
+        Vector2D f2loc = flag2.getComponenet<PositionComponent>().position;
+        std::pair<float, float> l2 = questions[find2].second;
+        float l2x = l2.first * 16 * TileScale + 8 * TileScale - f2loc.x;
+        float l2y = l2.second * 16 * TileScale + 8 * TileScale - f2loc.y;
+
+        p2 = 100 / ((l2x * l2x + l2y * l2y) + 10);
+    }
+    else
+    {
+        p2 = 0;
+    }
+
+    return p1 + p2;
+}
+
 void Maze::handleEvents()
 {
     SDL_PollEvent(&event);
@@ -188,33 +265,43 @@ void Maze::handleEvents()
         is_running = false;
         break;
 
-    default:
-        break;
-    }
-}
+    case SDL_KEYDOWN:
 
-void computeWinnerGameMode1()
-{
-    // implement
-}
-
-void gameMode1(bool am_i_done,bool is_opp_done)
-{
-    if (am_i_done)
-    {
-        if (is_opp_done)
+        switch (Maze::event.key.keysym.sym)
         {
-            computeWinnerGameMode1();
-        }
-    }
-    else
-    {   
-        // std::cout << "Game Model 1";
-        if (Maze::event.type == SDL_KEYDOWN)
+        case SDLK_RETURN:
         {
-            switch (Maze::event.key.keysym.sym)
+            if (myState == 0)
             {
-            case SDLK_i:
+                myState += 1;
+            }
+            else if (myState == 2 && opState >= 2)
+            {
+                myState += 1;
+                myMarks = calcuatePoint();
+                pack points = {1, myMarks, 0, 0, 0};
+                ENetPacket *packet = enet_packet_create(&points, sizeof(points), 0);
+                enet_peer_send(peer, 0, packet);
+            }
+            gameState g = {(char)myState};
+            ENetPacket *packet = enet_packet_create(&g, sizeof(g), 0);
+            enet_peer_send(peer, 0, packet);
+        }
+        break;
+        case SDLK_TAB:
+        {
+            if (myState == 1)
+            {
+                myState += 1;
+            }
+            gameState g = {(char)myState};
+            ENetPacket *packet = enet_packet_create(&g, sizeof(g), 0);
+            enet_peer_send(peer, 0, packet);
+        }
+        break;
+        case SDLK_i:
+            if (myState == 2)
+            {
                 if (flag1.hasComponent<PositionComponent>() == false)
                 {
                     flag1.addComponent<PositionComponent>();
@@ -222,8 +309,11 @@ void gameMode1(bool am_i_done,bool is_opp_done)
                 }
 
                 flag1.getComponenet<PositionComponent>().position = player1.getComponenet<PositionComponent>().position;
-                break;
-            case SDLK_o:
+            }
+            break;
+        case SDLK_o:
+            if (myState == 2)
+            {
                 if (flag2.hasComponent<PositionComponent>() == false)
                 {
                     flag2.addComponent<PositionComponent>();
@@ -231,40 +321,62 @@ void gameMode1(bool am_i_done,bool is_opp_done)
                 }
 
                 flag2.getComponenet<PositionComponent>().position = player1.getComponenet<PositionComponent>().position;
-                break;
-            default:
-                break;
             }
+            break;
+
+        default:
+            break;
+        }
+        break;
+
+    default:
+        break;
+    }
+}
+
+void Maze::recievePackets()
+{
+    pack *pack_data;
+    gameState *gameState_data;
+    while (enet_host_service(client_server, &enet_event, 0) > 0)
+    {
+        switch (enet_event.type)
+        {
+        case ENET_EVENT_TYPE_RECEIVE:
+            if (enet_event.packet->dataLength == 1)
+            {
+                gameState_data = (gameState *)(enet_event.packet->data);
+                opState = ((gameState *)(enet_event.packet->data))->gameS;
+            }
+            else
+            {
+                pack_data = (pack *)(enet_event.packet->data);
+                if (pack_data->type == -1)
+                {
+                    find1 = (int)(pack_data->packet_x);
+                    find2 = (int)(pack_data->packet_y);
+                    instrPgText.push_back(questions[find1].first);
+                    instrPgText.push_back(questions[find2].first);
+                }
+                else if (pack_data->type == 1)
+                {
+                    oppMarks = pack_data->packet_x;
+                }
+                else if (pack_data->type == 0 && myState == 2 && opState == 2)
+                {
+                    player2.getComponenet<PositionComponent>().position.x = pack_data->packet_x;
+                    player2.getComponenet<PositionComponent>().position.y = pack_data->packet_y;
+                }
+            }
+            break;
+        default:
+            break;
         }
     }
 }
 
 void Maze::update()
 {
-    pack *dat;
-    while (enet_host_service(client_server, &enet_event, 0) > 0)
-    {
-        switch (enet_event.type)
-        {
-        case ENET_EVENT_TYPE_RECEIVE:
-            dat = (pack *)(enet_event.packet->data);
-            if (dat->type == 0)
-            {
-                player2.getComponenet<PositionComponent>().position.x = dat->packet_x;
-                player2.getComponenet<PositionComponent>().position.y = dat->packet_y;
-            }else if(dat->type == 1)
-            {
-                 is_opp_done = true;
-            }
-            
-
-            // std::cout << dat->packet_x;
-
-            break;
-        default:
-            break;
-        }
-    }
 
     pack playerData = {0,
                        player1.getComponenet<PositionComponent>().position.x,
@@ -276,6 +388,7 @@ void Maze::update()
 
     cam.x = player1.getComponenet<PositionComponent>().position.x - gameW / 2;
     cam.y = player1.getComponenet<PositionComponent>().position.y - gameH / 2;
+
     if (cam.x < 0)
     {
         cam.x = 0;
@@ -284,18 +397,13 @@ void Maze::update()
     {
         cam.y = 0;
     }
-    if (cam.x > 225*16*TileScale-gameW)
+    if (cam.x > 225 * 16 * TileScale - gameW)
     {
-        cam.x = 225*16*TileScale-gameW;
+        cam.x = 225 * 16 * TileScale - gameW;
     }
-    if (cam.y > 84*16*TileScale-gameH)
+    if (cam.y > 84 * 16 * TileScale - gameH)
     {
-        cam.y = 84*16*TileScale-gameH;
-    }
-
-    if (gameMode == 1)
-    {
-        gameMode1(am_i_done,is_opp_done);
+        cam.y = 84 * 16 * TileScale - gameH;
     }
 
     manager.refresh();
@@ -306,68 +414,88 @@ void Maze::update()
 auto &playerTile(manager.getGroup(gPlayer));
 auto &entTile(manager.getGroup(gEntities));
 
-
 void Maze::render()
 {
     SDL_RenderClear(renderer);
-    // std::cout <<mapTile.size();
-    // for (auto &x : mapTile)
-    // {
-    //     x->draw();
-    // }
-    for(int j = 0; j <= gameH/(16*TileScale)+1; j++){
-        for(int i = 0;i <= gameW/(16*TileScale)+1; i++){
-            int ypos = cam.y/(16*TileScale) + j;
-            int xpos = cam.x/(16*TileScale) + i;
-            if(xpos<225 && ypos < 84){
-                if(!map_tiles[ypos][xpos]){
-                        map_tiles[ypos][xpos] = new Tile(xpos*16,ypos*16,16,16,iit_map[ypos][xpos]);
-                }
-                    
-                map_tiles[ypos][xpos]->update();
-                map_tiles[ypos][xpos]->draw();
-            }
-            
-        }
-    }
 
-    for (auto &x : playerTile)
+    if (myState == 0)
     {
-        x->draw();
+        Texture::Draw(mazePage, strtsrc, strtsrc, SDL_FLIP_NONE);
     }
-    for (auto &x : entTile)
+    else if (myState == 1)
     {
-        x->draw();
+        Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+        Texture::render_text(prt, instrPgText, 30,255,255,255);
     }
-    // manager.draw();
-    if(!am_i_ready){
-        Texture::Draw(mazePage,strtsrc,strtsrc, SDL_FLIP_NONE);
-        if (Maze::event.type == SDL_KEYDOWN)
-        {   
-            ENetPacket *packet;
-            pack ready = {1,0,0,0,0};
-            switch (Maze::event.key.keysym.sym)
+    else if (opState == 0 || opState == 1)
+    {
+        Texture::Draw(w8page, strtsrc, strtsrc, SDL_FLIP_NONE);
+    }
+    else if (myState == 2 && opState >= 2)
+    {
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        {
+            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
             {
-                case SDLK_RETURN:
-                    am_i_ready = true;
-                    packet = enet_packet_create(&ready, sizeof(ready), 0);
-                    enet_peer_send(peer, 0, packet);
-                    break;
-                default:
-                    break;
-            } 
+                int ypos = cam.y / (16 * TileScale) + j;
+                int xpos = cam.x / (16 * TileScale) + i;
+                if (xpos < 225 && ypos < 84)
+                {
+                    if (!map_tiles[ypos][xpos])
+                    {
+                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
+                    }
+
+                    map_tiles[ypos][xpos]->update();
+                    map_tiles[ypos][xpos]->draw();
+                }
+            }
         }
 
-
-    }else if(!is_opp_done){
-        std::cout << "Here";
-        Texture::Draw(strtpage,strtsrc,strtsrc, SDL_FLIP_NONE);
+        for (auto &x : playerTile)
+        {
+            x->draw();
         }
+        for (auto &x : entTile)
+        {
+            x->draw();
+        }
+    }
+    else if (myState == 3 && opState == 2)
+    {
+        Texture::Draw(w8page, strtsrc, strtsrc, SDL_FLIP_NONE);
+    }
+    else if (myState == 3 && opState == 3)
+    {
+        if (gameMode == 1)
+        {   
+            Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+
+            if (myMarks > oppMarks)
+            {
+                Texture::render_text(blx,"You won!",50,255,255,255);
+            }
+            else if (myMarks == oppMarks)
+            {
+                Texture::render_text(blx,"Its a tie!",50,255,255,255);
+            }
+            else
+            {
+                Texture::render_text(blx,"You lost,better luck next time",50,255,255,255);
+                
+            }
+        }
+    }
 
     SDL_RenderPresent(renderer);
 }
 void Maze::clean()
 {
+    TTF_CloseFont(abd);
+    TTF_CloseFont(blx);
+    TTF_CloseFont(krm);
+    TTF_CloseFont(prt);
+
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();

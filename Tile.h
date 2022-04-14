@@ -42,10 +42,7 @@ public:
     }
 
     void draw() override {
-        // std::cout << tile_rect.x << " ";
         Texture::Draw(tex,srcRect,tile_rect,SDL_FLIP_NONE);
-        // std::cout << srcRect.x << " ";
-        // std::cout << srcRect.y<< "\n";
     }
 };
 
