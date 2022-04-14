@@ -8,8 +8,10 @@
 #include "Vector2D.h"
 #include "ECS.h"
 #include "Controller.h"
-#include "Map.h"
+// #include "Map.h"
 #include <bits/stdc++.h>
+#include "Tile.h"
+ #include "map/iitd_map.h"
 
 #define MULTIMODE
 
@@ -47,6 +49,9 @@ SDL_Texture* mazePage = Texture::LoadTexture("assets/maze.png");
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
 std::vector<std::pair<std::string,Vector2D>> questions;
+
+Tile* map_tiles[84][225];
+
 
 Maze::Maze() {}
 Maze::~Maze() {}
@@ -137,7 +142,13 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         }
     }
 
-    Map *tileMap = new Map(225, 84, &manager, gMap);
+    // Map *tileMap = new Map(225, 84, &manager, gMap);
+    // for(int i = 0;i < 84; i++){
+    //     for(int j = 0; j < 225; j++){
+    //             // tileID = iit_map[i][j];
+    //         map_tiles[i][j] = new Tile(j*16,i*16,16,16,iit_map[i][j]);
+    //     }
+    // }
 
     player1.addComponent<PositionComponent>();
     player1.addComponent<Controller>();
@@ -272,13 +283,13 @@ void Maze::update()
     {
         cam.y = 0;
     }
-    if (cam.x > cam.w)
+    if (cam.x > 225*16*TileScale-gameW)
     {
-        cam.x = cam.w;
+        cam.x = 225*16*TileScale-gameW;
     }
-    if (cam.y > cam.h)
+    if (cam.y > 84*16*TileScale-gameH)
     {
-        cam.y = cam.h;
+        cam.y = 84*16*TileScale-gameH;
     }
 
     if (gameMode == 1)
@@ -290,7 +301,7 @@ void Maze::update()
     manager.update();
 }
 
-auto &mapTile(manager.getGroup(gMap));
+// auto &mapTile(manager.getGroup(gMap));
 auto &playerTile(manager.getGroup(gPlayer));
 auto &entTile(manager.getGroup(gEntities));
 
@@ -299,10 +310,26 @@ void Maze::render()
 {
     SDL_RenderClear(renderer);
     // std::cout <<mapTile.size();
-    for (auto &x : mapTile)
-    {
-        x->draw();
+    // for (auto &x : mapTile)
+    // {
+    //     x->draw();
+    // }
+    for(int j = 0; j <= gameH/(16*TileScale)+1; j++){
+        for(int i = 0;i <= gameW/(16*TileScale)+1; i++){
+            int ypos = cam.y/(16*TileScale) + j;
+            int xpos = cam.x/(16*TileScale) + i;
+            if(xpos<225 && ypos < 84){
+                if(!map_tiles[ypos][xpos]){
+                        map_tiles[ypos][xpos] = new Tile(xpos*16,ypos*16,16,16,iit_map[ypos][xpos]);
+                }
+                    
+                map_tiles[ypos][xpos]->update();
+                map_tiles[ypos][xpos]->draw();
+            }
+            
+        }
     }
+
     for (auto &x : playerTile)
     {
         x->draw();

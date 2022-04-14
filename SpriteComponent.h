@@ -1,5 +1,6 @@
 #pragma once
 
+#include "maze.h"
 #include "Component.h"
 #include "PositionComponent.h"
 #include "Texture.h"

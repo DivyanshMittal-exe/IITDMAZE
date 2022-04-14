@@ -9,11 +9,13 @@
 #include "Texture.h"
 
 
+
 // #include "SDL2/SDL_net.h"
 
 // Collider nhi chalte 
 // Unko sort karlena
 
+#define TileScale 5
 #define gameH 600
 #define gameW 800
 #define PORT 6667
@@ -44,6 +46,7 @@ public:
 
     bool am_i_done = false;
     bool is_opp_done = false;
+
 
     Maze();
     ~Maze();
