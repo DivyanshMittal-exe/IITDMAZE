@@ -4,8 +4,8 @@
 #include "SpriteComponent.h"
 #include "Vector2D.h"
 #include <iostream>
+#include "maze.h"
 
-#define TileScale 4
 
 class Tile : public Component
 {
@@ -23,7 +23,7 @@ public:
     Tile(){}
     ~Tile(){SDL_DestroyTexture(tex);}
     Tile(int x, int y,int w,int h, int id){
-        tex = Texture::LoadTexture("Test_Map.png");
+        tex = Texture::LoadTexture("map/IITD_Map.png");
         srcRect.x = (id % 15)*16;
         srcRect.y = (id / 15)*16;
         srcRect.w = srcRect.h = 16;
@@ -42,6 +42,7 @@ public:
     }
 
     void draw() override {
+        // std::cout << tile_rect.x << " ";
         Texture::Draw(tex,srcRect,tile_rect,SDL_FLIP_NONE);
         // std::cout << srcRect.x << " ";
         // std::cout << srcRect.y<< "\n";
