@@ -151,7 +151,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     // }
 
     player1.addComponent<PositionComponent>();
-    player1.addComponent<Controller>();
+    
     player1.addGroup(gPlayer);
     player2.addComponent<PositionComponent>();
     player2.addGroup(gPlayer);
@@ -161,14 +161,15 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     if (am_i_server)
     {
-        player1.addComponent<SpriteComponent>("assets/player1.png");
-        player2.addComponent<SpriteComponent>("assets/player2.png");
+        player1.addComponent<SpriteComponent>("assets/player1animated.png", true);
+        player2.addComponent<SpriteComponent>("assets/player2animated.png", true);
     }
     else
     {
-        player1.addComponent<SpriteComponent>("assets/player2.png");
-        player2.addComponent<SpriteComponent>("assets/player1.png");
+        player1.addComponent<SpriteComponent>("assets/player2animated.png", true);
+        player2.addComponent<SpriteComponent>("assets/player1animated.png", true);
     }
+    player1.addComponent<Controller>();
 
     player1.getComponenet<PositionComponent>().position.x = gameW / 2;
     player1.getComponenet<PositionComponent>().position.y = gameH / 2;
