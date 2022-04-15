@@ -346,6 +346,42 @@ void Maze::handleEvents()
                 flag2.getComponent<PositionComponent>().position = player1.getComponent<PositionComponent>().position;
             }
             break;
+        case SDLK_j:
+            if (gameMode == 2)
+            {
+                int ypos = (cam.y + gameH/2) / (16 * TileScale);
+                int xpos = (cam.x + gameW/2) / (16 * TileScale);
+                if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
+                {
+                    if(iit_bound[ypos][xpos]){
+                        bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
+                        std::cout << "ColYulu " <<  col << std::endl;
+                        if (col) {
+                            player1.getComponent<SpriteComponent>().hasyulu = true;
+                        }
+                        
+                    }
+                }
+            }
+            break;
+        case SDLK_k:
+            if (gameMode == 2)
+            {   
+                int ypos = (cam.y + gameH/2) / (16 * TileScale);
+                int xpos = (cam.x + gameW/2) / (16 * TileScale);
+                if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
+                {
+                    if(iit_bound[ypos][xpos]){
+                        bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
+                        std::cout << "ColYulu " <<  col << std::endl;
+                        if (col) {
+                            player1.getComponent<SpriteComponent>().hasyulu = false;
+                        }
+                        
+                    }
+                }
+            }
+            break;
 
         default:
             break;
@@ -465,19 +501,7 @@ void Maze::update()
                     std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
                     if (col) {
                         player1.getComponent<PositionComponent>().position.x += -1 * i * abs (player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
-
                         player1.getComponent<PositionComponent>().position.y += -1 * j * abs (player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
-                    
-                    // case 1:
-                    //     player1.getComponent<PositionComponent>().position.x += -1 * i * abs (player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
-                    //     break;
-                    
-                    // case 2:
-                    //     player1.getComponent<PositionComponent>().position.y += -1 * j * abs (player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
-                    //     break;
-                    
-                    // default:
-                    //     break;
                     }
                     
                 }

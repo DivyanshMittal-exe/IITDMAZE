@@ -41,12 +41,12 @@ class Controller : public Component{
                     break;
                 // Picking yulu
                 
-                case SDLK_j:
-                    sprite-> hasyulu = true;
-                    break;
-                case SDLK_k:
-                    sprite-> hasyulu = false;
-                    break;
+                // case SDLK_j:
+                //     sprite-> hasyulu = true;
+                //     break;
+                // case SDLK_k:
+                //     sprite-> hasyulu = false;
+                //     break;
                 default:
                     break;
                 }
