@@ -40,7 +40,7 @@ struct pack
 // -1 used for exchanging treasure questions
 // 0 for player locn and data
 // 1 for GameScore
-// 2 for gaurd locn
+// 2 for guard locn
 
 struct gameState
 {
@@ -150,10 +150,10 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     {
         instrPgText.push_back("Your goal is simple\n Look at the hints below and try locating these famous locations on campus\n Press i to place the flag for q1 and o to place flag for q2.\n Once you are satisfied, press Enter to finish your attempt");
     }
-    else if (gameMode == 2)
-    {
-        instrPgText.push_back("GAME MODE 2");
-    }
+    // else if (gameMode == 2)
+    // {
+    //     instrPgText.push_back("GAME MODE 2");
+    // }
 
     strtsrc = {0, 0, gameW, gameH};
 
@@ -234,22 +234,27 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     player2.addGroup(gPlayer);
 
     // Start from main gate
+    
     player1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
     player1.getComponent<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
 
     player1.addComponent<Collider>("Me");
 
+
+    //Guard
     guard1.addComponent<PositionComponent>();
+    guard1.addComponent<SpriteComponent>("assets/player1animated.png");
+    guard1.addComponent<Collider>("Guard");
+    guard1.addGroup(gPlayer);
     if (am_i_server)
     {
         guard1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
         guard1.getComponent<PositionComponent>().position.y = 7 * 16 * TileScale + 8 * TileScale;
+        guard1.getComponent<SpriteComponent>().Play(3);
         guard1.getComponent<PositionComponent>().velocity.x = 1;
     }
 
-    guard1.addComponent<SpriteComponent>("assets/player1animated.png");
-    guard1.addComponent<Collider>("Gaurd");
-    guard1.addGroup(gPlayer);
+    
 
     flag1.addGroup(gEntities);
     flag2.addGroup(gEntities);
@@ -414,6 +419,7 @@ void Maze::handleEvents()
                         if (col)
                         {
                             player1.getComponent<SpriteComponent>().stamina = 1;
+                            player1.getComponent<SpriteComponent>().money -= 50;
                         }
                     }
                 }
@@ -523,6 +529,33 @@ void Maze::recievePackets()
                         guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
                         guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
                         guard1.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                        guard1.getComponent<SpriteComponent>().animated = false;
+                        guard1.getComponent<SpriteComponent>().speed = 100;
+                    }
+                }
+            } else if (gameMode == 3)
+            {
+                if (enet_event.packet->dataLength == 1)
+                {
+                }
+                else
+                {
+                    pack_data = (pack *)(enet_event.packet->data);
+                    if (pack_data->type == 0)
+                    {
+                        player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                        player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                        player2.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                        player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                        player2.getComponent<SpriteComponent>().animated = true;
+                        player2.getComponent<SpriteComponent>().speed = 100;
+                    }
+                    else if (pack_data->type == 2)
+                    {
+                        guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                        guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                        guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                        guard1.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
                         guard1.getComponent<SpriteComponent>().animated = true;
                         guard1.getComponent<SpriteComponent>().speed = 100;
                     }
@@ -573,14 +606,25 @@ void Maze::update()
         Vector2D g = guard1.getComponent<PositionComponent>().position;
         float dist1 = getDist(player1.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
         float dist2 = getDist(player2.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
-        if(dist1 < dist2 && dist1 < 2000){
+        if(dist1 < dist2 && dist1 < 20000){
             Vector2D dirn = p1 - g;
-            guard1.getComponent<PositionComponent>().velocity.x = cos(atan(dirn.y/dirn.x));
-            guard1.getComponent<PositionComponent>().velocity.y = sin(atan(dirn.y/dirn.x));
-        }else if(dist2 < dist1 && dist2 < 2000){
+            guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+            guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+        }else if(dist2 < dist1 && dist2 < 20000){
             Vector2D dirn = p2 - g;
-            guard1.getComponent<PositionComponent>().velocity.x = cos(atan(dirn.y/dirn.x));
-            guard1.getComponent<PositionComponent>().velocity.y = sin(atan(dirn.y/dirn.x));
+            guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+            guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+        }
+
+        //Animating Guard
+        if (guard1.getComponent<PositionComponent>().velocity.x > 0) {
+            guard1.getComponent<SpriteComponent>().Play(3);
+        } else if (guard1.getComponent<PositionComponent>().velocity.x < 0)
+        {
+            guard1.getComponent<SpriteComponent>().Play(4);
+        }
+        else {
+            guard1.getComponent<SpriteComponent>().Play(0);
         }
     }
 
@@ -630,6 +674,7 @@ void Maze::update()
                         }
                     }
                 }
+                std::cout << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << std::endl;
                 pack guard1Data = {2,
                                    guard1.getComponent<PositionComponent>().position.x,
                                    guard1.getComponent<PositionComponent>().position.y,
@@ -750,8 +795,41 @@ void Maze::render()
         {
             x->draw();
         }
+<<<<<<< HEAD
 
         DisplayStamina(50);
+=======
+    }else if (gameMode == 3)
+    {
+
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        {
+            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+            {
+                int ypos = cam.y / (16 * TileScale) + j;
+                int xpos = cam.x / (16 * TileScale) + i;
+                if (xpos < 225 && ypos < 84)
+                {
+                    if (!map_tiles[ypos][xpos])
+                    {
+                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
+                    }
+
+                    map_tiles[ypos][xpos]->update();
+                    map_tiles[ypos][xpos]->draw();
+                }
+            }
+        }
+
+        for (auto &x : playerTile)
+        {
+            x->draw();
+        }
+        for (auto &x : entTile)
+        {
+            x->draw();
+        }
+>>>>>>> 41ba29af0d335b3e628e6318bc38229e9ee77108
     }
 
     SDL_RenderPresent(renderer);

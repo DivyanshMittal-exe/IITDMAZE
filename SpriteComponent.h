@@ -23,12 +23,13 @@ class SpriteComponent : public Component
 
     public:
         bool animated = false;
-        int frames = 0;
+        int frames = 1;
         int speed = 200; //Delay in ms
 
 
         float speedFactor = 1;
-        float stamina = 0.8;
+        float stamina = 1;
+        float money = 1000;
         bool hasyulu = false;
         int animationInd = 0;
 
@@ -77,19 +78,24 @@ class SpriteComponent : public Component
         void update() override{
 
             if (animated) {
-                srcRect.x = srcRect.w * static_cast<int>((SDL_GetTicks()/ speed) % frames);
+                srcRect.x = srcRect.w * (int) ((SDL_GetTicks()/ speed) % frames);
             }
             srcRect.y = animationInd * srcRect.h;
 
             destRect.x = position->position.x - Maze::cam.x;
             destRect.y = position->position.y - Maze::cam.y;
 
-            //stamina -= 0.001;
-
+            //Decresing stamina with time
+            // if (stamina > 0) {
+            //     stamina -= 0.0002;
+            // }
+            
+            //Stamina and yulu determines speed multiplier
             if (hasyulu) {
-                speedFactor = 1 + stamina + 0.2;
+                speedFactor = 1 + 0.5 * stamina + 0.5;
+                money -= 0.1;
             } else {
-                speedFactor = stamina + 0.2;
+                speedFactor = 0.5 * stamina + 0.5;
             }
         }
         void draw() override{
@@ -104,7 +110,7 @@ class SpriteComponent : public Component
             //Remember to remove this !!!!!!
             animationName = animationName % 5;
             //end Remember
-            
+
             frames = animations[animationName].frames;
             animationInd = animations[animationName].index;
             speed = animations[animationName].speed;
