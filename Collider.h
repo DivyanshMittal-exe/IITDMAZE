@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include "maze.h"
 #include "SDL2/SDL.h"

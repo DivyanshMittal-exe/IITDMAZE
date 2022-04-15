@@ -12,6 +12,9 @@
 #include <bits/stdc++.h>
 #include "Tile.h"
 #include "map/iitd_map.h"
+#include "map/iitd_bound.h"
+#include "Collision.h"
+#include "Collider.h"
 #include <stdlib.h>
 #include <time.h>
 
@@ -173,16 +176,16 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         client_server = enet_host_create(&address, 4, 1, 0, 0);
         if (client_server == NULL)
         {
-            std::cout << "client_server failed" << std::endl;
+            std::cout << "client_server failed\n" << std::endl;
         }
         else
         {
-            std::cout << "client_server made" << std::endl;
+            std::cout << "client_server made\n" << std::endl;
         }
         if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             peer = enet_event.peer;
-            std::cout << "Connected" << std::endl;
+            std::cout << "Connected\n" << std::endl;
         }
 
         if (gameMode == 1)
@@ -215,6 +218,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     // Start from main gate
     player1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
     player1.getComponent<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
+
+    player1.addComponent<Collider>("Me");
 
     flag1.addGroup(gEntities);
     flag2.addGroup(gEntities);
@@ -386,12 +391,13 @@ void Maze::recievePackets()
                         player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
                     }
                 }
-            } else if (gameMode == 2) {
+            }
+            else if (gameMode == 2)
+            {
                 pack_data = (pack *)(enet_event.packet->data);
 
                 player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
                 player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
-
             }
             break;
         default:
@@ -429,6 +435,42 @@ void Maze::update()
     if (cam.y > 84 * 16 * TileScale - gameH)
     {
         cam.y = 84 * 16 * TileScale - gameH;
+    }
+
+    for (int j = -1; j <= 1; j++)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            int ypos = (cam.y + gameH/2) / (16 * TileScale) + j;
+            int xpos = (cam.x + gameW/2) / (16 * TileScale) + i;
+            if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
+            {
+        
+                if(iit_bound[ypos][xpos]){
+                    int col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
+                    std::cout << "Collision";
+                    switch (col)
+                    {
+                    case 3:
+                        player1.getComponent<PositionComponent>().velocity.x *= -1;
+                        player1.getComponent<PositionComponent>().velocity.y *= -1;
+                        break;
+                    
+                    case 1:
+                        player1.getComponent<PositionComponent>().velocity.x *= -1;
+                        break;
+                    
+                    case 2:
+                        player1.getComponent<PositionComponent>().velocity.y *= -1;
+                        break;
+                    
+                    default:
+                        break;
+                    }
+                    
+                }
+            }
+        }
     }
 
     manager.refresh();
@@ -493,49 +535,52 @@ void Maze::render()
         }
         else if (myState == 3 && opState == 3)
         {
-                Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+            Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
 
-                if (myMarks > oppMarks)
-                {
-                    Texture::render_text(blx, "You won!", 50, 255, 255, 255);
-                }
-                else if (myMarks == oppMarks)
-                {
-                    Texture::render_text(blx, "Its a tie!", 50, 255, 255, 255);
-                }
-                else
-                {
-                    Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
-                }
+            if (myMarks > oppMarks)
+            {
+                Texture::render_text(blx, "You won!", 50, 255, 255, 255);
+            }
+            else if (myMarks == oppMarks)
+            {
+                Texture::render_text(blx, "Its a tie!", 50, 255, 255, 255);
+            }
+            else
+            {
+                Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
+            }
         }
-    } else if (gameMode == 2) {
-        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
-            {
-                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
-                {
-                    int ypos = cam.y / (16 * TileScale) + j;
-                    int xpos = cam.x / (16 * TileScale) + i;
-                    if (xpos < 225 && ypos < 84)
-                    {
-                        if (!map_tiles[ypos][xpos])
-                        {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
-                        }
+    }
+    else if (gameMode == 2)
+    {
 
-                        map_tiles[ypos][xpos]->update();
-                        map_tiles[ypos][xpos]->draw();
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        {
+            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+            {
+                int ypos = cam.y / (16 * TileScale) + j;
+                int xpos = cam.x / (16 * TileScale) + i;
+                if (xpos < 225 && ypos < 84)
+                {
+                    if (!map_tiles[ypos][xpos])
+                    {
+                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
                     }
+
+                    map_tiles[ypos][xpos]->update();
+                    map_tiles[ypos][xpos]->draw();
                 }
             }
+        }
 
-            for (auto &x : playerTile)
-            {
-                x->draw();
-            }
-            for (auto &x : entTile)
-            {
-                x->draw();
-            }
+        for (auto &x : playerTile)
+        {
+            x->draw();
+        }
+        for (auto &x : entTile)
+        {
+            x->draw();
+        }
     }
 
     SDL_RenderPresent(renderer);
@@ -561,7 +606,7 @@ void Maze::clean()
             enet_packet_destroy(enet_event.packet);
             break;
         case ENET_EVENT_TYPE_DISCONNECT:
-            std::cout << "Disconnected client_server";
+            std::cout << "Disconnected client_server\n";
             break;
         default:
             break;
