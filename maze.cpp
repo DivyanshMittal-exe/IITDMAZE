@@ -17,6 +17,7 @@
 #include "Collider.h"
 #include <stdlib.h>
 #include <time.h>
+#include <cmath>
 
 #define MULTIMODE
 
@@ -36,6 +37,10 @@ struct pack
     int packet_anim_ind;
     int packet_anim_frames;
 };
+// -1 used for exchanging treasure questions
+// 0 for player locn and data
+// 1 for GameScore
+// 2 for gaurd locn
 
 struct gameState
 {
@@ -48,6 +53,8 @@ Entity &player2(manager.addEntity());
 
 Entity &flag1(manager.addEntity());
 Entity &flag2(manager.addEntity());
+
+Entity &guard1(manager.addEntity());
 
 SDL_Event Maze::event;
 SDL_Renderer *Maze::renderer;
@@ -177,16 +184,19 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         client_server = enet_host_create(&address, 4, 1, 0, 0);
         if (client_server == NULL)
         {
-            std::cout << "client_server failed\n" << std::endl;
+            std::cout << "client_server failed\n"
+                      << std::endl;
         }
         else
         {
-            std::cout << "client_server made\n" << std::endl;
+            std::cout << "client_server made\n"
+                      << std::endl;
         }
         if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             peer = enet_event.peer;
-            std::cout << "Connected\n" << std::endl;
+            std::cout << "Connected\n"
+                      << std::endl;
         }
 
         if (gameMode == 1)
@@ -222,6 +232,18 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     player1.getComponent<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
 
     player1.addComponent<Collider>("Me");
+
+    guard1.addComponent<PositionComponent>();
+    if (am_i_server)
+    {
+        guard1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
+        guard1.getComponent<PositionComponent>().position.y = 7 * 16 * TileScale + 8 * TileScale;
+        guard1.getComponent<PositionComponent>().velocity.x = 1;
+    }
+
+    guard1.addComponent<SpriteComponent>("assets/player1animated.png");
+    guard1.addComponent<Collider>("Gaurd");
+    guard1.addGroup(gPlayer);
 
     flag1.addGroup(gEntities);
     flag2.addGroup(gEntities);
@@ -275,6 +297,10 @@ float calcuatePoint()
     }
 
     return p1 + p2;
+}
+
+float getDist(const Vector2D& v1,const Vector2D& v2){
+    return (v1.x-v2.x)*(v1.x-v2.x) + (v1.y-v2.y)*(v1.y-v2.y);
 }
 
 void Maze::handleEvents()
@@ -349,45 +375,49 @@ void Maze::handleEvents()
         case SDLK_j:
             if (gameMode == 2)
             {
-                int ypos = (cam.y + gameH/2) / (16 * TileScale);
-                int xpos = (cam.x + gameW/2) / (16 * TileScale);
-                if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
+                int ypos = (cam.y + gameH / 2) / (16 * TileScale);
+                int xpos = (cam.x + gameW / 2) / (16 * TileScale);
+                if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
                 {
-                    if(iit_bound[ypos][xpos] == 2){
-                        //Yulu Stands
-                        bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
-                        std::cout << "ColYulu " <<  col << std::endl;
-                        if (col) {
+                    if (iit_bound[ypos][xpos] == 2)
+                    {
+                        // Yulu Stands
+                        bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
+                        std::cout << "ColYulu " << col << std::endl;
+                        if (col)
+                        {
                             player1.getComponent<SpriteComponent>().hasyulu = true;
                         }
-                        
-                    } else if (iit_bound[ypos][xpos] == 3){
-                        //Eating Shops
-                        bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
-                        std::cout << "ColEat " <<  col << std::endl;
-                        if (col) {
+                    }
+                    else if (iit_bound[ypos][xpos] == 3)
+                    {
+                        // Eating Shops
+                        bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
+                        std::cout << "ColEat " << col << std::endl;
+                        if (col)
+                        {
                             player1.getComponent<SpriteComponent>().stamina = 1;
                         }
-                        
                     }
                 }
             }
             break;
         case SDLK_k:
             if (gameMode == 2)
-            {   
-                int ypos = (cam.y + gameH/2) / (16 * TileScale);
-                int xpos = (cam.x + gameW/2) / (16 * TileScale);
-                if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
+            {
+                int ypos = (cam.y + gameH / 2) / (16 * TileScale);
+                int xpos = (cam.x + gameW / 2) / (16 * TileScale);
+                if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
                 {
-                    if(iit_bound[ypos][xpos] == 2){
-                        //Yulu Stands
-                        bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
-                        std::cout << "ColYulu " <<  col << std::endl;
-                        if (col) {
+                    if (iit_bound[ypos][xpos] == 2)
+                    {
+                        // Yulu Stands
+                        bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
+                        std::cout << "ColYulu " << col << std::endl;
+                        if (col)
+                        {
                             player1.getComponent<SpriteComponent>().hasyulu = false;
                         }
-                        
                     }
                 }
             }
@@ -442,21 +472,44 @@ void Maze::recievePackets()
                         player2.getComponent<SpriteComponent>().animated = true;
                         player2.getComponent<SpriteComponent>().speed = 100;
                     }
+                    else if (pack_data->type == 2)
+                    {
+                        guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                        guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                        guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                        guard1.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                        guard1.getComponent<SpriteComponent>().animated = true;
+                        guard1.getComponent<SpriteComponent>().speed = 100;
+                    }
                 }
             }
             else if (gameMode == 2)
             {
-                pack_data = (pack *)(enet_event.packet->data);
-
-                player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
-                player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
-                player2.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
-                player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
-                player2.getComponent<SpriteComponent>().animated = true;
-                player2.getComponent<SpriteComponent>().speed = 100;
-
-
-
+                if (enet_event.packet->dataLength == 1)
+                {
+                }
+                else
+                {
+                    pack_data = (pack *)(enet_event.packet->data);
+                    if (pack_data->type == 0)
+                    {
+                        player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                        player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                        player2.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                        player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                        player2.getComponent<SpriteComponent>().animated = true;
+                        player2.getComponent<SpriteComponent>().speed = 100;
+                    }
+                    else if (pack_data->type == 2)
+                    {
+                        guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                        guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                        guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                        guard1.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                        guard1.getComponent<SpriteComponent>().animated = true;
+                        guard1.getComponent<SpriteComponent>().speed = 100;
+                    }
+                }
             }
             break;
         default:
@@ -497,24 +550,77 @@ void Maze::update()
         cam.y = 84 * 16 * TileScale - gameH;
     }
 
+    if(am_i_server){
+        Vector2D p1 = player1.getComponent<PositionComponent>().position;
+        Vector2D p2 = player2.getComponent<PositionComponent>().position;
+        Vector2D g = guard1.getComponent<PositionComponent>().position;
+        float dist1 = getDist(player1.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
+        float dist2 = getDist(player2.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
+        if(dist1 < dist2 && dist1 < 2000){
+            Vector2D dirn = p1 - g;
+            guard1.getComponent<PositionComponent>().velocity.x = cos(atan(dirn.y/dirn.x));
+            guard1.getComponent<PositionComponent>().velocity.y = sin(atan(dirn.y/dirn.x));
+        }else if(dist2 < dist1 && dist2 < 2000){
+            Vector2D dirn = p2 - g;
+            guard1.getComponent<PositionComponent>().velocity.x = cos(atan(dirn.y/dirn.x));
+            guard1.getComponent<PositionComponent>().velocity.y = sin(atan(dirn.y/dirn.x));
+        }
+    }
+
     for (int j = -1; j <= 1; j++)
     {
         for (int i = -1; i <= 1; i++)
         {
-            int ypos = (cam.y + gameH/2) / (16 * TileScale) + j;
-            int xpos = (cam.x + gameW/2) / (16 * TileScale) + i;
-            if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
+            int ypos = (player1.getComponent<PositionComponent>().position.y ) / (16 * TileScale) + j;
+            int xpos = (player1.getComponent<PositionComponent>().position.x ) / (16 * TileScale) + i;
+            if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
             {
-        
-                if(iit_bound[ypos][xpos] == 1){
-                    bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
-                    std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
-                    if (col) {
-                        player1.getComponent<PositionComponent>().position.x += -1 * i * abs (player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
-                        player1.getComponent<PositionComponent>().position.y += -1 * j * abs (player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
+
+                if (iit_bound[ypos][xpos] == 1)
+                {
+                    bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
+                    // std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
+                    if (col)
+                    {
+                        player1.getComponent<PositionComponent>().position.x += -1 * i * abs(player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
+                        player1.getComponent<PositionComponent>().position.y += -1 * j * abs(player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
                     }
-                    
                 }
+            }
+            if (am_i_server)
+            {
+                int gypos = (guard1.getComponent<PositionComponent>().position.y) / (16 * TileScale) + j;
+                int gxpos = (guard1.getComponent<PositionComponent>().position.x) / (16 * TileScale) + i;
+
+                if (gxpos < 225 && gypos < 84 && gxpos >= 0 && gypos >= 0)
+                {
+
+                    if (iit_bound[gypos][gxpos] == 1)
+                    {
+                        bool col = Collision::AABB(gxpos, gypos, guard1.getComponent<Collider>());
+                        // std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
+                        if (col)
+                        {
+                            guard1.getComponent<PositionComponent>().position.x += -1 * i * abs(guard1.getComponent<PositionComponent>().velocity.x * guard1.getComponent<PositionComponent>().speed);
+                            guard1.getComponent<PositionComponent>().position.y += -1 * j * abs(guard1.getComponent<PositionComponent>().velocity.y * guard1.getComponent<PositionComponent>().speed);
+                            if(abs(guard1.getComponent<PositionComponent>().velocity.x)>abs(guard1.getComponent<PositionComponent>().velocity.y)){
+                                guard1.getComponent<PositionComponent>().velocity.x = 0;
+                                guard1.getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1: 1;
+                            }else{
+                                guard1.getComponent<PositionComponent>().velocity.y = 0;
+                                guard1.getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1: 1;
+                            }
+                        }
+                    }
+                }
+                pack guard1Data = {2,
+                                   guard1.getComponent<PositionComponent>().position.x,
+                                   guard1.getComponent<PositionComponent>().position.y,
+                                   0,
+                                   guard1.getComponent<SpriteComponent>().animationInd,
+                                   guard1.getComponent<SpriteComponent>().frames};
+                ENetPacket *packet = enet_packet_create(&guard1Data, sizeof(guard1Data), 0);
+                enet_peer_send(peer, 0, packet);
             }
         }
     }
