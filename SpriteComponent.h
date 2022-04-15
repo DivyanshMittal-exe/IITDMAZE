@@ -23,7 +23,7 @@ class SpriteComponent : public Component
 
     public:
         bool animated = false;
-        int frames = 0;
+        int frames = 1;
         int speed = 200; //Delay in ms
 
 
@@ -78,7 +78,7 @@ class SpriteComponent : public Component
         void update() override{
 
             if (animated) {
-                srcRect.x = srcRect.w * static_cast<int>((SDL_GetTicks()/ speed) % frames);
+                srcRect.x = srcRect.w * (int) ((SDL_GetTicks()/ speed) % frames);
             }
             srcRect.y = animationInd * srcRect.h;
 
@@ -86,9 +86,9 @@ class SpriteComponent : public Component
             destRect.y = position->position.y - Maze::cam.y;
 
             //Decresing stamina with time
-            if (stamina > 0) {
-                stamina -= 0.0002;
-            }
+            // if (stamina > 0) {
+            //     stamina -= 0.0002;
+            // }
             
             //Stamina and yulu determines speed multiplier
             if (hasyulu) {
