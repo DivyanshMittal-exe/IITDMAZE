@@ -137,10 +137,10 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     {
         instrPgText.push_back("Your goal is simple\n Look at the hints below and try locating these famous locations on campus\n Press i to place the flag for q1 and o to place flag for q2.\n Once you are satisfied, press Enter to finish your attempt");
     }
-    else if (gameMode == 2)
-    {
-        instrPgText.push_back("GAME MODE 2");
-    }
+    // else if (gameMode == 2)
+    // {
+    //     instrPgText.push_back("GAME MODE 2");
+    // }
 
     strtsrc = {0, 0, gameW, gameH};
 
@@ -367,6 +367,7 @@ void Maze::handleEvents()
                         std::cout << "ColEat " <<  col << std::endl;
                         if (col) {
                             player1.getComponent<SpriteComponent>().stamina = 1;
+                            player1.getComponent<SpriteComponent>().money -= 50;
                         }
                         
                     }
@@ -454,9 +455,17 @@ void Maze::recievePackets()
                 player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
                 player2.getComponent<SpriteComponent>().animated = true;
                 player2.getComponent<SpriteComponent>().speed = 100;
+            }
+            else if (gameMode == 3)
+            {
+                pack_data = (pack *)(enet_event.packet->data);
 
-
-
+                player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                player2.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                player2.getComponent<SpriteComponent>().animated = true;
+                player2.getComponent<SpriteComponent>().speed = 100;
             }
             break;
         default:
@@ -508,7 +517,7 @@ void Maze::update()
         
                 if(iit_bound[ypos][xpos] == 1){
                     bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
-                    std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
+                    //std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
                     if (col) {
                         player1.getComponent<PositionComponent>().position.x += -1 * i * abs (player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
                         player1.getComponent<PositionComponent>().position.y += -1 * j * abs (player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
@@ -598,6 +607,36 @@ void Maze::render()
         }
     }
     else if (gameMode == 2)
+    {
+
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        {
+            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+            {
+                int ypos = cam.y / (16 * TileScale) + j;
+                int xpos = cam.x / (16 * TileScale) + i;
+                if (xpos < 225 && ypos < 84)
+                {
+                    if (!map_tiles[ypos][xpos])
+                    {
+                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
+                    }
+
+                    map_tiles[ypos][xpos]->update();
+                    map_tiles[ypos][xpos]->draw();
+                }
+            }
+        }
+
+        for (auto &x : playerTile)
+        {
+            x->draw();
+        }
+        for (auto &x : entTile)
+        {
+            x->draw();
+        }
+    }else if (gameMode == 3)
     {
 
         for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
