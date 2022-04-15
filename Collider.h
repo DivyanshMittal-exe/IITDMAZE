@@ -25,7 +25,7 @@ public:
         {
            entity-> addComponent<PositionComponent>();
         }
-        pos = &entity-> getComponenet<PositionComponent>();
+        pos = &entity-> getComponent<PositionComponent>();
 
         
         // Maze::maze_colliders.push_back(this);

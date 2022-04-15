@@ -19,8 +19,12 @@ class SpriteComponent : public Component
         int frames = 0;
         int speed = 200; //Delay in ms
 
-    public:
+        
 
+    public:
+        float speedFactor = 1;
+        float stamina = 0.8;
+        bool hasyulu = false;
         int animationInd = 0;
 
         std::map<const char*, Animation> animations;
@@ -58,7 +62,7 @@ class SpriteComponent : public Component
         }
         
         void init() override{
-            position = &entity -> getComponenet<PositionComponent>();
+            position = &entity -> getComponent<PositionComponent>();
             srcRect.x = srcRect.y = 0;
             // srcRect.w = srcRect.h = 16;
             srcRect.w = srcRect.h = 64;
@@ -70,12 +74,18 @@ class SpriteComponent : public Component
             if (animated) {
                 srcRect.x = srcRect.w * static_cast<int>((SDL_GetTicks()/ speed) % frames);
             }
-            //Dicy
             srcRect.y = animationInd * srcRect.h;
 
             destRect.x = position->position.x - Maze::cam.x;
             destRect.y = position->position.y - Maze::cam.y;
 
+            //stamina -= 0.001;
+
+            if (hasyulu) {
+                speedFactor = 1 + stamina + 0.2;
+            } else {
+                speedFactor = stamina + 0.2;
+            }
         }
         void draw() override{
             Texture::Draw(texture,srcRect,destRect, SDL_FLIP_NONE);

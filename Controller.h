@@ -11,8 +11,8 @@ class Controller : public Component{
         SpriteComponent *sprite;
 
         void init() override{
-            pos = &entity-> getComponenet<PositionComponent>();
-            sprite = &entity-> getComponenet<SpriteComponent>();
+            pos = &entity-> getComponent<PositionComponent>();
+            sprite = &entity-> getComponent<SpriteComponent>();
             }
         void update() override {
             if (Maze::event.type == SDL_KEYDOWN)
@@ -20,22 +20,28 @@ class Controller : public Component{
                 switch (Maze::event.key.keysym.sym )
                 {
                 case SDLK_w:
-                    pos->velocity.y = -1;
+                    pos->velocity.y = -1 * (sprite-> speedFactor);
                     sprite-> Play("WalkN");
                     break;
                 case SDLK_a:
-                    pos->velocity.x = -1;
+                    pos->velocity.x = -1 * (sprite-> speedFactor);
                     sprite-> Play("WalkW");
                     break;
                 case SDLK_s:
-                    pos->velocity.y = 1;
+                    pos->velocity.y = 1 * (sprite-> speedFactor);
                     sprite-> Play("WalkS");
                     break;
                 case SDLK_d:
-                    pos->velocity.x = 1;
+                    pos->velocity.x = 1 * (sprite-> speedFactor);
                     sprite-> Play("WalkE");
                     break;
-                
+                // Picking yulu
+                case SDLK_j:
+                    sprite-> hasyulu = true;
+                    break;
+                case SDLK_k:
+                    sprite-> hasyulu = false;
+                    break;
                 default:
                     break;
                 }

@@ -29,14 +29,14 @@ class Manager{
 };
 
 
-inline ComponentID getNewComponenetTypeID(){
+inline ComponentID getNewComponentTypeID(){
     static ComponentID lastID = 0;
     return lastID++;
 }
 
-template <typename T> inline ComponentID getComponenetTypeID() noexcept
+template <typename T> inline ComponentID getComponentTypeID() noexcept
 {
-    static ComponentID typeID = getNewComponenetTypeID();
+    static ComponentID typeID = getNewComponentTypeID();
     return typeID;
 }
 
@@ -96,7 +96,7 @@ class Entity{
         
 
         template <typename T> bool hasComponent() const {
-            return componentBitset[getComponenetTypeID<T>()];
+            return componentBitset[getComponentTypeID<T>()];
         }
 
         template <typename T,typename...  TArgs>
@@ -107,15 +107,15 @@ class Entity{
             std::unique_ptr<Component> uPtr{c};
             components.emplace_back(std::move(uPtr));
 
-            componentArray[getComponenetTypeID<T>()] = c;
-            componentBitset[getComponenetTypeID<T>()] = true;
+            componentArray[getComponentTypeID<T>()] = c;
+            componentBitset[getComponentTypeID<T>()] = true;
 
             c->init();
             return *c;
         }
 
-        template <typename T> T& getComponenet() const{
-            auto ptr(componentArray[getComponenetTypeID<T>()]);
+        template <typename T> T& getComponent() const{
+            auto ptr(componentArray[getComponentTypeID<T>()]);
             return *static_cast<T*>(ptr);
         }
 

@@ -133,8 +133,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     {
         instrPgText.push_back("Your goal is simple\n Look at the hints below and try locating these famous locations on campus\n Press i to place the flag for q1 and o to place flag for q2.\n Once you are satisfied, press Enter to finish your attempt");
     }
-    else
+    else if (gameMode == 2)
     {
+        instrPgText.push_back("GAME MODE 2");
     }
 
     strtsrc = {0, 0, gameW, gameH};
@@ -212,8 +213,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     player2.addGroup(gPlayer);
 
     // Start from main gate
-    player1.getComponenet<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
-    player1.getComponenet<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
+    player1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
+    player1.getComponent<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
 
     flag1.addGroup(gEntities);
     flag2.addGroup(gEntities);
@@ -240,7 +241,7 @@ float calcuatePoint()
     float p1, p2;
     if (flag1.hasComponent<PositionComponent>() == true)
     {
-        Vector2D f1loc = flag1.getComponenet<PositionComponent>().position;
+        Vector2D f1loc = flag1.getComponent<PositionComponent>().position;
         std::pair<float, float> l1 = questions[find1].second;
         float l1x = l1.first * 16 * TileScale + 8 * TileScale - f1loc.x;
         float l1y = l1.second * 16 * TileScale + 8 * TileScale - f1loc.y;
@@ -254,7 +255,7 @@ float calcuatePoint()
 
     if (flag2.hasComponent<PositionComponent>() == true)
     {
-        Vector2D f2loc = flag2.getComponenet<PositionComponent>().position;
+        Vector2D f2loc = flag2.getComponent<PositionComponent>().position;
         std::pair<float, float> l2 = questions[find2].second;
         float l2x = l2.first * 16 * TileScale + 8 * TileScale - f2loc.x;
         float l2y = l2.second * 16 * TileScale + 8 * TileScale - f2loc.y;
@@ -323,7 +324,7 @@ void Maze::handleEvents()
                     flag1.addComponent<SpriteComponent>("assets/flag1.png");
                 }
 
-                flag1.getComponenet<PositionComponent>().position = player1.getComponenet<PositionComponent>().position;
+                flag1.getComponent<PositionComponent>().position = player1.getComponent<PositionComponent>().position;
             }
             break;
         case SDLK_o:
@@ -335,7 +336,7 @@ void Maze::handleEvents()
                     flag2.addComponent<SpriteComponent>("assets/flag2.png");
                 }
 
-                flag2.getComponenet<PositionComponent>().position = player1.getComponenet<PositionComponent>().position;
+                flag2.getComponent<PositionComponent>().position = player1.getComponent<PositionComponent>().position;
             }
             break;
 
@@ -381,10 +382,16 @@ void Maze::recievePackets()
                     }
                     else if (pack_data->type == 0 && myState == 2 && opState == 2)
                     {
-                        player2.getComponenet<PositionComponent>().position.x = pack_data->packet_x;
-                        player2.getComponenet<PositionComponent>().position.y = pack_data->packet_y;
+                        player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                        player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
                     }
                 }
+            } else if (gameMode == 2) {
+                pack_data = (pack *)(enet_event.packet->data);
+
+                player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+
             }
             break;
         default:
@@ -397,15 +404,15 @@ void Maze::update()
 {
 
     pack playerData = {0,
-                       player1.getComponenet<PositionComponent>().position.x,
-                       player1.getComponenet<PositionComponent>().position.y,
+                       player1.getComponent<PositionComponent>().position.x,
+                       player1.getComponent<PositionComponent>().position.y,
                        0,
                        0};
     ENetPacket *packet = enet_packet_create(&playerData, sizeof(playerData), 0);
     enet_peer_send(peer, 0, packet);
 
-    cam.x = player1.getComponenet<PositionComponent>().position.x - gameW / 2;
-    cam.y = player1.getComponenet<PositionComponent>().position.y - gameH / 2;
+    cam.x = player1.getComponent<PositionComponent>().position.x - gameW / 2;
+    cam.y = player1.getComponent<PositionComponent>().position.y - gameH / 2;
 
     if (cam.x < 0)
     {
@@ -501,6 +508,34 @@ void Maze::render()
                     Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
                 }
         }
+    } else if (gameMode == 2) {
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+            {
+                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+                {
+                    int ypos = cam.y / (16 * TileScale) + j;
+                    int xpos = cam.x / (16 * TileScale) + i;
+                    if (xpos < 225 && ypos < 84)
+                    {
+                        if (!map_tiles[ypos][xpos])
+                        {
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
+                        }
+
+                        map_tiles[ypos][xpos]->update();
+                        map_tiles[ypos][xpos]->draw();
+                    }
+                }
+            }
+
+            for (auto &x : playerTile)
+            {
+                x->draw();
+            }
+            for (auto &x : entTile)
+            {
+                x->draw();
+            }
     }
 
     SDL_RenderPresent(renderer);
