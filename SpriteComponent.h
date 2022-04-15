@@ -15,19 +15,24 @@ class SpriteComponent : public Component
         SDL_Texture *texture;
         SDL_Rect srcRect,destRect;
 
-        bool animated = false;
-        int frames = 0;
-        int speed = 200; //Delay in ms
+        // bool animated = false;
+        //int frames = 0;
+        //int speed = 200; //Delay in ms
 
         
 
     public:
+        bool animated = false;
+        int frames = 0;
+        int speed = 200; //Delay in ms
+
+
         float speedFactor = 1;
         float stamina = 0.8;
         bool hasyulu = false;
         int animationInd = 0;
 
-        std::map<const char*, Animation> animations;
+        std::map<int, Animation> animations;
 
         void setText(const char* path){
             texture = Texture::LoadTexture(path);
@@ -46,13 +51,13 @@ class SpriteComponent : public Component
             Animation walkEast = Animation(2, 4, 100);
             Animation walkWest = Animation(1, 4, 100);
 
-            animations.emplace("Idle", idle);
-            animations.emplace("WalkS", walkSouth);
-            animations.emplace("WalkN", walkNorth);
-            animations.emplace("WalkE", walkEast);
-            animations.emplace("WalkW", walkWest);
+            animations.emplace(0, idle);
+            animations.emplace(1, walkSouth);
+            animations.emplace(2, walkNorth);
+            animations.emplace(3, walkEast);
+            animations.emplace(4, walkWest);
 
-            Play("Idle");
+            Play(0);
 
             texture = Texture::LoadTexture(path);            
         }
@@ -91,7 +96,11 @@ class SpriteComponent : public Component
             Texture::Draw(texture,srcRect,destRect, SDL_FLIP_NONE);
         }
 
-        void Play(const char* animationName) {
+        void Play(int animationName) {
+            if (hasyulu) {
+                animationName += 5;
+            }
+            animationName = animationName % 5;
             frames = animations[animationName].frames;
             animationInd = animations[animationName].index;
             speed = animations[animationName].speed;

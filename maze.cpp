@@ -30,7 +30,8 @@ struct pack
     float packet_x;
     float packet_y;
     int packet_sprite;
-    int packet_orientation;
+    int packet_anim_ind;
+    int packet_anim_frames;
 };
 
 struct gameState
@@ -157,7 +158,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             std::cout << "Peer not available" << std::endl;
         }
 
-        if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
+        if (enet_host_service(client_server, &enet_event, 1000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             std::cout << "Connected" << std::endl;
         }
@@ -197,6 +198,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             pack tr_locs = {-1,
                             find1,
                             find2,
+                            0,
                             0,
                             0};
 
@@ -384,6 +386,10 @@ void Maze::recievePackets()
                     {
                         player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
                         player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                        player2.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                        player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                        player2.getComponent<SpriteComponent>().animated = true;
+                        player2.getComponent<SpriteComponent>().speed = 100;
                     }
                 }
             } else if (gameMode == 2) {
@@ -391,6 +397,12 @@ void Maze::recievePackets()
 
                 player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
                 player2.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                player2.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                player2.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                player2.getComponent<SpriteComponent>().animated = true;
+                player2.getComponent<SpriteComponent>().speed = 100;
+
+
 
             }
             break;
@@ -407,7 +419,8 @@ void Maze::update()
                        player1.getComponent<PositionComponent>().position.x,
                        player1.getComponent<PositionComponent>().position.y,
                        0,
-                       0};
+                       player1.getComponent<SpriteComponent>().animationInd,
+                       player1.getComponent<SpriteComponent>().frames};
     ENetPacket *packet = enet_packet_create(&playerData, sizeof(playerData), 0);
     enet_peer_send(peer, 0, packet);
 
