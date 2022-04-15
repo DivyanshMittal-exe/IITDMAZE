@@ -23,7 +23,8 @@ void Texture::render_text(TTF_Font *font, std::string  text, float y, int r = 25
 
         SDL_Texture *text_texture = Texture::TextTexture(font, text ,r,g,b);
         int w, h;
-        if (!TTF_SizeText(font, (text).c_str(), &w, &h))
+        // if (!TTF_SizeText(font, (text).c_str(), &w, &h))
+        if(!SDL_QueryTexture(text_texture,NULL,NULL,&w,&h))
         {
             SDL_Rect textBox;
             textBox.x = (gameW - w)/2;
