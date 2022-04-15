@@ -18,17 +18,21 @@ public:
     {
         return AABB(a.collider, b.collider);
     }
-    static int AABB(const int &i, const int &j, const Collider &player)
+    static bool AABB(const int &i, const int &j, const Collider &player)
     {
-        bool xCollided = ((i+1)* 16* TileScale >= player.collider.x) && (player.collider.x + player.collider.w >= i* 16* TileScale >= player.collider.x);
-        bool yCollided = ((j+1)* 16* TileScale >= player.collider.y) && (player.collider.y + player.collider.h >= j* 16* TileScale >= player.collider.y);
+        bool xCollided = ((i+1)* 16* TileScale >= player.collider.x) && (player.collider.x + player.collider.w >= i* 16* TileScale);
+        bool yCollided = ((j+1)* 16* TileScale >= player.collider.y) && (player.collider.y + player.collider.h >= j* 16* TileScale);
 
-        if (xCollided && yCollided)
-            return 3;
-        if (xCollided)
-            return 1;
-        if (yCollided)
-            return 2;
-        return 0;
+        // bool xCollided = ((i+1)* 16* TileScale >= (player.collider.x + player.collider.w / 2)) &&  ((player.collider.x + player.collider.w / 2)>= i* 16* TileScale);
+        // bool yCollided = ((j+1)* 16* TileScale >= (player.collider.y + player.collider.h / 2)) &&  ((player.collider.y + player.collider.h / 2) >= j* 16* TileScale);
+        // if (xCollided && yCollided)
+        //     return 1;
+        // if (xCollided)
+        //     return 1;
+        // if (yCollided)
+        //     return 2;
+        // return 0;
+
+        return (xCollided && yCollided);
     }
 };

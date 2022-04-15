@@ -93,7 +93,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
     srand(time(NULL));
 
-    gameMode = 1;
+    gameMode = 2;
 
     // initialising SDL,enet, and stuff
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -161,7 +161,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             std::cout << "Peer not available" << std::endl;
         }
 
-        if (enet_host_service(client_server, &enet_event, 1000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
+        if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             std::cout << "Connected" << std::endl;
         }
@@ -461,25 +461,23 @@ void Maze::update()
             {
         
                 if(iit_bound[ypos][xpos]){
-                    int col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
-                    std::cout << "Collision";
-                    switch (col)
-                    {
-                    case 3:
-                        player1.getComponent<PositionComponent>().velocity.x *= -1;
-                        player1.getComponent<PositionComponent>().velocity.y *= -1;
-                        break;
+                    bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
+                    std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
+                    if (col) {
+                        player1.getComponent<PositionComponent>().position.x += -1 * i * abs (player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
+
+                        player1.getComponent<PositionComponent>().position.y += -1 * j * abs (player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
                     
-                    case 1:
-                        player1.getComponent<PositionComponent>().velocity.x *= -1;
-                        break;
+                    // case 1:
+                    //     player1.getComponent<PositionComponent>().position.x += -1 * i * abs (player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
+                    //     break;
                     
-                    case 2:
-                        player1.getComponent<PositionComponent>().velocity.y *= -1;
-                        break;
+                    // case 2:
+                    //     player1.getComponent<PositionComponent>().position.y += -1 * j * abs (player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
+                    //     break;
                     
-                    default:
-                        break;
+                    // default:
+                    //     break;
                     }
                     
                 }
