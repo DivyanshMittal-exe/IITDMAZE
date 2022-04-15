@@ -100,7 +100,11 @@ class SpriteComponent : public Component
             if (hasyulu) {
                 animationName += 5;
             }
+
+            //Remember to remove this !!!!!!
             animationName = animationName % 5;
+            //end Remember
+            
             frames = animations[animationName].frames;
             animationInd = animations[animationName].index;
             speed = animations[animationName].speed;

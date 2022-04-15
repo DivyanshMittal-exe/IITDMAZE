@@ -161,7 +161,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             std::cout << "Peer not available" << std::endl;
         }
 
-        if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
+        if (enet_host_service(client_server, &enet_event, 1000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             std::cout << "Connected" << std::endl;
         }
@@ -353,11 +353,20 @@ void Maze::handleEvents()
                 int xpos = (cam.x + gameW/2) / (16 * TileScale);
                 if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
                 {
-                    if(iit_bound[ypos][xpos]){
+                    if(iit_bound[ypos][xpos] == 2){
+                        //Yulu Stands
                         bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
                         std::cout << "ColYulu " <<  col << std::endl;
                         if (col) {
                             player1.getComponent<SpriteComponent>().hasyulu = true;
+                        }
+                        
+                    } else if (iit_bound[ypos][xpos] == 3){
+                        //Eating Shops
+                        bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
+                        std::cout << "ColEat " <<  col << std::endl;
+                        if (col) {
+                            player1.getComponent<SpriteComponent>().stamina = 1;
                         }
                         
                     }
@@ -371,7 +380,8 @@ void Maze::handleEvents()
                 int xpos = (cam.x + gameW/2) / (16 * TileScale);
                 if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
                 {
-                    if(iit_bound[ypos][xpos]){
+                    if(iit_bound[ypos][xpos] == 2){
+                        //Yulu Stands
                         bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
                         std::cout << "ColYulu " <<  col << std::endl;
                         if (col) {
@@ -496,7 +506,7 @@ void Maze::update()
             if (xpos < 225 && ypos < 84 && xpos >=0 && ypos >=0)
             {
         
-                if(iit_bound[ypos][xpos]){
+                if(iit_bound[ypos][xpos] == 1){
                     bool col = Collision::AABB(xpos,ypos,player1.getComponent<Collider>());
                     std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
                     if (col) {
