@@ -93,6 +93,12 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
     {"Where do these young kids study?\n They can barely speak, let alone give JEE!", {95, 18}}};
 
 std::vector<std::string> instrPgText;
+
+SDL_Texture* coin = Texture::LoadTexture("assets/coin.png");
+SDL_Texture* heart = Texture::LoadTexture("assets/heart.png");
+SDL_Texture* trim = Texture::LoadTexture("assets/trim.png");
+SDL_Texture* coin_bar = Texture::LoadTexture("assets/money.png");
+SDL_Texture* stamina_bar = Texture::LoadTexture("assets/stamina.png");
 Maze::Maze() {}
 Maze::~Maze() {}
 
@@ -184,12 +190,12 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         client_server = enet_host_create(&address, 4, 1, 0, 0);
         if (client_server == NULL)
         {
-            std::cout << "client_server failed\n"
+            std::cout << "client_server failed"
                       << std::endl;
         }
         else
         {
-            std::cout << "client_server made\n"
+            std::cout << "client_server made"
                       << std::endl;
         }
         if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
@@ -307,6 +313,17 @@ float calcuatePoint()
 
 float getDist(const Vector2D& v1,const Vector2D& v2){
     return (v1.x-v2.x)*(v1.x-v2.x) + (v1.y-v2.y)*(v1.y-v2.y);
+}
+
+void DisplayStamina(int health,int x = 9*gameW/10,int y = gameH/20 ){
+    SDL_Rect src = {0,0,100,16};
+    SDL_Rect dest = {x+gameH/20+16,y,gameW/15, gameH/20};
+    SDL_Rect dest2 = {x+gameH/20+16,y,gameW*health/(15*100),gameH/20};
+    SDL_Rect icon_src = {0,0,64,64};
+    SDL_Rect icon_dest = {x,y,gameH/20,gameH/20};
+    Texture::Draw(heart, icon_src, icon_dest, SDL_FLIP_NONE);
+    Texture::Draw(stamina_bar, src, dest, SDL_FLIP_NONE);
+    Texture::Draw(trim, src, dest, SDL_FLIP_NONE);
 }
 
 void Maze::handleEvents()
@@ -788,6 +805,10 @@ void Maze::render()
         {
             x->draw();
         }
+<<<<<<< HEAD
+
+        DisplayStamina(50);
+=======
     }else if (gameMode == 3)
     {
 
@@ -818,6 +839,7 @@ void Maze::render()
         {
             x->draw();
         }
+>>>>>>> 41ba29af0d335b3e628e6318bc38229e9ee77108
     }
 
     SDL_RenderPresent(renderer);
