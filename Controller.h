@@ -21,27 +21,32 @@ class Controller : public Component{
                 {
                 case SDLK_w:
                     pos->velocity.y = -1 * (sprite-> speedFactor);
-                    sprite-> Play("WalkN");
+                    //North
+                    sprite-> Play(2);
                     break;
                 case SDLK_a:
                     pos->velocity.x = -1 * (sprite-> speedFactor);
-                    sprite-> Play("WalkW");
+                    //West
+                    sprite-> Play(4);
                     break;
                 case SDLK_s:
                     pos->velocity.y = 1 * (sprite-> speedFactor);
-                    sprite-> Play("WalkS");
+                    //South
+                    sprite-> Play(1);
                     break;
                 case SDLK_d:
                     pos->velocity.x = 1 * (sprite-> speedFactor);
-                    sprite-> Play("WalkE");
+                    //East
+                    sprite-> Play(3);
                     break;
                 // Picking yulu
-                case SDLK_j:
-                    sprite-> hasyulu = true;
-                    break;
-                case SDLK_k:
-                    sprite-> hasyulu = false;
-                    break;
+                
+                // case SDLK_j:
+                //     sprite-> hasyulu = true;
+                //     break;
+                // case SDLK_k:
+                //     sprite-> hasyulu = false;
+                //     break;
                 default:
                     break;
                 }
@@ -51,19 +56,23 @@ class Controller : public Component{
                 {
                 case SDLK_w:
                     pos->velocity.y = 0;
-                    sprite-> Play("Idle");
+                    //sprite-> Play(0);
+                    sprite->frames = 1;
                     break;
                 case SDLK_a:
                     pos->velocity.x = 0;
-                    sprite-> Play("Idle");
+                    //sprite-> Play(0);
+                    sprite->frames = 1;
                     break;
                 case SDLK_s:
                     pos->velocity.y = 0;
-                    sprite-> Play("Idle");
+                    //sprite-> Play(0);
+                    sprite->frames = 1;
                     break;
                 case SDLK_d:
                     pos->velocity.x = 0;
-                    sprite-> Play("Idle");
+                    //sprite-> Play(0);
+                    sprite->frames = 1;
                     break;
                 
                 default:
