@@ -237,7 +237,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     //Guard
     guard1.addComponent<PositionComponent>();
-    guard1.addComponent<SpriteComponent>("assets/player1animated.png");
+    guard1.addComponent<SpriteComponent>("assets/player1animated.png", true);
     guard1.addComponent<Collider>("Guard");
     guard1.addGroup(gPlayer);
     if (am_i_server)
@@ -245,6 +245,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         guard1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
         guard1.getComponent<PositionComponent>().position.y = 7 * 16 * TileScale + 8 * TileScale;
         guard1.getComponent<SpriteComponent>().Play(3);
+        std::cout << "Initially " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << std::endl;
         guard1.getComponent<PositionComponent>().velocity.x = 1;
     }
 
@@ -508,6 +509,7 @@ void Maze::recievePackets()
                     }
                     else if (pack_data->type == 2)
                     {
+                        std::cout << "receiving " << pack_data->packet_anim_ind << " " << pack_data->packet_anim_frames << std::endl;
                         guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
                         guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
                         guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
@@ -591,8 +593,11 @@ void Maze::update()
         float dist2 = getDist(player2.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
         if(dist1 < dist2 && dist1 < 20000){
             Vector2D dirn = p1 - g;
-            guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
-            guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+            if (dirn.x*dirn.x + dirn.y*dirn.y != 0) {
+                guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+                guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+            }
+            
         }else if(dist2 < dist1 && dist2 < 20000){
             Vector2D dirn = p2 - g;
             guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
@@ -607,7 +612,12 @@ void Maze::update()
             guard1.getComponent<SpriteComponent>().Play(4);
         }
         else {
-            guard1.getComponent<SpriteComponent>().Play(0);
+            if (guard1.getComponent<PositionComponent>().velocity.y > 0) {
+            guard1.getComponent<SpriteComponent>().Play(1);
+            } else if (guard1.getComponent<PositionComponent>().velocity.y < 0)
+            {
+                guard1.getComponent<SpriteComponent>().Play(2);
+            }
         }
     }
 
@@ -657,7 +667,7 @@ void Maze::update()
                         }
                     }
                 }
-                std::cout << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << std::endl;
+                std::cout << "sending " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << " " << guard1.getComponent<SpriteComponent>().speed << " " << guard1.getComponent<SpriteComponent>().animated<< std::endl;
                 pack guard1Data = {2,
                                    guard1.getComponent<PositionComponent>().position.x,
                                    guard1.getComponent<PositionComponent>().position.y,

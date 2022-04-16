@@ -72,6 +72,9 @@
         "utility": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "sdl.h": "c"
+        "sdl.h": "c",
+        "algorithm": "cpp",
+        "iterator": "cpp",
+        "random": "cpp"
     }
 }
