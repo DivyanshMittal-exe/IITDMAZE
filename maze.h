@@ -2,6 +2,7 @@
 #define MAZE_H
 
 #include "SDL2/SDL.h"
+
 #include <vector>
 #include <string>
 #include "Collider.h"
@@ -9,16 +10,10 @@
 #include "Texture.h"
 
 
-
-// #include "SDL2/SDL_net.h"
-
-// Collider nhi chalte 
-// Unko sort karlena
-
 #define TileScale 5
 #define gameH 600
 #define gameW 800
-#define PORT 80
+#define PORT 6666
 
 class Maze
 {

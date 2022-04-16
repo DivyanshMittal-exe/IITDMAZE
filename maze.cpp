@@ -1,4 +1,5 @@
 #include "maze.h"
+#include "SDL2/SDL_mixer.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
 #include <iostream>
@@ -123,12 +124,15 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
 
 std::vector<std::string> instrPgText;
 
+Mix_Music *bgm   ;
+Mix_Chunk *sound ;
 
 SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
 SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
 SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
 SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
 SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
+SDL_Texture *overlay_map = Texture::LoadTexture("assets/layer1.png");
 
 
 Maze::Maze() {}
@@ -138,7 +142,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
     srand(time(NULL));
 
-    gameMode = 2;
+    gameMode = 1;
 
     // initialising SDL,enet, and stuff
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -168,6 +172,13 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         std::cout << "Initialization failed" << std::endl;
     }
 
+    if(Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,2048)<0){
+        std::cout << "Mixer not made"<<std::endl;
+    }
+
+    // bgm   = Mix_LoadMUS("");
+    // sound = Mix_LoadMUS("");
+
     TTF_Init();
     abd = TTF_OpenFont("fonts/abduct.ttf", 16);
     blx = TTF_OpenFont("fonts/Blox.ttf", 16);
@@ -184,6 +195,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     trim = Texture::LoadTexture("assets/trim.png");
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
+    overlay_map = Texture::LoadTexture("assets/layer1.png");
 
     if (gameMode == 1)
     {
@@ -213,7 +225,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             std::cout << "Peer not available" << std::endl;
         }
 
-        if (enet_host_service(client_server, &enet_event, 1000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
+        if (enet_host_service(client_server, &enet_event, 50000) > 0 && enet_event.type == ENET_EVENT_TYPE_CONNECT)
         {
             std::cout << "Connected" << std::endl;
         }
@@ -374,6 +386,13 @@ void DisplayParameters(float stamina, float money ,int x = 8*gameW/10,int y = ga
     //outline
     Texture::Draw(trim, src, hdest, SDL_FLIP_NONE);
     Texture::Draw(trim, src, cdest, SDL_FLIP_NONE);
+}
+
+void DrawOverLayMap(){
+    SDL_Rect src = {Maze::cam.x/TileScale,Maze::cam.y/TileScale,gameW/TileScale, gameH/TileScale};
+    SDL_Rect dest = {0.0,gameW, gameH};
+    Texture::Draw(overlay_map, src, dest, SDL_FLIP_NONE);
+
 }
 
 void Maze::handleEvents()
@@ -911,11 +930,18 @@ void Maze::render()
             x->draw();
         }
     }
+    
+    DrawOverLayMap();
 
     SDL_RenderPresent(renderer);
 }
 void Maze::clean()
-{
+{   
+    Mix_FreeChunk(sound);
+    Mix_FreeMusic(bgm);
+
+    Mix_Quit();
+
     TTF_CloseFont(abd);
     TTF_CloseFont(blx);
     TTF_CloseFont(krm);
