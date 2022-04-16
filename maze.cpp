@@ -439,7 +439,7 @@ void Maze::handleEvents()
                         // Eating Shops
                         bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
                         std::cout << "ColEat " << col << std::endl;
-                        if (col)
+                        if (col and money >= 50)
                         {
                             player1.getComponent<SpriteComponent>().stamina = 1;
                             player1.getComponent<SpriteComponent>().money -= 50;

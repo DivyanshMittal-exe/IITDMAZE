@@ -94,6 +94,9 @@ class SpriteComponent : public Component
             if (hasyulu) {
                 speedFactor = 1 + 0.5 * stamina + 0.5;
                 money -= 0.1;
+                if (money <= 0) {
+                    hasyulu = false;
+                }
             } else {
                 speedFactor = 0.5 * stamina + 0.5;
             }
