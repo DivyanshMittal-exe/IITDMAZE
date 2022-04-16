@@ -54,8 +54,6 @@ struct pack
 // 3 Eating locations
 // 1 Collision Barriers
 
-
-
 struct gameState
 {
     char gameS;
@@ -93,22 +91,20 @@ float myMarks;
 float oppMarks;
 int find1, find2;
 
-//For Objectives in mode 2
-//Objective and the number corresponding to the location in .h file
+// For Objectives in mode 2
+// Objective and the number corresponding to the location in .h file
 std::vector<std::pair<std::string, int>> objectives{
-    {"Go to Shivalik to meet Divyanis",11},
-    {"Go to Shivalik to meet Divyanis2",11},
-    {"Go to Shivalik to meet Divyanis",12},
-    {"Go to Shivalik to meet Divyanis",13},
-    {"Go to Shivalik to meet Divyanis",14},
-    {"Go to Shivalik to meet Divyanis",15},
-    {"Go to Shivalik to meet Divyanis",16},
-    {"Go to Shivalik to meet Divyanis",17},
-    {"Go to Shivalik to meet Divyanis",18}
-};
+    {"Go to Shivalik to meet Divyanis", 11},
+    {"Go to Shivalik to meet Divyanis2", 11},
+    {"Go to Shivalik to meet Divyanis", 12},
+    {"Go to Shivalik to meet Divyanis", 13},
+    {"Go to Shivalik to meet Divyanis", 14},
+    {"Go to Shivalik to meet Divyanis", 15},
+    {"Go to Shivalik to meet Divyanis", 16},
+    {"Go to Shivalik to meet Divyanis", 17},
+    {"Go to Shivalik to meet Divyanis", 18}};
 
-
-//For GeoGuesser
+// For GeoGuesser
 std::vector<std::pair<std::string, std::pair<float, float>>> questions{
     {"The unofficial pizza \n place of IIT Delhi", {72, 48}},
     {"Your first photo was \n probably taken here ", {150, 20}},
@@ -128,8 +124,8 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
 
 std::vector<std::string> instrPgText;
 
-Mix_Music *bgm   ;
-Mix_Chunk *sound ;
+Mix_Music *bgm;
+Mix_Chunk *sound;
 
 SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
 SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
@@ -138,7 +134,7 @@ SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
 SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
 SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
 
-SDL_Texture * baseTex,*buildTex;
+SDL_Texture *baseTex, *buildTex;
 
 Maze::Maze() {}
 Maze::~Maze() {}
@@ -147,7 +143,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
     srand(time(NULL));
 
-    gameMode = 2;
+    // gameMode = 2;
 
     // initialising SDL,enet, and stuff
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -177,8 +173,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         std::cout << "Initialization failed" << std::endl;
     }
 
-    if(Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,2048)<0){
-        std::cout << "Mixer not made"<<std::endl;
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        std::cout << "Mixer not made" << std::endl;
     }
 
     // bgm   = Mix_LoadMUS("");
@@ -193,8 +190,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
-    
-    //Reloading some more assets, not sure why this is required
+
+    // Reloading some more assets, not sure why this is required
     coin = Texture::LoadTexture("assets/coin.png");
     heart = Texture::LoadTexture("assets/heart.png");
     trim = Texture::LoadTexture("assets/trim.png");
@@ -281,6 +278,18 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             instrPgText.push_back(questions[find1].first);
             instrPgText.push_back(questions[find2].first);
         }
+        else
+        {
+            pack tr_locs = {-2,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0};
+
+            ENetPacket *packet = enet_packet_create(&tr_locs, sizeof(tr_locs), 0);
+            enet_peer_send(peer, 0, packet);
+        }
     }
 
     player1.addComponent<PositionComponent>();
@@ -289,16 +298,15 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     player2.addGroup(gPlayer);
 
     // Start from main gate
-    
+
     player1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
     player1.getComponent<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
 
     player1.addComponent<Collider>("Me");
 
-
-    //Guard
+    // Guard
     guard1.addComponent<PositionComponent>();
-    //guard1.getComponent<PositionComponent>().speed = 1;
+    // guard1.getComponent<PositionComponent>().speed = 1;
     guard1.addComponent<SpriteComponent>("assets/player1animated.png", true);
     guard1.addComponent<Collider>("Guard");
     guard1.addGroup(gPlayer);
@@ -310,8 +318,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         std::cout << "Initially " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << std::endl;
         guard1.getComponent<PositionComponent>().velocity.x = 1;
     }
-
-    
 
     flag1.addGroup(gEntities);
     flag2.addGroup(gEntities);
@@ -331,7 +337,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     baseTex = Texture::LoadTexture("map/base.png");
     buildTex = Texture::LoadTexture("map/build.png");
-
 
     myState = 0;
     opState = 0;
@@ -371,37 +376,39 @@ float calcuatePoint()
     return p1 + p2;
 }
 
-float getDist(const Vector2D& v1,const Vector2D& v2){
-    return (v1.x-v2.x)*(v1.x-v2.x) + (v1.y-v2.y)*(v1.y-v2.y);
+float getDist(const Vector2D &v1, const Vector2D &v2)
+{
+    return (v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y);
 }
 
-void DisplayParameters(float stamina, float money ,int x = 8*gameW/10,int y = gameH/40 ){
-    SDL_Rect src = {0,0,100,16};
-    SDL_Rect hdest = {x+gameH/40+16,y,100, 16};
-    SDL_Rect cdest = {x+gameH/40+16,y + 25,100, 16};
-    SDL_Rect hdest2 = {x+gameH/40+16,y,100*stamina,16};
-    SDL_Rect cdest2 = {x+gameH/40+16,y + 25,100*money,16};
-    SDL_Rect heart_src = {0,0,64,64};
-    SDL_Rect coin_src = {0,0,32,32};
-    SDL_Rect heart_dest = {x,y,16,16};
-    SDL_Rect coin_dest = {x - 8,y + 25 - 8,32,32};
-    
-    //icons
+void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y = gameH / 40)
+{
+    SDL_Rect src = {0, 0, 100, 16};
+    SDL_Rect hdest = {x + gameH / 40 + 16, y, 100, 16};
+    SDL_Rect cdest = {x + gameH / 40 + 16, y + 25, 100, 16};
+    SDL_Rect hdest2 = {x + gameH / 40 + 16, y, 100 * stamina, 16};
+    SDL_Rect cdest2 = {x + gameH / 40 + 16, y + 25, 100 * money, 16};
+    SDL_Rect heart_src = {0, 0, 64, 64};
+    SDL_Rect coin_src = {0, 0, 32, 32};
+    SDL_Rect heart_dest = {x, y, 16, 16};
+    SDL_Rect coin_dest = {x - 8, y + 25 - 8, 32, 32};
+
+    // icons
     Texture::Draw(heart, heart_src, heart_dest, SDL_FLIP_NONE);
     Texture::Draw(coin, coin_src, coin_dest, SDL_FLIP_NONE);
-    //bar
+    // bar
     Texture::Draw(stamina_bar, src, hdest2, SDL_FLIP_NONE);
     Texture::Draw(coin_bar, src, cdest2, SDL_FLIP_NONE);
-    //outline
+    // outline
     Texture::Draw(trim, src, hdest, SDL_FLIP_NONE);
     Texture::Draw(trim, src, cdest, SDL_FLIP_NONE);
 }
 
-void DrawOverLayMap(){
-    SDL_Rect src = {Maze::cam.x/TileScale,Maze::cam.y/TileScale,gameW/TileScale, gameH/TileScale};
-    SDL_Rect dest = {0,0,gameW, gameH};
+void DrawOverLayMap()
+{
+    SDL_Rect src = {Maze::cam.x / TileScale, Maze::cam.y / TileScale, gameW / TileScale, gameH / TileScale};
+    SDL_Rect dest = {0, 0, gameW, gameH};
     Texture::Draw(overlay_map, src, dest, SDL_FLIP_NONE);
-
 }
 
 void Maze::handleEvents()
@@ -508,7 +515,6 @@ void Maze::handleEvents()
                     std::cout << "ColObjective " << col << std::endl;
                     game2state += 1;
                 }
-
             }
             break;
         case SDLK_k:
@@ -527,10 +533,9 @@ void Maze::handleEvents()
                     }
                 }
             }
-            
+
             if (gameMode == 2)
             {
-                
             }
             break;
 
@@ -553,33 +558,38 @@ void Maze::recievePackets()
         switch (enet_event.type)
         {
         case ENET_EVENT_TYPE_RECEIVE:
-            
-            if (pack_data->type == 2)
+
+            if (enet_event.packet->dataLength == 1)
             {
-                guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
-                guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
-                guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
-                guard1.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
-                guard1.getComponent<SpriteComponent>().animated = true;
-                guard1.getComponent<SpriteComponent>().speed = 100;
-            } else if (gameMode == 1)
+                opState = ((gameState *)(enet_event.packet->data))->gameS;
+            }
+            else
             {
-                if (enet_event.packet->dataLength == 1)
+                pack_data = (pack *)(enet_event.packet->data);
+                if (pack_data->type == 2)
                 {
-                    gameState_data = (gameState *)(enet_event.packet->data);
-                    opState = ((gameState *)(enet_event.packet->data))->gameS;
+                    guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
+                    guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
+                    guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
+                    guard1.getComponent<SpriteComponent>().frames = pack_data->packet_anim_frames;
+                    guard1.getComponent<SpriteComponent>().animated = true;
+                    guard1.getComponent<SpriteComponent>().speed = 100;
                 }
-                else
+                else if (pack_data->type == -1)
                 {
-                    pack_data = (pack *)(enet_event.packet->data);
-                    if (pack_data->type == -1)
-                    {
-                        find1 = (int)(pack_data->packet_x);
-                        find2 = (int)(pack_data->packet_y);
-                        instrPgText.push_back(questions[find1].first);
-                        instrPgText.push_back(questions[find2].first);
-                    }
-                    else if (pack_data->type == 1)
+                    gameMode = 1;
+                    find1 = (int)(pack_data->packet_x);
+                    find2 = (int)(pack_data->packet_y);
+                    instrPgText.push_back(questions[find1].first);
+                    instrPgText.push_back(questions[find2].first);
+                }
+                else if (pack_data->type == -2)
+                {
+                    gameMode = 2;
+                }
+                else if (gameMode == 1)
+                {
+                    if (pack_data->type == 1)
                     {
                         oppMarks = pack_data->packet_x;
                     }
@@ -593,15 +603,8 @@ void Maze::recievePackets()
                         player2.getComponent<SpriteComponent>().speed = 100;
                     }
                 }
-            }
-            else if (gameMode == 2)
-            {
-                if (enet_event.packet->dataLength == 1)
+                else if (gameMode == 2)
                 {
-                }
-                else
-                {
-                    pack_data = (pack *)(enet_event.packet->data);
                     if (pack_data->type == 0)
                     {
                         player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
@@ -612,14 +615,8 @@ void Maze::recievePackets()
                         player2.getComponent<SpriteComponent>().speed = 100;
                     }
                 }
-            } else if (gameMode == 3)
-            {
-                if (enet_event.packet->dataLength == 1)
-                {
-                }
                 else
                 {
-                    pack_data = (pack *)(enet_event.packet->data);
                     if (pack_data->type == 0)
                     {
                         player2.getComponent<PositionComponent>().position.x = pack_data->packet_x;
@@ -631,6 +628,7 @@ void Maze::recievePackets()
                     }
                 }
             }
+
             break;
         default:
             break;
@@ -670,64 +668,78 @@ void Maze::update()
         cam.y = 84 * 16 * TileScale - gameH;
     }
 
-    if(am_i_server){
+    if (am_i_server)
+    {
         Vector2D p1 = player1.getComponent<PositionComponent>().position;
         Vector2D p2 = player2.getComponent<PositionComponent>().position;
         Vector2D g = guard1.getComponent<PositionComponent>().position;
-        float dist1 = getDist(player1.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
-        float dist2 = getDist(player2.getComponent<PositionComponent>().position,guard1.getComponent<PositionComponent>().position);
-        if(dist1 < dist2 && dist1 < 20000){
+        float dist1 = getDist(player1.getComponent<PositionComponent>().position, guard1.getComponent<PositionComponent>().position);
+        float dist2 = getDist(player2.getComponent<PositionComponent>().position, guard1.getComponent<PositionComponent>().position);
+        if (dist1 < dist2 && dist1 < 20000)
+        {
             Vector2D dirn = p1 - g;
-            if (dirn.x*dirn.x + dirn.y*dirn.y != 0) {
-                guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
-                guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+            if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
+            {
+                guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
             }
-            
-        }else if(dist2 < dist1 && dist2 < 20000){
+        }
+        else if (dist2 < dist1 && dist2 < 20000)
+        {
             Vector2D dirn = p2 - g;
-            guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
-            guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
-        } else {
-            if(guard1.getComponent<PositionComponent>().velocity.x != 0 &&  iit_bound[(int) ((guard1.getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + guard1.getComponent<PositionComponent>().velocity.x *guard1.getComponent<PositionComponent>().speed + 16)/ (16 * 5))] == 1){
+            guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+            guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+        }
+        else
+        {
+            if (guard1.getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((guard1.getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + guard1.getComponent<PositionComponent>().velocity.x * guard1.getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
+            {
                 guard1.getComponent<PositionComponent>().velocity.x = 0;
-                guard1.getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1: 1;
-            }else if (guard1.getComponent<PositionComponent>().velocity.y != 0 &&  iit_bound[(int) ((guard1.getComponent<PositionComponent>().position.y + guard1.getComponent<PositionComponent>().velocity.y*guard1.getComponent<PositionComponent>().speed+ 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + 16)/ (16 * 5))] == 1){
+                guard1.getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
+            }
+            else if (guard1.getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((guard1.getComponent<PositionComponent>().position.y + guard1.getComponent<PositionComponent>().velocity.y * guard1.getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
+            {
                 guard1.getComponent<PositionComponent>().velocity.y = 0;
-                guard1.getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1: 1;
+                guard1.getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
             }
         }
 
-        //Animating Guard
-        if (guard1.getComponent<PositionComponent>().velocity.x > 0) {
+        // Animating Guard
+        if (guard1.getComponent<PositionComponent>().velocity.x > 0)
+        {
             guard1.getComponent<SpriteComponent>().Play(3);
-        } else if (guard1.getComponent<PositionComponent>().velocity.x < 0)
+        }
+        else if (guard1.getComponent<PositionComponent>().velocity.x < 0)
         {
             guard1.getComponent<SpriteComponent>().Play(4);
         }
-        else {
-            if (guard1.getComponent<PositionComponent>().velocity.y > 0) {
-            guard1.getComponent<SpriteComponent>().Play(1);
-            } else if (guard1.getComponent<PositionComponent>().velocity.y < 0)
+        else
+        {
+            if (guard1.getComponent<PositionComponent>().velocity.y > 0)
+            {
+                guard1.getComponent<SpriteComponent>().Play(1);
+            }
+            else if (guard1.getComponent<PositionComponent>().velocity.y < 0)
             {
                 guard1.getComponent<SpriteComponent>().Play(2);
             }
         }
     }
 
-    if (am_i_server) {
-        for(int i = 0; i < 4; i++) {
+    if (am_i_server)
+    {
+        for (int i = 0; i < 4; i++)
+        {
             pack guard1Data = {2,
-                            guard1.getComponent<PositionComponent>().position.x,
-                            guard1.getComponent<PositionComponent>().position.y,
-                            0,
-                            guard1.getComponent<SpriteComponent>().animationInd,
-                            guard1.getComponent<SpriteComponent>().frames};
+                               guard1.getComponent<PositionComponent>().position.x,
+                               guard1.getComponent<PositionComponent>().position.y,
+                               0,
+                               guard1.getComponent<SpriteComponent>().animationInd,
+                               guard1.getComponent<SpriteComponent>().frames};
             ENetPacket *packet = enet_packet_create(&guard1Data, sizeof(guard1Data), 0);
             enet_peer_send(peer, 0, packet);
         }
     }
-
-
 
     manager.refresh();
     manager.update();
@@ -745,7 +757,6 @@ void Maze::render()
         if (myState == 0)
         {
             Texture::Draw(mazePage, strtsrc, strtsrc, SDL_FLIP_NONE);
-
         }
         else if (myState == 1)
         {
@@ -768,17 +779,17 @@ void Maze::render()
                     {
                         if (!map_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],baseTex);
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos], baseTex);
                         }
-                        
 
                         map_tiles[ypos][xpos]->update();
                         map_tiles[ypos][xpos]->draw();
 
-                        if(iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0 ){
+                        if (iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0)
+                        {
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],buildTex);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos], buildTex);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
@@ -821,97 +832,96 @@ void Maze::render()
     else if (gameMode == 2)
     {
 
-                    for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        {
+            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
             {
-                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+                int ypos = cam.y / (16 * TileScale) + j;
+                int xpos = cam.x / (16 * TileScale) + i;
+                if (xpos < 225 && ypos < 84)
                 {
-                    int ypos = cam.y / (16 * TileScale) + j;
-                    int xpos = cam.x / (16 * TileScale) + i;
-                    if (xpos < 225 && ypos < 84)
+                    if (!map_tiles[ypos][xpos])
                     {
-                        if (!map_tiles[ypos][xpos])
+                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos], baseTex);
+                    }
+
+                    map_tiles[ypos][xpos]->update();
+                    map_tiles[ypos][xpos]->draw();
+
+                    if (iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0)
+                    {
+                        if (!build_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],baseTex);
+                            build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos], buildTex);
                         }
-                        
-
-                        map_tiles[ypos][xpos]->update();
-                        map_tiles[ypos][xpos]->draw();
-
-                        if(iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0){
-                            if (!build_tiles[ypos][xpos])
-                            {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],buildTex);
-                            }
-                            build_tiles[ypos][xpos]->update();
-                            build_tiles[ypos][xpos]->draw();
-                        }
+                        build_tiles[ypos][xpos]->update();
+                        build_tiles[ypos][xpos]->draw();
                     }
                 }
             }
+        }
 
-            for (auto &x : playerTile)
-            {
-                x->draw();
-            }
-            for (auto &x : entTile)
-            {
-                x->draw();
-            }
-        
+        for (auto &x : playerTile)
+        {
+            x->draw();
+        }
+        for (auto &x : entTile)
+        {
+            x->draw();
+        }
+
         Texture::render_text(prt, objectives[game2state].first, 30, 255, 255, 255);
 
-        DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money/1000);
-
-        
-    }else if (gameMode == 3)
+        DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
+    }
+    else if (gameMode == 3)
     {
 
-                    for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
+        {
+            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
             {
-                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+                int ypos = cam.y / (16 * TileScale) + j;
+                int xpos = cam.x / (16 * TileScale) + i;
+                if (xpos < 225 && ypos < 84)
                 {
-                    int ypos = cam.y / (16 * TileScale) + j;
-                    int xpos = cam.x / (16 * TileScale) + i;
-                    if (xpos < 225 && ypos < 84)
+                    if (!map_tiles[ypos][xpos])
                     {
-                        if (!map_tiles[ypos][xpos])
+                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos], baseTex);
+                    }
+
+                    map_tiles[ypos][xpos]->update();
+                    map_tiles[ypos][xpos]->draw();
+
+                    if (iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0)
+                    {
+                        if (!build_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],baseTex);
+                            build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos], buildTex);
                         }
-                        
-
-                        map_tiles[ypos][xpos]->update();
-                        map_tiles[ypos][xpos]->draw();
-
-                        if(iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0){
-                            if (!build_tiles[ypos][xpos])
-                            {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],buildTex);
-                            }
-                            build_tiles[ypos][xpos]->update();
-                            build_tiles[ypos][xpos]->draw();
-                        }
+                        build_tiles[ypos][xpos]->update();
+                        build_tiles[ypos][xpos]->draw();
                     }
                 }
             }
+        }
 
-            for (auto &x : playerTile)
-            {
-                x->draw();
-            }
-            for (auto &x : entTile)
-            {
-                x->draw();
-            }
+        for (auto &x : playerTile)
+        {
+            x->draw();
+        }
+        for (auto &x : entTile)
+        {
+            x->draw();
+        }
     }
-    
+
     // DrawOverLayMap();
 
     SDL_RenderPresent(renderer);
 }
 void Maze::clean()
-{   
+{
     Mix_FreeChunk(sound);
     Mix_FreeMusic(bgm);
 
