@@ -73,7 +73,7 @@ class SpriteComponent : public Component
             srcRect.x = srcRect.y = 0;
             // srcRect.w = srcRect.h = 16;
             srcRect.w = srcRect.h = 64;
-            destRect.w = destRect.h = 32;
+            destRect.w = destRect.h = 48;
             // Change Collider too if you decide to change these values
         }
         void update() override{

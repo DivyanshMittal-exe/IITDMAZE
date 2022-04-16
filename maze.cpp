@@ -138,6 +138,7 @@ SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
 SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
 SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
 
+SDL_Texture * baseTex,*buildTex;
 
 Maze::Maze() {}
 Maze::~Maze() {}
@@ -327,6 +328,10 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         player2.addComponent<SpriteComponent>("assets/player1animated.png", true);
     }
     player1.addComponent<Controller>();
+
+    baseTex = Texture::LoadTexture("map/base.png");
+    buildTex = Texture::LoadTexture("map/build.png");
+
 
     myState = 0;
     opState = 0;
@@ -763,17 +768,17 @@ void Maze::render()
                     {
                         if (!map_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],0);
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],baseTex);
                         }
                         
 
                         map_tiles[ypos][xpos]->update();
                         map_tiles[ypos][xpos]->draw();
 
-                        if(iit_build[ypos][xpos] != -1){
+                        if(iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0 ){
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],1);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],buildTex);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
@@ -826,17 +831,17 @@ void Maze::render()
                     {
                         if (!map_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],0);
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],baseTex);
                         }
                         
 
                         map_tiles[ypos][xpos]->update();
                         map_tiles[ypos][xpos]->draw();
 
-                        if(iit_build[ypos][xpos] != -1){
+                        if(iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0){
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],1);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],buildTex);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
@@ -872,17 +877,17 @@ void Maze::render()
                     {
                         if (!map_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],0);
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],baseTex);
                         }
                         
 
                         map_tiles[ypos][xpos]->update();
                         map_tiles[ypos][xpos]->draw();
 
-                        if(iit_build[ypos][xpos] != -1){
+                        if(iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0){
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],1);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],buildTex);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
