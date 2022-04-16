@@ -11,13 +11,15 @@
 #include "SDL2/SDL_ttf.h"
 #include <bits/stdc++.h>
 #include "Tile.h"
-#include "map/iitd_map.h"
-#include "map/iitd_bound.h"
 #include "Collision.h"
 #include "Collider.h"
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
+
+#include "map/iitd_map.h"
+#include "map/iitd_bound.h"
+#include "map/building.h"
 
 #define MULTIMODE
 
@@ -761,9 +763,19 @@ void Maze::render()
                         {
                             map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
                         }
+                        
 
                         map_tiles[ypos][xpos]->update();
                         map_tiles[ypos][xpos]->draw();
+
+                        if(iit_build[ypos][xpos] != -1){
+                            if (!build_tiles[ypos][xpos])
+                            {
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos]);
+                            }
+                            build_tiles[ypos][xpos]->update();
+                            build_tiles[ypos][xpos]->draw();
+                        }
                     }
                 }
             }
@@ -817,6 +829,15 @@ void Maze::render()
 
                     map_tiles[ypos][xpos]->update();
                     map_tiles[ypos][xpos]->draw();
+
+                    if(iit_build[ypos][xpos] != -1){
+                            if (!build_tiles[ypos][xpos])
+                            {
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos]);
+                            }
+                            build_tiles[ypos][xpos]->update();
+                            build_tiles[ypos][xpos]->draw();
+                        }
                 }
             }
         }
@@ -852,6 +873,15 @@ void Maze::render()
 
                     map_tiles[ypos][xpos]->update();
                     map_tiles[ypos][xpos]->draw();
+
+                    if(iit_build[ypos][xpos] != -1){
+                            if (!build_tiles[ypos][xpos])
+                            {
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos]);
+                            }
+                            build_tiles[ypos][xpos]->update();
+                            build_tiles[ypos][xpos]->draw();
+                        }
                 }
             }
         }
