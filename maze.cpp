@@ -57,6 +57,7 @@ SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
 Tile *map_tiles[84][225];
+Tile *build_tiles[84][225];
 
 TTF_Font *abd, *blx, *krm, *prt;
 
