@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Apr 16 11:38:32 2022
+# Make data base, printed on Sun Apr 17 00:37:31 2022
 
 # Variables
 
@@ -49,7 +49,7 @@ VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/share/code/code
 # environment
-JOURNAL_STREAM = 8:34383
+JOURNAL_STREAM = 8:35143
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # makefile (from 'Makefile', line 1)
@@ -69,7 +69,7 @@ VSCODE_VERBOSE_LOGGING = true
 # makefile (from 'Makefile', line 2)
 OBJS = game.cpp  
 # environment
-MANAGERPID = 1282
+MANAGERPID = 1301
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -85,7 +85,7 @@ AUX_OBJS = ECS.o maze.o Vector2D.o Texture.o
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1539,unix/jsr-VirtualBox:/tmp/.ICE-unix/1539
+SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1556,unix/jsr-VirtualBox:/tmp/.ICE-unix/1556
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -93,9 +93,9 @@ XDG_MENU_PREFIX = gnome-
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd&iid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd&sid=a2ff91e2-aba2-4229-93b2-07757c3ab6fd","uploadToServer":true}
+ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 2332b26fa05f4d04b89fd2d6407bc992
+INVOCATION_ID = 2d8207b96c764ba0811b23ba0f43ff87
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -105,7 +105,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 2233
+GIO_LAUNCHED_DESKTOP_FILE_PID = 2116
 # automatic
 %F = $(notdir $%)
 # environment
@@ -117,25 +117,25 @@ PWD = /home/jsr/Codes/IITDMAZE
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1493
+SSH_AGENT_PID = 1508
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # makefile (from 'Makefile', line 15)
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lenet -lSDL2_ttf
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lenet -lSDL2_ttf -lSDL2_mixer
 # environment
 GTK_MODULES = gail:atk-bridge:appmenu-gtk-module
 # environment
-VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProcess
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
 HOME = /home/jsr
 # environment
 LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
-VSCODE_CODE_CACHE_PATH = /home/jsr/.config/Code/CachedData/899d46d82c4c95423fb7e10e68eba52050e30ba3
+VSCODE_CODE_CACHE_PATH = /home/jsr/.config/Code/CachedData/dfd34e8260c270da74b5c2d86d61aee4b6d56977
 # environment
 LOGNAME = jsr
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # environment
@@ -159,7 +159,7 @@ CC = g++
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-9dee2ffb-0ba4-4c7a-b0de-f75474c2f380.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-ad29f6e9-f621-4bbd-b2a4-80e8fe3ae73f.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -179,15 +179,13 @@ MAKE_COMMAND := make
 # environment
 LANGUAGE = en_IN:en
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-ca55b025-1.63.2-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-ca55b025-1.66.2-main.sock
 # makefile
 MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
-# environment
-BREAKPAD_DUMP_LOCATION = /home/jsr/.config/Code/exthost Crash Reports
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -200,8 +198,6 @@ QT_ACCESSIBILITY = 1
 MAKEFILES := 
 # automatic
 <F = $(notdir $<)
-# environment
-ELECTRON_RUN_AS_NODE = 1
 # environment
 LC_ALL = C
 # environment
@@ -225,9 +221,9 @@ OBJ_NAME = game.out
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2233
+VSCODE_PID = 2116
 # variable set hash-table stats:
-# Load=108/1024=11%, Rehash=0, Collisions=16/138=12%
+# Load=106/1024=10%, Rehash=0, Collisions=15/136=11%
 
 # Pattern-specific Variable Values
 
@@ -235,9 +231,9 @@ VSCODE_PID = 2233
 
 # Directories
 
-# . (device 2064, inode 589993): 36 files, no impossibilities.
+# . (device 2064, inode 589993): 37 files, no impossibilities.
 
-# 36 files, no impossibilities in 1 directories.
+# 37 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -278,15 +274,15 @@ all:
 
 # Not a target:
 .SUFFIXES:
- 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
 # Not a target:
+ 
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-04-15 11:18:24.762830737
+#  Last modified 2022-04-16 18:07:05.270790922
 #  File has been updated.
 #  Successfully updated.
 
@@ -336,12 +332,12 @@ host:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 44 / storage = 407 B / avg = 9 B
-# current buf: size = 8162 B / used = 407 B / count = 44 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 45 / storage = 415 B / avg = 9 B
+# current buf: size = 8162 B / used = 415 B / count = 45 / avg = 9 B
 
-# strcache performance: lookups = 55 / hit rate = 20%
+# strcache performance: lookups = 56 / hit rate = 19%
 # hash-table stats:
-# Load=44/8192=1%, Rehash=0, Collisions=1/55=2%
-# Finished Make data base on Sat Apr 16 11:38:32 2022
+# Load=45/8192=1%, Rehash=0, Collisions=1/56=2%
+# Finished Make data base on Sun Apr 17 00:37:31 2022
 
  

@@ -199,7 +199,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     trim = Texture::LoadTexture("assets/trim.png");
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
-    overlay_map = Texture::LoadTexture("map/layer1.png");
 
     if (gameMode == 1)
     {
@@ -764,7 +763,7 @@ void Maze::render()
                     {
                         if (!map_tiles[ypos][xpos])
                         {
-                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],0);
                         }
                         
 
@@ -774,7 +773,7 @@ void Maze::render()
                         if(iit_build[ypos][xpos] != -1){
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos]);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],1);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
@@ -817,42 +816,43 @@ void Maze::render()
     else if (gameMode == 2)
     {
 
-        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
-        {
-            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+                    for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
             {
-                int ypos = cam.y / (16 * TileScale) + j;
-                int xpos = cam.x / (16 * TileScale) + i;
-                if (xpos < 225 && ypos < 84)
+                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
                 {
-                    if (!map_tiles[ypos][xpos])
+                    int ypos = cam.y / (16 * TileScale) + j;
+                    int xpos = cam.x / (16 * TileScale) + i;
+                    if (xpos < 225 && ypos < 84)
                     {
-                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
-                    }
+                        if (!map_tiles[ypos][xpos])
+                        {
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],0);
+                        }
+                        
 
-                    map_tiles[ypos][xpos]->update();
-                    map_tiles[ypos][xpos]->draw();
+                        map_tiles[ypos][xpos]->update();
+                        map_tiles[ypos][xpos]->draw();
 
-                    if(iit_build[ypos][xpos] != -1){
+                        if(iit_build[ypos][xpos] != -1){
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos]);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],1);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
                         }
+                    }
                 }
             }
-        }
 
-        for (auto &x : playerTile)
-        {
-            x->draw();
-        }
-        for (auto &x : entTile)
-        {
-            x->draw();
-        }
+            for (auto &x : playerTile)
+            {
+                x->draw();
+            }
+            for (auto &x : entTile)
+            {
+                x->draw();
+            }
         
         Texture::render_text(prt, objectives[game2state].first, 30, 255, 255, 255);
 
@@ -862,42 +862,43 @@ void Maze::render()
     }else if (gameMode == 3)
     {
 
-        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
-        {
-            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+                    for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
             {
-                int ypos = cam.y / (16 * TileScale) + j;
-                int xpos = cam.x / (16 * TileScale) + i;
-                if (xpos < 225 && ypos < 84)
+                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
                 {
-                    if (!map_tiles[ypos][xpos])
+                    int ypos = cam.y / (16 * TileScale) + j;
+                    int xpos = cam.x / (16 * TileScale) + i;
+                    if (xpos < 225 && ypos < 84)
                     {
-                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos]);
-                    }
+                        if (!map_tiles[ypos][xpos])
+                        {
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos],0);
+                        }
+                        
 
-                    map_tiles[ypos][xpos]->update();
-                    map_tiles[ypos][xpos]->draw();
+                        map_tiles[ypos][xpos]->update();
+                        map_tiles[ypos][xpos]->draw();
 
-                    if(iit_build[ypos][xpos] != -1){
+                        if(iit_build[ypos][xpos] != -1){
                             if (!build_tiles[ypos][xpos])
                             {
-                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos]);
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos],1);
                             }
                             build_tiles[ypos][xpos]->update();
                             build_tiles[ypos][xpos]->draw();
                         }
+                    }
                 }
             }
-        }
 
-        for (auto &x : playerTile)
-        {
-            x->draw();
-        }
-        for (auto &x : entTile)
-        {
-            x->draw();
-        }
+            for (auto &x : playerTile)
+            {
+                x->draw();
+            }
+            for (auto &x : entTile)
+            {
+                x->draw();
+            }
     }
     
     // DrawOverLayMap();
