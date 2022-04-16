@@ -85,10 +85,10 @@ class SpriteComponent : public Component
             destRect.x = position->position.x - Maze::cam.x;
             destRect.y = position->position.y - Maze::cam.y;
 
-            //Decresing stamina with time
-            // if (stamina > 0) {
-            //     stamina -= 0.0002;
-            // }
+            //Decreasing stamina with time
+            if (stamina > 0) {
+                stamina -= 0.0002;
+            }
             
             //Stamina and yulu determines speed multiplier
             if (hasyulu) {

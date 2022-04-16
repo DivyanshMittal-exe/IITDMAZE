@@ -63,6 +63,7 @@ ENetPeer *Maze::peer;
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
 SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
+SDL_Texture *testing = Texture::LoadTexture("assets/maze.png");
 SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
 SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
@@ -94,11 +95,14 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
 
 std::vector<std::string> instrPgText;
 
-SDL_Texture* coin = Texture::LoadTexture("assets/coin.png");
-SDL_Texture* heart = Texture::LoadTexture("assets/heart.png");
-SDL_Texture* trim = Texture::LoadTexture("assets/trim.png");
-SDL_Texture* coin_bar = Texture::LoadTexture("assets/money.png");
-SDL_Texture* stamina_bar = Texture::LoadTexture("assets/stamina.png");
+
+SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
+SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
+SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
+SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
+SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
+
+
 Maze::Maze() {}
 Maze::~Maze() {}
 
@@ -145,6 +149,13 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
+    
+    //Reloading some more assets, not sure why this is required
+    coin = Texture::LoadTexture("assets/coin.png");
+    heart = Texture::LoadTexture("assets/heart.png");
+    trim = Texture::LoadTexture("assets/trim.png");
+    coin_bar = Texture::LoadTexture("assets/money.png");
+    stamina_bar = Texture::LoadTexture("assets/stamina.png");
 
     if (gameMode == 1)
     {
@@ -315,15 +326,26 @@ float getDist(const Vector2D& v1,const Vector2D& v2){
     return (v1.x-v2.x)*(v1.x-v2.x) + (v1.y-v2.y)*(v1.y-v2.y);
 }
 
-void DisplayStamina(int health,int x = 9*gameW/10,int y = gameH/20 ){
+void DisplayParameters(float stamina, float money ,int x = 8*gameW/10,int y = gameH/40 ){
     SDL_Rect src = {0,0,100,16};
-    SDL_Rect dest = {x+gameH/20+16,y,gameW/15, gameH/20};
-    SDL_Rect dest2 = {x+gameH/20+16,y,gameW*health/(15*100),gameH/20};
-    SDL_Rect icon_src = {0,0,64,64};
-    SDL_Rect icon_dest = {x,y,gameH/20,gameH/20};
-    Texture::Draw(heart, icon_src, icon_dest, SDL_FLIP_NONE);
-    Texture::Draw(stamina_bar, src, dest, SDL_FLIP_NONE);
-    Texture::Draw(trim, src, dest, SDL_FLIP_NONE);
+    SDL_Rect hdest = {x+gameH/40+16,y,100, 16};
+    SDL_Rect cdest = {x+gameH/40+16,y + 25,100, 16};
+    SDL_Rect hdest2 = {x+gameH/40+16,y,100*stamina,16};
+    SDL_Rect cdest2 = {x+gameH/40+16,y + 25,100*money,16};
+    SDL_Rect heart_src = {0,0,64,64};
+    SDL_Rect coin_src = {0,0,32,32};
+    SDL_Rect heart_dest = {x,y,16,16};
+    SDL_Rect coin_dest = {x - 8,y + 25 - 8,32,32};
+    
+    //icons
+    Texture::Draw(heart, heart_src, heart_dest, SDL_FLIP_NONE);
+    Texture::Draw(coin, coin_src, coin_dest, SDL_FLIP_NONE);
+    //bar
+    Texture::Draw(stamina_bar, src, hdest2, SDL_FLIP_NONE);
+    Texture::Draw(coin_bar, src, cdest2, SDL_FLIP_NONE);
+    //outline
+    Texture::Draw(trim, src, hdest, SDL_FLIP_NONE);
+    Texture::Draw(trim, src, cdest, SDL_FLIP_NONE);
 }
 
 void Maze::handleEvents()
@@ -526,7 +548,7 @@ void Maze::recievePackets()
                     }
                     else if (pack_data->type == 2)
                     {
-                        std::cout << "receiving " << pack_data->packet_anim_ind << " " << pack_data->packet_anim_frames << std::endl;
+                        //std::cout << "receiving " << pack_data->packet_anim_ind << " " << pack_data->packet_anim_frames << std::endl;
                         guard1.getComponent<PositionComponent>().position.x = pack_data->packet_x;
                         guard1.getComponent<PositionComponent>().position.y = pack_data->packet_y;
                         guard1.getComponent<SpriteComponent>().animationInd = pack_data->packet_anim_ind;
@@ -684,7 +706,7 @@ void Maze::update()
                         }
                     }
                 }
-                std::cout << "sending " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << " " << guard1.getComponent<SpriteComponent>().speed << " " << guard1.getComponent<SpriteComponent>().animated<< std::endl;
+                //std::cout << "sending " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << " " << guard1.getComponent<SpriteComponent>().speed << " " << guard1.getComponent<SpriteComponent>().animated<< std::endl;
                 pack guard1Data = {2,
                                    guard1.getComponent<PositionComponent>().position.x,
                                    guard1.getComponent<PositionComponent>().position.y,
@@ -713,6 +735,7 @@ void Maze::render()
         if (myState == 0)
         {
             Texture::Draw(mazePage, strtsrc, strtsrc, SDL_FLIP_NONE);
+
         }
         else if (myState == 1)
         {
@@ -805,10 +828,11 @@ void Maze::render()
         {
             x->draw();
         }
-<<<<<<< HEAD
+        //Texture::Draw(mazePage, strtsrc, strtsrc, SDL_FLIP_NONE);
+        //Texture::Draw(testing,strtsrc, strtsrc, SDL_FLIP_NONE);
+        DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money/1000);
 
-        DisplayStamina(50);
-=======
+        
     }else if (gameMode == 3)
     {
 
@@ -839,7 +863,6 @@ void Maze::render()
         {
             x->draw();
         }
->>>>>>> 41ba29af0d335b3e628e6318bc38229e9ee77108
     }
 
     SDL_RenderPresent(renderer);
