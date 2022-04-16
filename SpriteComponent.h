@@ -31,6 +31,7 @@ class SpriteComponent : public Component
         float stamina = 1;
         float money = 1000;
         bool hasyulu = false;
+        bool inWater = false;
         int animationInd = 0;
 
         std::map<int, Animation> animations;
@@ -108,8 +109,9 @@ class SpriteComponent : public Component
         void Play(int animationName) {
             if (hasyulu) {
                 animationName += 5;
+            } else if (inWater) {
+                animationName += 10;
             }
-
             //Remember to remove this !!!!!!
             animationName = animationName % 5;
             //end Remember
