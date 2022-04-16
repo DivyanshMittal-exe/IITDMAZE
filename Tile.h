@@ -24,8 +24,8 @@ public:
     ~Tile(){SDL_DestroyTexture(tex);}
     Tile(int x, int y,int w,int h, int id){
         tex = Texture::LoadTexture("map/IITD_Map.png");
-        srcRect.x = (id % 15)*16;
-        srcRect.y = (id / 15)*16;
+        srcRect.x = (id % 20)*16;
+        srcRect.y = (id / 20)*16;
         srcRect.w = srcRect.h = 16;
         tile_rect.x = x*TileScale;
         tile_rect.y = y*TileScale;
