@@ -4,6 +4,7 @@
 #define MAZE_H
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_mixer.h"
 
 #include <vector>
 #include <string>
@@ -15,7 +16,7 @@
 #define TileScale 5
 #define gameH 600
 #define gameW 800
-#define PORT 6666
+#define PORT 6667
 
 class Maze
 {
@@ -35,6 +36,7 @@ public:
     ENetAddress address;
     ENetEvent enet_event;
     static ENetPeer* peer;
+    static Mix_Chunk *walk;
 
     int gameMode;
     char opState;

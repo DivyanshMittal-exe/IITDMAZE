@@ -12,6 +12,7 @@ class PositionComponent: public Component
     public:
     //Can we define it somewhere else
     int bound[84][225] = IITBOUND;
+    bool am_i_walking;
 
     Vector2D position;
     Vector2D velocity;
@@ -48,6 +49,10 @@ class PositionComponent: public Component
         if (bound[(int) ((position.y + 24) / (16 * 5))][(int)((position.x + velocity.x *speed + 24)/ (16 * 5))] != 1) {
             position.x += velocity.x *speed;
         }
+
+
+        
+        
 
 
         // position.x += velocity.x *speed;

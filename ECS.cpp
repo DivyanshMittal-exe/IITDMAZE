@@ -45,8 +45,6 @@
 
     Entity& Manager::addEntity(){
         Entity* newEnt =  new Entity(*this);
-        // std::unique_ptr<Entity> newEntPtr(newEnt);
-        // entities.emplace_back(std::move(newEntPtr));
         entities.emplace_back(newEnt);
         return *newEnt;
     }

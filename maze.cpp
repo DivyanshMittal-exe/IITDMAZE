@@ -36,6 +36,8 @@ int iit_bound[84][225] = IITBOUND;
 
 // Add group is different, not entity based, but manager based
 
+
+
 struct pack
 {
     int type;
@@ -91,11 +93,7 @@ ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
-SDL_Texture *testing = Texture::LoadTexture("assets/maze.png");
-SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
-SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
-SDL_Texture *infoPage = Texture::LoadTexture("assets/general_image.png");
+SDL_Texture *w8page,*testing,*mazePage,*instrPage,*infoPage;
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -104,8 +102,9 @@ Tile *build_tiles[84][225];
 
 TTF_Font *abd, *blx, *krm, *prt;
 
+bool am_i_walking;
 int game2state = 0;
-//Set number of stages
+// Set number of stages
 int game2lastStage = 3;
 bool game2over = false;
 bool easterEgg = false;
@@ -113,7 +112,8 @@ bool objectiveComplete = false;
 float myMarks;
 float oppMarks;
 int find1, find2;
-std::map <const char*, int> Loc = {
+
+std::map<const char *, int> Loc = {
     {"zanskar", 61},
     {"shiva", 52},
     {"himadri", 14},
@@ -141,10 +141,7 @@ std::map <const char*, int> Loc = {
     {"tennis", 12},
     {"food", 28},
     {"water", 71},
-    {"easteregg", 31}
-};
-
-
+    {"easteregg", 31}};
 
 // For Objectives in mode 2
 // Objective and the number corresponding to the location in .h file
@@ -159,9 +156,7 @@ std::vector<std::pair<std::string, int>> allObjectives{
     {"Go to SAC to do RDV work", Loc["sac"]},
     {"Go to LHC to attend a lecture!", Loc["lhc"]}};
 
-
 std::vector<std::pair<std::string, int>> objectives;
-
 
 // For GeoGuesser
 std::vector<std::pair<std::string, std::pair<float, float>>> questions{
@@ -184,15 +179,9 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
 std::vector<std::string> instrPgText;
 
 Mix_Music *bgm;
-Mix_Chunk *sound;
+Mix_Chunk * Maze::walk;
 
-SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
-SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
-SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
-SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
-SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
-SDL_Texture *easterEggTex = Texture::LoadTexture("assets/emojialien.png");
-SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
+SDL_Texture *coin ,*heart ,*trim,*coin_bar,*stamina_bar ,*easterEggTex,*overlay_map ;
 
 SDL_Texture *baseTex, *buildTex;
 
@@ -202,6 +191,7 @@ Maze::~Maze() {}
 void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
     srand(time(NULL));
+// SDL_EnableKeyRepeat(0,0);
 
     // initialising SDL,enet, and stuff
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -250,7 +240,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     instrPage = Texture::LoadTexture("assets/general_image.png");
     infoPage = Texture::LoadTexture("assets/general_image.png");
 
-
     // Reloading some more assets, not sure why this is required
     coin = Texture::LoadTexture("assets/coin.png");
     heart = Texture::LoadTexture("assets/heart.png");
@@ -258,6 +247,10 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
     easterEggTex = Texture::LoadTexture("assets/emojialien.png");
+
+
+
+    walk = Mix_LoadWAV("sound/walk.wav");
 
     strtsrc = {0, 0, gameW, gameH};
 
@@ -327,7 +320,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
             ENetPacket *packet = enet_packet_create(&tr_locs, sizeof(tr_locs), 0);
             enet_peer_send(peer, 0, packet);
-
         }
         else
         {
@@ -360,18 +352,20 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         }
     }
 
-    //Randomly assigning few objectives to each player
-    while (objectives.size() < game2lastStage) {
+    // Randomly assigning few objectives to each player
+    while (objectives.size() < game2lastStage)
+    {
         int objtemp = rand() % (allObjectives.size());
         bool t = false;
-        for(int i = 0; i < objectives.size(); i++)
+        for (int i = 0; i < objectives.size(); i++)
         {
             if (objectives[i].second == allObjectives[objtemp].second)
             {
                 t = true;
             }
         }
-        if (t == false) {
+        if (t == false)
+        {
             objectives.push_back(allObjectives[objtemp]);
         }
     }
@@ -423,6 +417,10 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     myState = 0;
     opState = 0;
+
+    bgm = Mix_LoadMUS("sound/Waiting_Music.wav");
+    // Mix_PlayMusic(bgm,-1);
+    am_i_walking = false;
 }
 
 float calcuatePoint()
@@ -576,7 +574,6 @@ void Maze::handleEvents()
                     // Yulu Stands
                     std::cout << "ColYulu " << std::endl;
                     player1.getComponent<SpriteComponent>().hasyulu = true;
-
                 }
                 else if (iit_bound[ypos][xpos] == Loc["food"])
                 {
@@ -592,8 +589,9 @@ void Maze::handleEvents()
                     std::cout << "ColObjective " << std::endl;
                     game2state += 1;
                     std::cout << "game2state " << game2state << std::endl;
-                    if (game2state == game2lastStage) {
-                        //Game Finished
+                    if (game2state == game2lastStage)
+                    {
+                        // Game Finished
                         gameState g = {(char)1};
                         ENetPacket *packet = enet_packet_create(&g, sizeof(g), 0);
                         enet_peer_send(peer, 0, packet);
@@ -644,7 +642,8 @@ void Maze::recievePackets()
 
             if (enet_event.packet->dataLength == 1)
             {
-                if (gameMode == 2) {
+                if (gameMode == 2)
+                {
                     game2over = true;
                 }
                 opState = ((gameState *)(enet_event.packet->data))->gameS;
@@ -776,103 +775,133 @@ void Maze::update()
         if (iit_bound[ypos][xpos] == Loc["water"])
         {
             // in Water
-            //std::cout << "ColWater " << std::endl;
+            // std::cout << "ColWater " << std::endl;
             player1.getComponent<SpriteComponent>().inWater = true;
             player1.getComponent<SpriteComponent>().hasyulu = false;
-
-        } else {
+        }
+        else
+        {
             player1.getComponent<SpriteComponent>().inWater = false;
         }
-        if (iit_bound[ypos][xpos] == Loc["easteregg"]){
+        if (iit_bound[ypos][xpos] == Loc["easteregg"])
+        {
             easterEgg = true;
         }
-        else {
+        else
+        {
             easterEgg = false;
         }
 
-    if (am_i_server)
-    {
-        Vector2D p1 = player1.getComponent<PositionComponent>().position;
-        Vector2D p2 = player2.getComponent<PositionComponent>().position;
-        for (int i = 0; i < 3; i++)
+        if (am_i_server)
         {
-
-            float dist1 = getDist(player1.getComponent<PositionComponent>().position, guard_vec[i]->getComponent<PositionComponent>().position);
-            float dist2 = getDist(player2.getComponent<PositionComponent>().position, guard_vec[i]->getComponent<PositionComponent>().position);
-            if (dist1 < dist2 && dist1 < 20000)
+            Vector2D p1 = player1.getComponent<PositionComponent>().position;
+            Vector2D p2 = player2.getComponent<PositionComponent>().position;
+            for (int i = 0; i < 3; i++)
             {
-                Vector2D dirn = p1 - guard_vec[i]->getComponent<PositionComponent>().position;
-                if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
+
+                float dist1 = getDist(player1.getComponent<PositionComponent>().position, guard_vec[i]->getComponent<PositionComponent>().position);
+                float dist2 = getDist(player2.getComponent<PositionComponent>().position, guard_vec[i]->getComponent<PositionComponent>().position);
+                if (dist1 < dist2 && dist1 < 20000)
                 {
+                    Vector2D dirn = p1 - guard_vec[i]->getComponent<PositionComponent>().position;
+                    if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
+                    {
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                    }
+                }
+                else if (dist2 < dist1 && dist2 < 20000)
+                {
+                    Vector2D dirn = p2 - guard_vec[i]->getComponent<PositionComponent>().position;
                     guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
                     guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
                 }
-            }
-            else if (dist2 < dist1 && dist2 < 20000)
-            {
-                Vector2D dirn = p2 - guard_vec[i]->getComponent<PositionComponent>().position;
-                guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-                guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-            }
-            else
-            {
-                if (guard_vec[i]->getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + guard_vec[i]->getComponent<PositionComponent>().velocity.x * guard_vec[i]->getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
+                else
                 {
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = 0;
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
+                    if (guard_vec[i]->getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + guard_vec[i]->getComponent<PositionComponent>().velocity.x * guard_vec[i]->getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
+                    {
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.x = 0;
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
+                    }
+                    else if (guard_vec[i]->getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + guard_vec[i]->getComponent<PositionComponent>().velocity.y * guard_vec[i]->getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
+                    {
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.y = 0;
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
+                    }
                 }
-                else if (guard_vec[i]->getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + guard_vec[i]->getComponent<PositionComponent>().velocity.y * guard_vec[i]->getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
-                {
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = 0;
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
-                }
-            }
 
-            // Animating Guard
-            if (guard_vec[i]->getComponent<PositionComponent>().velocity.x > 0)
-            {
-                guard_vec[i]->getComponent<SpriteComponent>().Play(3);
-            }
-            else if (guard_vec[i]->getComponent<PositionComponent>().velocity.x < 0)
-            {
-                guard_vec[i]->getComponent<SpriteComponent>().Play(4);
-            }
-            else
-            {
-                if (guard_vec[i]->getComponent<PositionComponent>().velocity.y > 0)
+                // Animating Guard
+                if (guard_vec[i]->getComponent<PositionComponent>().velocity.x > 0)
                 {
-                    guard_vec[i]->getComponent<SpriteComponent>().Play(1);
+                    guard_vec[i]->getComponent<SpriteComponent>().Play(3);
                 }
-                else if (guard_vec[i]->getComponent<PositionComponent>().velocity.y < 0)
+                else if (guard_vec[i]->getComponent<PositionComponent>().velocity.x < 0)
                 {
-                    guard_vec[i]->getComponent<SpriteComponent>().Play(2);
+                    guard_vec[i]->getComponent<SpriteComponent>().Play(4);
+                }
+                else
+                {
+                    if (guard_vec[i]->getComponent<PositionComponent>().velocity.y > 0)
+                    {
+                        guard_vec[i]->getComponent<SpriteComponent>().Play(1);
+                    }
+                    else if (guard_vec[i]->getComponent<PositionComponent>().velocity.y < 0)
+                    {
+                        guard_vec[i]->getComponent<SpriteComponent>().Play(2);
+                    }
                 }
             }
         }
-    }
 
-    player_guard_packet packet_to_send;
-    packet_to_send.id = 0;
-    packet_to_send.p2 = {
-        player1.getComponent<PositionComponent>().position.x,
-        player1.getComponent<PositionComponent>().position.y,
-        player1.getComponent<SpriteComponent>().animationInd,
-        player1.getComponent<SpriteComponent>().frames};
+        player_guard_packet packet_to_send;
+        packet_to_send.id = 0;
+        packet_to_send.p2 = {
+            player1.getComponent<PositionComponent>().position.x,
+            player1.getComponent<PositionComponent>().position.y,
+            player1.getComponent<SpriteComponent>().animationInd,
+            player1.getComponent<SpriteComponent>().frames};
 
-    for (int i = 0; i < 3; i++)
-    {
-        packet_to_send.guard[i] = {
-            guard_vec[i]->getComponent<PositionComponent>().position.x,
-            guard_vec[i]->getComponent<PositionComponent>().position.y,
-            guard_vec[i]->getComponent<SpriteComponent>().animationInd,
-            guard_vec[i]->getComponent<SpriteComponent>().frames};
-    }
+        for (int i = 0; i < 3; i++)
+        {
+            packet_to_send.guard[i] = {
+                guard_vec[i]->getComponent<PositionComponent>().position.x,
+                guard_vec[i]->getComponent<PositionComponent>().position.y,
+                guard_vec[i]->getComponent<SpriteComponent>().animationInd,
+                guard_vec[i]->getComponent<SpriteComponent>().frames};
+        }
 
-    ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
-    enet_peer_send(peer, 0, packet);
+        ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
+        enet_peer_send(peer, 0, packet);
 
-    manager.refresh();
-    manager.update();
+
+        if (player1.getComponent<PositionComponent>().velocity.x != 0 || player1.getComponent<PositionComponent>().velocity.y != 0){
+            if(!am_i_walking){
+                am_i_walking = true;
+                if (player1.getComponent<PositionComponent>().velocity.x > 0)
+                {
+                    player1.getComponent<SpriteComponent>().Play(3);
+                }
+                else if (player1.getComponent<PositionComponent>().velocity.x < 0)
+                {
+                    player1.getComponent<SpriteComponent>().Play(4);
+                }
+                else if (player1.getComponent<PositionComponent>().velocity.y > 0)
+                {
+                    player1.getComponent<SpriteComponent>().Play(1);
+                }
+                else if (player1.getComponent<PositionComponent>().velocity.y < 0)
+                {
+                    player1.getComponent<SpriteComponent>().Play(2);
+                }
+
+            }
+
+        }else{
+            am_i_walking = false;
+        }
+
+        manager.refresh();
+        manager.update();
     }
 }
 
@@ -938,7 +967,6 @@ void Maze::render()
             }
 
             DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
-
         }
         else if (myState == 3 && opState == 2)
         {
@@ -964,7 +992,8 @@ void Maze::render()
     }
     else if (gameMode == 2)
     {
-        if (game2state < game2lastStage && game2over == false) {
+        if (game2state < game2lastStage && game2over == false)
+        {
             for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
             {
                 for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
@@ -1006,13 +1035,16 @@ void Maze::render()
             Texture::render_text(prt, objectives[game2state].first, 30, 255, 255, 255);
 
             DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
-            //Easter Egg
-            if (easterEgg) {
+            // Easter Egg
+            if (easterEgg)
+            {
                 SDL_Rect eggsrc = {0, 0, 64, 64};
                 SDL_Rect eggdest = {32, 32, 32, 32};
                 Texture::Draw(easterEggTex, eggsrc, eggdest, SDL_FLIP_NONE);
             }
-        } else {
+        }
+        else
+        {
             Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             if (game2state == game2lastStage)
             {
@@ -1023,7 +1055,6 @@ void Maze::render()
                 Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
             }
         }
-
     }
     else if (gameMode == 3)
     {
@@ -1066,14 +1097,14 @@ void Maze::render()
             x->draw();
         }
     }
-    
+
     // DrawOverLayMap();
 
     SDL_RenderPresent(renderer);
 }
 void Maze::clean()
 {
-    Mix_FreeChunk(sound);
+    Mix_FreeChunk(walk);
     Mix_FreeMusic(bgm);
 
     Mix_Quit();
