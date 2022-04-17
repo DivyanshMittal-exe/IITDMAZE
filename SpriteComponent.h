@@ -107,18 +107,15 @@ class SpriteComponent : public Component
         }
 
         void Play(int animationName) {
-            if (hasyulu) {
-                animationName += 5;
-            } else if (inWater) {
-                animationName += 10;
-            }
-            //Remember to remove this !!!!!!
-            animationName = animationName % 5;
-            //end Remember
-
             frames = animations[animationName].frames;
             animationInd = animations[animationName].index;
             speed = animations[animationName].speed;
+
+            if (hasyulu) {
+                animationInd += 4;
+            } else if (inWater) {
+                animationInd += 8;
+            }
         }
 
 };

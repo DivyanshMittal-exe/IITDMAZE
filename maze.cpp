@@ -111,7 +111,7 @@ int find1, find2;
 // For Objectives in mode 2
 // Objective and the number corresponding to the location in .h file
 std::vector<std::pair<std::string, int>> objectives{
-    {"Go to Shivalik to meet Divyanis", 11},
+    {"Go to the BasketBall Court", 11},
     {"Go to Shivalik to meet Divyanis2", 11},
     {"Go to Shivalik to meet Divyanis", 12},
     {"Go to Shivalik to meet Divyanis", 13},
@@ -323,9 +323,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     guard_vec[0] = &guard1;
     guard_vec[1] = &guard2;
     guard_vec[2] = &guard3;
-    guard1.addComponent<PositionComponent>();
-    guard2.addComponent<PositionComponent>();
-    guard3.addComponent<PositionComponent>();
+    guard1.addComponent<PositionComponent>(182 * 16 * TileScale + 8 * TileScale, 16 * 16 * TileScale + 8 * TileScale);
+    guard2.addComponent<PositionComponent>(64 * 16 * TileScale + 8 * TileScale, 32 * 16 * TileScale + 8 * TileScale);
+    guard3.addComponent<PositionComponent>(88 * 16 * TileScale + 8 * TileScale, 47 * 16 * TileScale + 8 * TileScale);
 
     for (int i = 0; i < 3; i++)
     {
@@ -583,8 +583,9 @@ void Maze::recievePackets()
             {
                 opState = ((gameState *)(enet_event.packet->data))->gameS;
             }
-            else if (enet_event.packet->dataLength == 17)
+            else if (enet_event.packet->dataLength == 68)
             {
+                pgp = ((player_guard_packet*)(enet_event.packet->data));
                 player2.getComponent<PositionComponent>().position.x = pgp->p2.packet_x;
                 player2.getComponent<PositionComponent>().position.y = pgp->p2.packet_y;
                 player2.getComponent<SpriteComponent>().animationInd = pgp->p2.packet_anim_ind;
@@ -698,6 +699,26 @@ void Maze::update()
         cam.y = 84 * 16 * TileScale - gameH;
     }
 
+    int ypos = (cam.y + gameH / 2) / (16 * TileScale);
+    int xpos = (cam.x + gameW / 2) / (16 * TileScale);
+    if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
+    {
+        if (iit_bound[ypos][xpos] == 71)
+        {
+            // in Water
+            //Check whether this is required
+            bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
+            std::cout << "ColWater " << col << std::endl;
+            if (col)
+            {
+                player1.getComponent<SpriteComponent>().inWater = true;
+                player1.getComponent<SpriteComponent>().hasyulu = false;
+            }
+        }
+        else {
+            player1.getComponent<SpriteComponent>().inWater = false;
+        }
+
     if (am_i_server)
     {
         Vector2D p1 = player1.getComponent<PositionComponent>().position;
@@ -762,6 +783,7 @@ void Maze::update()
 
 
     player_guard_packet packet_to_send;
+    packet_to_send.id = 0;
     packet_to_send.p2 = {
         player1.getComponent<PositionComponent>().position.x,
         player1.getComponent<PositionComponent>().position.y,
@@ -776,11 +798,13 @@ void Maze::update()
             guard_vec[i]->getComponent<SpriteComponent>().animationInd,
             guard_vec[i]->getComponent<SpriteComponent>().frames};
     }
+
     ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
     enet_peer_send(peer, 0, packet);
 
     manager.refresh();
     manager.update();
+    }
 }
 
 auto &playerTile(manager.getGroup(gPlayer));

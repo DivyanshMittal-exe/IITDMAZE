@@ -18,11 +18,10 @@ Maze *maze = nullptr;
 int main(int argc, char* argv[]){
 
     maze = new Maze();
-    if((argv[1] == "1") || (argv[1] == "2")){
+    if(!(strcmp(argv[1],"1")&&strcmp(argv[1],"2"))){
 
         maze->am_i_server = true;
         maze->gameMode  = atoi(argv[1]);
-
     }
     else {
         maze->am_i_server = false;
