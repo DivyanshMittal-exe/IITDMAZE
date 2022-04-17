@@ -93,15 +93,7 @@ ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-<<<<<<< HEAD
 SDL_Texture *w8page,*testing,*mazePage,*instrPage,*infoPage;
-=======
-SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
-SDL_Texture *testing = Texture::LoadTexture("assets/maze.png");
-SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
-SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
-SDL_Texture *infoPage = Texture::LoadTexture("assets/info.png");
->>>>>>> 995ca8af2446613bafe68362947a3ee8e7a1ab8f
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -607,14 +599,8 @@ void Maze::handleEvents()
                     std::cout << "ColObjective " << std::endl;
                     game2state += 1;
                     std::cout << "game2state " << game2state << std::endl;
-<<<<<<< HEAD
-                    if (game2state == game2lastStage)
-                    {
-                        // Game Finished
-=======
                     if (game2state == game2lastStage) {
                         //Game Finished, send packet
->>>>>>> 995ca8af2446613bafe68362947a3ee8e7a1ab8f
                         gameState g = {(char)1};
                         ENetPacket *packet = enet_packet_create(&g, sizeof(g), 0);
                         enet_peer_send(peer, 0, packet);
@@ -810,12 +796,6 @@ void Maze::update()
             // in Water
             // std::cout << "ColWater " << std::endl;
             player1.getComponent<SpriteComponent>().inWater = true;
-<<<<<<< HEAD
-            player1.getComponent<SpriteComponent>().hasyulu = false;
-        }
-        else
-        {
-=======
             if (player1.getComponent<SpriteComponent>().hasyulu) {
                 player1.getComponent<SpriteComponent>().hasyulu = false;
                 if (player1.getComponent<SpriteComponent>().money > 500) {
@@ -828,7 +808,6 @@ void Maze::update()
             
 
         } else {
->>>>>>> 995ca8af2446613bafe68362947a3ee8e7a1ab8f
             player1.getComponent<SpriteComponent>().inWater = false;
         }
         if (iit_bound[ypos][xpos] == Loc["easteregg"])
@@ -1090,18 +1069,12 @@ void Maze::render()
                 SDL_Rect eggdest = {32, 32, 32, 32};
                 Texture::Draw(easterEggTex, eggsrc, eggdest, SDL_FLIP_NONE);
             }
-<<<<<<< HEAD
-        }
-        else
-        {
-=======
 
             if (displayInfo) {
                 Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             }
 
         } else {
->>>>>>> 995ca8af2446613bafe68362947a3ee8e7a1ab8f
             Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             if (game2state == game2lastStage)
             {
