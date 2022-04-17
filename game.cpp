@@ -18,15 +18,17 @@ Maze *maze = nullptr;
 int main(int argc, char* argv[]){
 
     maze = new Maze();
-    if((argv[1] == "1") || (argv[1] == "2")){
+    std::cout << argv[1];
+    if(!(strcmp(argv[1],"1")&&strcmp(argv[1],"2"))){
 
         maze->am_i_server = true;
         maze->gameMode  = atoi(argv[1]);
-
+        std::cout << "Server hoo me "<<endl;
     }
     else {
         maze->am_i_server = false;
         maze->Server_IP = argv[1];
+        std::cout << "Client hoo yaar"<<endl;
     }
 
     maze -> init("IITD Maze",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,gameW,gameH,false);
