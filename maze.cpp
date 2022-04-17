@@ -65,11 +65,11 @@ struct playerPacket
     int packet_anim_ind, packet_anim_frames;
 };
 
-struct player_gaurd_packet
+struct player_guard_packet
 {
     int id;
     playerPacket p2;
-    playerPacket gaurd[3];
+    playerPacket guard[3];
 };
 
 Manager manager;
@@ -144,7 +144,13 @@ std::vector<std::string> instrPgText;
 Mix_Music *bgm;
 Mix_Chunk *sound;
 
-SDL_Texture *coin, *heart, *trim, *coin_bar, *stamina_bar, *overlay_map;
+SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
+SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
+SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
+SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
+SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
+SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
+
 
 SDL_Texture *baseTex, *buildTex;
 
@@ -323,12 +329,12 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     for (int i = 0; i < 3; i++)
     {
-        guard_vec[i].addComponent<SpriteComponent>("assets/player1animated.png", true);
-        guard_vec[i].addComponent<Collider>("Guard");
-        guard_vec[i].addGroup(gPlayer);
+        guard_vec[i]->addComponent<SpriteComponent>("assets/player1animated.png", true);
+        guard_vec[i]->addComponent<Collider>("Guard");
+        guard_vec[i]->addGroup(gPlayer);
 
-        guard_vec[i].getComponent<SpriteComponent>().Play(3);
-        guard_vec[i].getComponent<PositionComponent>().velocity.x = 1;
+        guard_vec[i]->getComponent<SpriteComponent>().Play(3);
+        guard_vec[i]->getComponent<PositionComponent>().velocity.x = 1;
     }
 
     flag1.addGroup(gEntities);
@@ -565,7 +571,7 @@ void Maze::recievePackets()
 {
     pack *pack_data;
     gameState *gameState_data;
-    player_gaurd_packet *pgp;
+    player_guard_packet *pgp;
 
     while (enet_host_service(client_server, &enet_event, 0) > 0)
     {
@@ -588,10 +594,10 @@ void Maze::recievePackets()
 
                 for (int i = 0; i < 3; i++)
                 {
-                    guard_vec[i]->getComponent<PositionComponent>().position.x = pgp->gaurd[i].packet_x;
-                    guard_vec[i]->getComponent<PositionComponent>().position.y = pgp->gaurd[i].packet_y;
-                    guard_vec[i]->getComponent<SpriteComponent>().animationInd = pgp->gaurd[i].packet_anim_ind;
-                    guard_vec[i]->getComponent<SpriteComponent>().frames = pgp->gaurd[i].packet_anim_frames;
+                    guard_vec[i]->getComponent<PositionComponent>().position.x = pgp->guard[i].packet_x;
+                    guard_vec[i]->getComponent<PositionComponent>().position.y = pgp->guard[i].packet_y;
+                    guard_vec[i]->getComponent<SpriteComponent>().animationInd = pgp->guard[i].packet_anim_ind;
+                    guard_vec[i]->getComponent<SpriteComponent>().frames = pgp->guard[i].packet_anim_frames;
                     guard_vec[i]->getComponent<SpriteComponent>().animated = true;
                     guard_vec[i]->getComponent<SpriteComponent>().speed = 100;
                 }
@@ -699,55 +705,55 @@ void Maze::update()
         for (int i = 0; i < 3; i++)
         {
 
-            float dist1 = getDist(player1.getComponent<PositionComponent>().position, gaurd_vec[i].getComponent<PositionComponent>().position);
-            float dist2 = getDist(player2.getComponent<PositionComponent>().position, gaurd_vec[i].getComponent<PositionComponent>().position);
+            float dist1 = getDist(player1.getComponent<PositionComponent>().position, guard_vec[i]->getComponent<PositionComponent>().position);
+            float dist2 = getDist(player2.getComponent<PositionComponent>().position, guard_vec[i]->getComponent<PositionComponent>().position);
             if (dist1 < dist2 && dist1 < 20000)
             {
-                Vector2D dirn = p1 - g;
+                Vector2D dirn = p1 - guard_vec[i]->getComponent<PositionComponent>().position;
                 if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
                 {
-                    gaurd_vec[i].getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-                    gaurd_vec[i].getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
                 }
             }
             else if (dist2 < dist1 && dist2 < 20000)
             {
-                Vector2D dirn = p2 - g;
-                gaurd_vec[i].getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-                gaurd_vec[i].getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                Vector2D dirn = p2 - guard_vec[i]->getComponent<PositionComponent>().position;
+                guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
             }
             else
             {
-                if (gaurd_vec[i].getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((gaurd_vec[i].getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((gaurd_vec[i].getComponent<PositionComponent>().position.x + gaurd_vec[i].getComponent<PositionComponent>().velocity.x * gaurd_vec[i].getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
+                if (guard_vec[i]->getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + guard_vec[i]->getComponent<PositionComponent>().velocity.x * guard_vec[i]->getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
                 {
-                    gaurd_vec[i].getComponent<PositionComponent>().velocity.x = 0;
-                    gaurd_vec[i].getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
+                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = 0;
+                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
                 }
-                else if (gaurd_vec[i].getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((gaurd_vec[i].getComponent<PositionComponent>().position.y + gaurd_vec[i].getComponent<PositionComponent>().velocity.y * gaurd_vec[i].getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((gaurd_vec[i].getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
+                else if (guard_vec[i]->getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + guard_vec[i]->getComponent<PositionComponent>().velocity.y * guard_vec[i]->getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
                 {
-                    gaurd_vec[i].getComponent<PositionComponent>().velocity.y = 0;
-                    gaurd_vec[i].getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
+                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = 0;
+                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
                 }
             }
 
             // Animating Guard
-            if (gaurd_vec[i].getComponent<PositionComponent>().velocity.x > 0)
+            if (guard_vec[i]->getComponent<PositionComponent>().velocity.x > 0)
             {
-                gaurd_vec[i].getComponent<SpriteComponent>().Play(3);
+                guard_vec[i]->getComponent<SpriteComponent>().Play(3);
             }
-            else if (gaurd_vec[i].getComponent<PositionComponent>().velocity.x < 0)
+            else if (guard_vec[i]->getComponent<PositionComponent>().velocity.x < 0)
             {
-                gaurd_vec[i].getComponent<SpriteComponent>().Play(4);
+                guard_vec[i]->getComponent<SpriteComponent>().Play(4);
             }
             else
             {
-                if (gaurd_vec[i].getComponent<PositionComponent>().velocity.y > 0)
+                if (guard_vec[i]->getComponent<PositionComponent>().velocity.y > 0)
                 {
-                    gaurd_vec[i].getComponent<SpriteComponent>().Play(1);
+                    guard_vec[i]->getComponent<SpriteComponent>().Play(1);
                 }
-                else if (gaurd_vec[i].getComponent<PositionComponent>().velocity.y < 0)
+                else if (guard_vec[i]->getComponent<PositionComponent>().velocity.y < 0)
                 {
-                    gaurd_vec[i].getComponent<SpriteComponent>().Play(2);
+                    guard_vec[i]->getComponent<SpriteComponent>().Play(2);
                 }
             }
         }
@@ -755,7 +761,7 @@ void Maze::update()
 
 
 
-    player_gaurd_packet packet_to_send;
+    player_guard_packet packet_to_send;
     packet_to_send.p2 = {
         player1.getComponent<PositionComponent>().position.x,
         player1.getComponent<PositionComponent>().position.y,
@@ -764,11 +770,11 @@ void Maze::update()
 
     for (int i = 0; i < 3; i++)
     {
-        packet_to_send.gaurd[i] = {
-            guard_vec[i].getComponent<PositionComponent>().position.x,
-            guard_vec[i].getComponent<PositionComponent>().position.y,
-            guard_vec[i].getComponent<SpriteComponent>().animationInd,
-            guard_vec[i].getComponent<SpriteComponent>().frames};
+        packet_to_send.guard[i] = {
+            guard_vec[i]->getComponent<PositionComponent>().position.x,
+            guard_vec[i]->getComponent<PositionComponent>().position.y,
+            guard_vec[i]->getComponent<SpriteComponent>().animationInd,
+            guard_vec[i]->getComponent<SpriteComponent>().frames};
     }
     ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
     enet_peer_send(peer, 0, packet);
