@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MAZE_H
 #define MAZE_H
 

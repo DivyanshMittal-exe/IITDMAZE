@@ -1,3 +1,5 @@
+#pragma once
+
 #include "maze.h"
 #include "SDL2/SDL_mixer.h"
 #include "SDL2/SDL_image.h"
@@ -28,6 +30,8 @@
 #define gPlayer 1
 #define gEntities 2
 // #define PORT 5050
+
+int iit_bound[84][225] = IITBOUND;
 
 // Add group is different, not entity based, but manager based
 
@@ -132,7 +136,7 @@ SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
 SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
 SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
 SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
-SDL_Texture *overlay_map = Texture::LoadTexture("assets/layer1.png");
+SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
 
 
 Maze::Maze() {}
@@ -142,7 +146,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
     srand(time(NULL));
 
-    gameMode = 1;
+    gameMode = 2;
 
     // initialising SDL,enet, and stuff
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -195,7 +199,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     trim = Texture::LoadTexture("assets/trim.png");
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
-    overlay_map = Texture::LoadTexture("assets/layer1.png");
+    overlay_map = Texture::LoadTexture("map/layer1.png");
 
     if (gameMode == 1)
     {
@@ -390,7 +394,7 @@ void DisplayParameters(float stamina, float money ,int x = 8*gameW/10,int y = ga
 
 void DrawOverLayMap(){
     SDL_Rect src = {Maze::cam.x/TileScale,Maze::cam.y/TileScale,gameW/TileScale, gameH/TileScale};
-    SDL_Rect dest = {0.0,gameW, gameH};
+    SDL_Rect dest = {0,0,gameW, gameH};
     Texture::Draw(overlay_map, src, dest, SDL_FLIP_NONE);
 
 }
@@ -696,27 +700,27 @@ void Maze::update()
             }
         }
     }
-
+    //Logic for Collision
     for (int j = -1; j <= 1; j++)
     {
         for (int i = -1; i <= 1; i++)
         {
-            int ypos = (player1.getComponent<PositionComponent>().position.y ) / (16 * TileScale) + j;
-            int xpos = (player1.getComponent<PositionComponent>().position.x ) / (16 * TileScale) + i;
-            if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
-            {
+            // int ypos = (player1.getComponent<PositionComponent>().position.y ) / (16 * TileScale) + j;
+            // int xpos = (player1.getComponent<PositionComponent>().position.x ) / (16 * TileScale) + i;
+            // if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
+            // {
 
-                if (iit_bound[ypos][xpos] == 1)
-                {
-                    bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
-                    // std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
-                    if (col)
-                    {
-                        player1.getComponent<PositionComponent>().position.x += -1 * i * abs(player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
-                        player1.getComponent<PositionComponent>().position.y += -1 * j * abs(player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
-                    }
-                }
-            }
+            //     if (iit_bound[ypos][xpos] == 1)
+            //     {
+            //         bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
+            //         // std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
+            //         if (col)
+            //         {
+            //             // player1.getComponent<PositionComponent>().position.x += -1 * i * abs(player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
+            //             // player1.getComponent<PositionComponent>().position.y += -1 * j * abs(player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
+            //         }
+            //     }
+            // }
             if (am_i_server)
             {
                 int gypos = (guard1.getComponent<PositionComponent>().position.y) / (16 * TileScale) + j;
@@ -931,7 +935,7 @@ void Maze::render()
         }
     }
     
-    DrawOverLayMap();
+    // DrawOverLayMap();
 
     SDL_RenderPresent(renderer);
 }

@@ -2,16 +2,21 @@
 
 #include "ECS.h"
 #include "Vector2D.h"
+#include "map/iitd_bound.h"
+
+// int iitd_bound[84][225] = IITBOUND;
 
 class PositionComponent: public Component
 {
 
     public:
+    //Can we define it somewhere else
+    int bound[84][225] = IITBOUND;
 
     Vector2D position;
     Vector2D velocity;
     float speed = 5;
-
+     
     void SetPosition(float x, float y){
         position.x  = x;
         position.y =  y;
@@ -37,8 +42,23 @@ class PositionComponent: public Component
     }
 
     void update() override{
-        position.x += velocity.x *speed;
-        position.y += velocity.y *speed;
+        if (bound[(int) ((position.y + velocity.y *speed + 16)/ (16 * 5))][(int)((position.x + 16) / (16 * 5))] != 1) {
+            position.y += velocity.y *speed;
+        }
+        if (bound[(int) ((position.y + 16) / (16 * 5))][(int)((position.x + velocity.x *speed + 16)/ (16 * 5))] != 1) {
+            position.x += velocity.x *speed;
+        }
+
+
+        // position.x += velocity.x *speed;
+        
+        // if (bound[(int) (position.y / (16 * 5))][(int)(position.x / (16 * 5))] == 1) {
+        //     std::cout << "C\n";
+        //     position.x -= velocity.x *speed;
+        //     position.y -= velocity.y *speed;
+        //     // velocity.x = 0;
+        //     // velocity.y = 0;
+        // }  
     }
 
     
