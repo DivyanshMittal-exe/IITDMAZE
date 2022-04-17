@@ -699,11 +699,11 @@ void Maze::update()
         cam.y = 84 * 16 * TileScale - gameH;
     }
 
-    ypos = (cam.y + gameH / 2) / (16 * TileScale);
-    xpos = (cam.x + gameW / 2) / (16 * TileScale);
+    int ypos = (cam.y + gameH / 2) / (16 * TileScale);
+    int xpos = (cam.x + gameW / 2) / (16 * TileScale);
     if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
     {
-        if (iit_bound[ypos][xpos] == 2)
+        if (iit_bound[ypos][xpos] == 71)
         {
             // in Water
             //Check whether this is required
@@ -804,6 +804,7 @@ void Maze::update()
 
     manager.refresh();
     manager.update();
+    }
 }
 
 auto &playerTile(manager.getGroup(gPlayer));
