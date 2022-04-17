@@ -323,9 +323,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     guard_vec[0] = &guard1;
     guard_vec[1] = &guard2;
     guard_vec[2] = &guard3;
-    guard1.addComponent<PositionComponent>();
-    guard2.addComponent<PositionComponent>();
-    guard3.addComponent<PositionComponent>();
+    guard1.addComponent<PositionComponent>(182 * 16 * TileScale + 8 * TileScale, 16 * 16 * TileScale + 8 * TileScale);
+    guard2.addComponent<PositionComponent>(64 * 16 * TileScale + 8 * TileScale, 32 * 16 * TileScale + 8 * TileScale);
+    guard3.addComponent<PositionComponent>(88 * 16 * TileScale + 8 * TileScale, 47 * 16 * TileScale + 8 * TileScale);
 
     for (int i = 0; i < 3; i++)
     {
@@ -583,8 +583,9 @@ void Maze::recievePackets()
             {
                 opState = ((gameState *)(enet_event.packet->data))->gameS;
             }
-            else if (enet_event.packet->dataLength == 17)
+            else if (enet_event.packet->dataLength == 68)
             {
+                pgp = ((player_guard_packet*)(enet_event.packet->data));
                 player2.getComponent<PositionComponent>().position.x = pgp->p2.packet_x;
                 player2.getComponent<PositionComponent>().position.y = pgp->p2.packet_y;
                 player2.getComponent<SpriteComponent>().animationInd = pgp->p2.packet_anim_ind;
@@ -762,6 +763,7 @@ void Maze::update()
 
 
     player_guard_packet packet_to_send;
+    packet_to_send.id = 0;
     packet_to_send.p2 = {
         player1.getComponent<PositionComponent>().position.x,
         player1.getComponent<PositionComponent>().position.y,
@@ -776,6 +778,7 @@ void Maze::update()
             guard_vec[i]->getComponent<SpriteComponent>().animationInd,
             guard_vec[i]->getComponent<SpriteComponent>().frames};
     }
+
     ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
     enet_peer_send(peer, 0, packet);
 
