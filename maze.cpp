@@ -353,7 +353,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     }
     player1.addComponent<Controller>();
 
-    baseTex = Texture::LoadTexture("map/base.png");
+    baseTex = Texture::LoadTexture("map/baselayer.png");
     buildTex = Texture::LoadTexture("map/build.png");
 
     myState = 0;
