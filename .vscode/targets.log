@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Apr 17 15:53:42 2022
+# Make data base, printed on Mon Apr 18 02:32:29 2022
 
 # Variables
 
@@ -49,7 +49,7 @@ VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/share/code/code
 # environment
-JOURNAL_STREAM = 8:33656
+JOURNAL_STREAM = 8:33670
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # makefile (from 'Makefile', line 1)
@@ -63,13 +63,14 @@ USERNAME = jsr
 # environment
 XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
 # environment
+ 
 DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # makefile (from 'Makefile', line 2)
 OBJS = game.cpp  
 # environment
-MANAGERPID = 1296
+MANAGERPID = 1297
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -85,7 +86,7 @@ AUX_OBJS = ECS.o maze.o Vector2D.o Texture.o
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1551,unix/jsr-VirtualBox:/tmp/.ICE-unix/1551
+SESSION_MANAGER = local/jsr-VirtualBox:@/tmp/.ICE-unix/1554,unix/jsr-VirtualBox:/tmp/.ICE-unix/1554
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -95,7 +96,7 @@ VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 67d7e3829320409499c168493c07b03c
+INVOCATION_ID = a15ed89be18044d5a060bc4df539ef25
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -105,7 +106,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 2559
+GIO_LAUNCHED_DESKTOP_FILE_PID = 2102
 # automatic
 %F = $(notdir $%)
 # environment
@@ -117,7 +118,7 @@ PWD = /home/jsr/Codes/IITDMAZE
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1505
+SSH_AGENT_PID = 1508
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # makefile (from 'Makefile', line 15)
@@ -159,7 +160,7 @@ CC = g++
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-b862bfdd-c2cd-4593-a5f8-3ced91c9119b.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-4bc6e556-7fb7-46e3-8189-f93ff6d95a31.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -221,7 +222,7 @@ OBJ_NAME = game.out
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2559
+VSCODE_PID = 2102
 # variable set hash-table stats:
 # Load=106/1024=10%, Rehash=0, Collisions=15/136=11%
 
@@ -231,9 +232,9 @@ VSCODE_PID = 2559
 
 # Directories
 
-# . (device 2064, inode 589993): 39 files, no impossibilities.
+# . (device 2064, inode 589993): 38 files, no impossibilities.
 
-# 39 files, no impossibilities in 1 directories.
+# 38 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -270,7 +271,7 @@ all:
 	@echo "Compiling"
 	@make clean
 	@make run
-	./$(OBJ_NAME) 1
+	./$(OBJ_NAME) 2
 
 # Not a target:
 .SUFFIXES:
@@ -279,10 +280,9 @@ all:
 #  File has not been updated.
 
 # Not a target:
- 
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-04-17 14:20:59.322445067
+#  Last modified 2022-04-18 02:30:42.935368842
 #  File has been updated.
 #  Successfully updated.
 
@@ -332,12 +332,12 @@ host:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 47 / storage = 431 B / avg = 9 B
-# current buf: size = 8162 B / used = 431 B / count = 47 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 46 / storage = 423 B / avg = 9 B
+# current buf: size = 8162 B / used = 423 B / count = 46 / avg = 9 B
 
-# strcache performance: lookups = 58 / hit rate = 18%
+# strcache performance: lookups = 57 / hit rate = 19%
 # hash-table stats:
-# Load=47/8192=1%, Rehash=0, Collisions=1/58=2%
-# Finished Make data base on Sun Apr 17 15:53:42 2022
+# Load=46/8192=1%, Rehash=0, Collisions=1/57=2%
+# Finished Make data base on Mon Apr 18 02:32:29 2022
 
  

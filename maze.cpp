@@ -469,8 +469,13 @@ void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y
     SDL_Rect cdest2 = {x + gameH / 40 + 16, y + 25, 100 * money, 16};
     SDL_Rect heart_src = {0, 0, 64, 64};
     SDL_Rect coin_src = {0, 0, 32, 32};
-    SDL_Rect heart_dest = {x, y, 16, 16};
-    SDL_Rect coin_dest = {x - 8, y + 25 - 8, 32, 32};
+    SDL_Rect heart_dest = {x - 20, y, 16, 16};
+    SDL_Rect coin_dest = {x - 28, y + 25 - 8, 32, 32};
+
+    SDL_Texture *c = Texture::TextTexture(abd, std::to_string((int)(100*money)), 255, 255, 255);
+    SDL_Texture *s = Texture::TextTexture(abd, std::to_string((int)(100*stamina)), 255, 255, 255);
+    int w, h;
+
 
     // icons
     Texture::Draw(heart, heart_src, heart_dest, SDL_FLIP_NONE);
@@ -481,6 +486,20 @@ void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y
     // outline
     Texture::Draw(trim, src, hdest, SDL_FLIP_NONE);
     Texture::Draw(trim, src, cdest, SDL_FLIP_NONE);
+
+    if (!SDL_QueryTexture(c, NULL, NULL, &w, &h))
+    {
+        SDL_Rect h_t1_dest = {x, y, (16 * w) / h, 16};
+        SDL_RenderCopy(Maze::renderer, s, NULL, &h_t1_dest);
+    }
+
+    if (!SDL_QueryTexture(c, NULL, NULL, &w, &h))
+    {
+
+        SDL_Rect c_t1_dest = {x, y + 26, (16 * w) / h, 16};
+        SDL_RenderCopy(Maze::renderer, c, NULL, &c_t1_dest);
+    }
+
 }
 
 void DrawOverLayMap()
@@ -504,7 +523,10 @@ void Maze::handleEvents()
 
         switch (Maze::event.key.keysym.sym)
         {
+        case SDLK_ESCAPE:
+            is_running = false;
         case SDLK_RETURN:
+
             if (gameMode == 1)
             {
                 if (myState == 0)
