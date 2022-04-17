@@ -4,6 +4,7 @@
 #define MAZE_H
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_mixer.h"
 
 #include <vector>
 #include <string>
@@ -35,6 +36,7 @@ public:
     ENetAddress address;
     ENetEvent enet_event;
     static ENetPeer* peer;
+    static Mix_Chunk *walk;
 
     int gameMode;
     char opState;
