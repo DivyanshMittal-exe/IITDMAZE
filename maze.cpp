@@ -93,7 +93,7 @@ ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-SDL_Texture *w8page,*testing,*mazePage,*instrPage,*infoPage;
+SDL_Texture *w8page,*testing,*mazePage,*instrPage,*infoPage,*gnrlPage;
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -241,7 +241,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
-    infoPage = Texture::LoadTexture("assets/info.png");
+    infoPage = Texture::LoadTexture("assets/Info_Screen.png");
+    gnrlPage = Texture::LoadTexture("assets/general_imag.png");
 
     // Reloading some more assets, not sure why this is required
     coin = Texture::LoadTexture("assets/coin.png");
@@ -994,6 +995,10 @@ void Maze::render()
             }
 
             DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
+            if (displayInfo) {
+                Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+                Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+            }
         }
         else if (myState == 3 && opState == 2)
         {
@@ -1071,6 +1076,7 @@ void Maze::render()
             }
 
             if (displayInfo) {
+                Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
                 Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             }
 
@@ -1127,7 +1133,7 @@ void Maze::render()
             x->draw();
         }
     }
-
+    
     // DrawOverLayMap();
 
     SDL_RenderPresent(renderer);
