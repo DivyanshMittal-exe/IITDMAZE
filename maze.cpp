@@ -52,7 +52,6 @@ struct pack
 
 // In .h file
 // 2 -> Yulu
-// 3 Eating locations
 // 1 Collision Barriers
 
 struct gameState
@@ -96,6 +95,8 @@ SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
 SDL_Texture *testing = Texture::LoadTexture("assets/maze.png");
 SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
 SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
+SDL_Texture *infoPage = Texture::LoadTexture("assets/general_image.png");
+
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
 Tile *map_tiles[84][225];
@@ -104,14 +105,16 @@ Tile *build_tiles[84][225];
 TTF_Font *abd, *blx, *krm, *prt;
 
 int game2state = 0;
-int game2lastStage = 4;
+//Set number of stages
+int game2lastStage = 3;
+bool game2over = false;
 bool easterEgg = false;
 bool objectiveComplete = false;
 float myMarks;
 float oppMarks;
 int find1, find2;
 std::map <const char*, int> Loc = {
-    {"zanksar", 61},
+    {"zanskar", 61},
     {"shiva", 52},
     {"himadri", 14},
     {"kailash", 15},
@@ -145,16 +148,20 @@ std::map <const char*, int> Loc = {
 
 // For Objectives in mode 2
 // Objective and the number corresponding to the location in .h file
-std::vector<std::pair<std::string, int>> objectives{
+std::vector<std::pair<std::string, int>> allObjectives{
     {"Go to the BasketBall Court!", Loc["basketball"]},
     {"Go to Shivalik to meet Divyanis!", Loc["shiva"]},
     {"Collect a Rose from the garden near tennis court", Loc["garden"]},
     {"Go to Nilgiri to meet a friend!", Loc["nilgiri"]},
-    {"Go to Shivalik to meet Divyanis", 14},
-    {"Go to Shivalik to meet Divyanis", 15},
-    {"Go to Shivalik to meet Divyanis", 16},
-    {"Go to Shivalik to meet Divyanis", 17},
-    {"Go to Shivalik to meet Divyanis", 18}};
+    {"Go to Himadri to meet your friend!", Loc["himadri"]},
+    {"Go to Tennis Court", Loc["tennis"]},
+    {"You had an accident, Go to Hospital", Loc["hospital"]},
+    {"Go to SAC to do RDV work", Loc["sac"]},
+    {"Go to LHC to attend a lecture!", Loc["lhc"]}};
+
+
+std::vector<std::pair<std::string, int>> objectives;
+
 
 // For GeoGuesser
 std::vector<std::pair<std::string, std::pair<float, float>>> questions{
@@ -241,6 +248,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
+    infoPage = Texture::LoadTexture("assets/general_image.png");
+
 
     // Reloading some more assets, not sure why this is required
     coin = Texture::LoadTexture("assets/coin.png");
@@ -348,6 +357,22 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         else if (gameMode == 2)
         {
             instrPgText.push_back("GAME MODE 2");
+        }
+    }
+
+    //Randomly assigning few objectives to each player
+    while (objectives.size() < game2lastStage) {
+        int objtemp = rand() % (allObjectives.size());
+        bool t = false;
+        for(int i = 0; i < objectives.size(); i++)
+        {
+            if (objectives[i].second == allObjectives[objtemp].second)
+            {
+                t = true;
+            }
+        }
+        if (t == false) {
+            objectives.push_back(allObjectives[objtemp]);
         }
     }
 
@@ -544,26 +569,21 @@ void Maze::handleEvents()
             xpos = (cam.x + gameW / 2) / (16 * TileScale);
             if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
             {
+                std::cout << iit_bound[ypos][xpos] << std::endl;
+                std::cout << "obj " << objectives[game2state].second << std::endl;
                 if (iit_bound[ypos][xpos] == 2)
                 {
                     // Yulu Stands
-                    bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
-                    std::cout << "ColYulu " << col << std::endl;
-                    if (col)
-                    {
-                        player1.getComponent<SpriteComponent>().hasyulu = true;
-                    }
+                    std::cout << "ColYulu " << std::endl;
+                    player1.getComponent<SpriteComponent>().hasyulu = true;
+
                 }
                 else if (iit_bound[ypos][xpos] == Loc["food"])
                 {
                     // Eating Shops
-                    bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
-                    std::cout << "ColEat " << col << std::endl;
-                    if (col and player1.getComponent<SpriteComponent>().money >= 50)
-                    {
-                        player1.getComponent<SpriteComponent>().stamina = 1;
-                        player1.getComponent<SpriteComponent>().money -= 50;
-                    }
+                    std::cout << "ColEat " << std::endl;
+                    player1.getComponent<SpriteComponent>().stamina = 1;
+                    player1.getComponent<SpriteComponent>().money -= 50;
                 }
 
                 else if (gameMode == 2 && iit_bound[ypos][xpos] == objectives[game2state].second)
@@ -571,9 +591,12 @@ void Maze::handleEvents()
                     // Game Mode 2 objectives
                     std::cout << "ColObjective " << std::endl;
                     game2state += 1;
+                    std::cout << "game2state " << game2state << std::endl;
                     if (game2state == game2lastStage) {
                         //Game Finished
-                        //Write Logic
+                        gameState g = {(char)1};
+                        ENetPacket *packet = enet_packet_create(&g, sizeof(g), 0);
+                        enet_peer_send(peer, 0, packet);
                     }
                 }
             }
@@ -621,6 +644,9 @@ void Maze::recievePackets()
 
             if (enet_event.packet->dataLength == 1)
             {
+                if (gameMode == 2) {
+                    game2over = true;
+                }
                 opState = ((gameState *)(enet_event.packet->data))->gameS;
             }
             else if (enet_event.packet->dataLength == 68)
@@ -750,7 +776,7 @@ void Maze::update()
         if (iit_bound[ypos][xpos] == Loc["water"])
         {
             // in Water
-            std::cout << "ColWater " << std::endl;
+            //std::cout << "ColWater " << std::endl;
             player1.getComponent<SpriteComponent>().inWater = true;
             player1.getComponent<SpriteComponent>().hasyulu = false;
 
@@ -910,6 +936,9 @@ void Maze::render()
             {
                 x->draw();
             }
+
+            DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
+
         }
         else if (myState == 3 && opState == 2)
         {
@@ -935,54 +964,66 @@ void Maze::render()
     }
     else if (gameMode == 2)
     {
-
-        for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
-        {
-            for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
+        if (game2state < game2lastStage && game2over == false) {
+            for (int j = 0; j <= gameH / (16 * TileScale) + 1; j++)
             {
-                int ypos = cam.y / (16 * TileScale) + j;
-                int xpos = cam.x / (16 * TileScale) + i;
-                if (xpos < 225 && ypos < 84)
+                for (int i = 0; i <= gameW / (16 * TileScale) + 1; i++)
                 {
-                    if (!map_tiles[ypos][xpos])
+                    int ypos = cam.y / (16 * TileScale) + j;
+                    int xpos = cam.x / (16 * TileScale) + i;
+                    if (xpos < 225 && ypos < 84)
                     {
-                        map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos], baseTex);
-                    }
-
-                    map_tiles[ypos][xpos]->update();
-                    map_tiles[ypos][xpos]->draw();
-
-                    if (iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0)
-                    {
-                        if (!build_tiles[ypos][xpos])
+                        if (!map_tiles[ypos][xpos])
                         {
-                            build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos], buildTex);
+                            map_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_map[ypos][xpos], baseTex);
                         }
-                        build_tiles[ypos][xpos]->update();
-                        build_tiles[ypos][xpos]->draw();
+
+                        map_tiles[ypos][xpos]->update();
+                        map_tiles[ypos][xpos]->draw();
+
+                        if (iit_build[ypos][xpos] != -1 && iit_build[ypos][xpos] != 0)
+                        {
+                            if (!build_tiles[ypos][xpos])
+                            {
+                                build_tiles[ypos][xpos] = new Tile(xpos * 16, ypos * 16, 16, 16, iit_build[ypos][xpos], buildTex);
+                            }
+                            build_tiles[ypos][xpos]->update();
+                            build_tiles[ypos][xpos]->draw();
+                        }
                     }
                 }
             }
+
+            for (auto &x : playerTile)
+            {
+                x->draw();
+            }
+            for (auto &x : entTile)
+            {
+                x->draw();
+            }
+
+            Texture::render_text(prt, objectives[game2state].first, 30, 255, 255, 255);
+
+            DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
+            //Easter Egg
+            if (easterEgg) {
+                SDL_Rect eggsrc = {0, 0, 64, 64};
+                SDL_Rect eggdest = {32, 32, 32, 32};
+                Texture::Draw(easterEggTex, eggsrc, eggdest, SDL_FLIP_NONE);
+            }
+        } else {
+            Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+            if (game2state == game2lastStage)
+            {
+                Texture::render_text(blx, "You won!", 50, 255, 255, 255);
+            }
+            else
+            {
+                Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
+            }
         }
 
-        for (auto &x : playerTile)
-        {
-            x->draw();
-        }
-        for (auto &x : entTile)
-        {
-            x->draw();
-        }
-
-        Texture::render_text(prt, objectives[game2state].first, 30, 255, 255, 255);
-
-        DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
-        //Easter Egg
-        if (easterEgg) {
-            SDL_Rect eggsrc = {0, 0, 64, 64};
-            SDL_Rect eggdest = {32, 32, 32, 32};
-            Texture::Draw(easterEggTex, eggsrc, eggdest, SDL_FLIP_NONE);
-        }
     }
     else if (gameMode == 3)
     {
@@ -1025,7 +1066,7 @@ void Maze::render()
             x->draw();
         }
     }
-
+    
     // DrawOverLayMap();
 
     SDL_RenderPresent(renderer);
