@@ -59,6 +59,19 @@ struct gameState
     char gameS;
 };
 
+struct playerPacket
+{
+    float packet_x, packet_y;
+    int packet_anim_ind, packet_anim_frames;
+};
+
+struct player_gaurd_packet
+{
+    int id;
+    playerPacket p2;
+    playerPacket gaurd[3];
+};
+
 Manager manager;
 Entity &player1(manager.addEntity());
 Entity &player2(manager.addEntity());
@@ -67,6 +80,10 @@ Entity &flag1(manager.addEntity());
 Entity &flag2(manager.addEntity());
 
 Entity &guard1(manager.addEntity());
+Entity &guard2(manager.addEntity());
+Entity &guard3(manager.addEntity());
+
+Entity *guard_vec[3];
 
 SDL_Event Maze::event;
 SDL_Renderer *Maze::renderer;
@@ -127,12 +144,7 @@ std::vector<std::string> instrPgText;
 Mix_Music *bgm;
 Mix_Chunk *sound;
 
-SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
-SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
-SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
-SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
-SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
-SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
+SDL_Texture *coin, *heart, *trim, *coin_bar, *stamina_bar, *overlay_map;
 
 SDL_Texture *baseTex, *buildTex;
 
@@ -142,8 +154,6 @@ Maze::~Maze() {}
 void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 {
     srand(time(NULL));
-
-    // gameMode = 2;
 
     // initialising SDL,enet, and stuff
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -200,12 +210,15 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     if (gameMode == 1)
     {
-        instrPgText.push_back("Your goal is simple\n Look at the hints below and try locating these famous locations on campus\n Press i to place the flag for q1 and o to place flag for q2.\n Once you are satisfied, press Enter to finish your attempt");
+        instrPgText.push_back("Your goal is simple");
+        instrPgText.push_back("Look at the hints below and try locating these famous locations on campus");
+        instrPgText.push_back("Press i to place the flag for q1 and o to place flag for q2.");
+        instrPgText.push_back("Once you are satisfied, press Enter to finish your attempt");
     }
-    // else if (gameMode == 2)
-    // {
-    //     instrPgText.push_back("GAME MODE 2");
-    // }
+    else if (gameMode == 2)
+    {
+        instrPgText.push_back("GAME MODE 2");
+    }
 
     strtsrc = {0, 0, gameW, gameH};
 
@@ -292,31 +305,30 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         }
     }
 
-    player1.addComponent<PositionComponent>();
+    // Start from main gate
+
+    player1.addComponent<PositionComponent>(167 * 16 * TileScale + 8 * TileScale, 5 * 16 * TileScale + 8 * TileScale);
     player1.addGroup(gPlayer);
     player2.addComponent<PositionComponent>();
     player2.addGroup(gPlayer);
-
-    // Start from main gate
-
-    player1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
-    player1.getComponent<PositionComponent>().position.y = 5 * 16 * TileScale + 8 * TileScale;
-
     player1.addComponent<Collider>("Me");
 
     // Guard
+    guard_vec[0] = &guard1;
+    guard_vec[1] = &guard2;
+    guard_vec[2] = &guard3;
     guard1.addComponent<PositionComponent>();
-    // guard1.getComponent<PositionComponent>().speed = 1;
-    guard1.addComponent<SpriteComponent>("assets/player1animated.png", true);
-    guard1.addComponent<Collider>("Guard");
-    guard1.addGroup(gPlayer);
-    if (am_i_server)
+    guard2.addComponent<PositionComponent>();
+    guard3.addComponent<PositionComponent>();
+
+    for (int i = 0; i < 3; i++)
     {
-        guard1.getComponent<PositionComponent>().position.x = 167 * 16 * TileScale + 8 * TileScale;
-        guard1.getComponent<PositionComponent>().position.y = 7 * 16 * TileScale + 8 * TileScale;
-        guard1.getComponent<SpriteComponent>().Play(3);
-        std::cout << "Initially " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << std::endl;
-        guard1.getComponent<PositionComponent>().velocity.x = 1;
+        guard_vec[i].addComponent<SpriteComponent>("assets/player1animated.png", true);
+        guard_vec[i].addComponent<Collider>("Guard");
+        guard_vec[i].addGroup(gPlayer);
+
+        guard_vec[i].getComponent<SpriteComponent>().Play(3);
+        guard_vec[i].getComponent<PositionComponent>().velocity.x = 1;
     }
 
     flag1.addGroup(gEntities);
@@ -553,6 +565,8 @@ void Maze::recievePackets()
 {
     pack *pack_data;
     gameState *gameState_data;
+    player_gaurd_packet *pgp;
+
     while (enet_host_service(client_server, &enet_event, 0) > 0)
     {
         switch (enet_event.type)
@@ -562,6 +576,25 @@ void Maze::recievePackets()
             if (enet_event.packet->dataLength == 1)
             {
                 opState = ((gameState *)(enet_event.packet->data))->gameS;
+            }
+            else if (enet_event.packet->dataLength == 17)
+            {
+                player2.getComponent<PositionComponent>().position.x = pgp->p2.packet_x;
+                player2.getComponent<PositionComponent>().position.y = pgp->p2.packet_y;
+                player2.getComponent<SpriteComponent>().animationInd = pgp->p2.packet_anim_ind;
+                player2.getComponent<SpriteComponent>().frames = pgp->p2.packet_anim_frames;
+                player2.getComponent<SpriteComponent>().animated = true;
+                player2.getComponent<SpriteComponent>().speed = 100;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    guard_vec[i]->getComponent<PositionComponent>().position.x = pgp->gaurd[i].packet_x;
+                    guard_vec[i]->getComponent<PositionComponent>().position.y = pgp->gaurd[i].packet_y;
+                    guard_vec[i]->getComponent<SpriteComponent>().animationInd = pgp->gaurd[i].packet_anim_ind;
+                    guard_vec[i]->getComponent<SpriteComponent>().frames = pgp->gaurd[i].packet_anim_frames;
+                    guard_vec[i]->getComponent<SpriteComponent>().animated = true;
+                    guard_vec[i]->getComponent<SpriteComponent>().speed = 100;
+                }
             }
             else
             {
@@ -639,15 +672,6 @@ void Maze::recievePackets()
 void Maze::update()
 {
 
-    pack playerData = {0,
-                       player1.getComponent<PositionComponent>().position.x,
-                       player1.getComponent<PositionComponent>().position.y,
-                       0,
-                       player1.getComponent<SpriteComponent>().animationInd,
-                       player1.getComponent<SpriteComponent>().frames};
-    ENetPacket *packet = enet_packet_create(&playerData, sizeof(playerData), 0);
-    enet_peer_send(peer, 0, packet);
-
     cam.x = player1.getComponent<PositionComponent>().position.x - gameW / 2;
     cam.y = player1.getComponent<PositionComponent>().position.y - gameH / 2;
 
@@ -672,80 +696,87 @@ void Maze::update()
     {
         Vector2D p1 = player1.getComponent<PositionComponent>().position;
         Vector2D p2 = player2.getComponent<PositionComponent>().position;
-        Vector2D g = guard1.getComponent<PositionComponent>().position;
-        float dist1 = getDist(player1.getComponent<PositionComponent>().position, guard1.getComponent<PositionComponent>().position);
-        float dist2 = getDist(player2.getComponent<PositionComponent>().position, guard1.getComponent<PositionComponent>().position);
-        if (dist1 < dist2 && dist1 < 20000)
+        for (int i = 0; i < 3; i++)
         {
-            Vector2D dirn = p1 - g;
-            if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
-            {
-                guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-                guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-            }
-        }
-        else if (dist2 < dist1 && dist2 < 20000)
-        {
-            Vector2D dirn = p2 - g;
-            guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-            guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-        }
-        else
-        {
-            if (guard1.getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((guard1.getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + guard1.getComponent<PositionComponent>().velocity.x * guard1.getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
-            {
-                guard1.getComponent<PositionComponent>().velocity.x = 0;
-                guard1.getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
-            }
-            else if (guard1.getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((guard1.getComponent<PositionComponent>().position.y + guard1.getComponent<PositionComponent>().velocity.y * guard1.getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
-            {
-                guard1.getComponent<PositionComponent>().velocity.y = 0;
-                guard1.getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
-            }
-        }
 
-        // Animating Guard
-        if (guard1.getComponent<PositionComponent>().velocity.x > 0)
-        {
-            guard1.getComponent<SpriteComponent>().Play(3);
-        }
-        else if (guard1.getComponent<PositionComponent>().velocity.x < 0)
-        {
-            guard1.getComponent<SpriteComponent>().Play(4);
-        }
-        else
-        {
-            if (guard1.getComponent<PositionComponent>().velocity.y > 0)
+            float dist1 = getDist(player1.getComponent<PositionComponent>().position, gaurd_vec[i].getComponent<PositionComponent>().position);
+            float dist2 = getDist(player2.getComponent<PositionComponent>().position, gaurd_vec[i].getComponent<PositionComponent>().position);
+            if (dist1 < dist2 && dist1 < 20000)
             {
-                guard1.getComponent<SpriteComponent>().Play(1);
+                Vector2D dirn = p1 - g;
+                if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
+                {
+                    gaurd_vec[i].getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                    gaurd_vec[i].getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                }
             }
-            else if (guard1.getComponent<PositionComponent>().velocity.y < 0)
+            else if (dist2 < dist1 && dist2 < 20000)
             {
-                guard1.getComponent<SpriteComponent>().Play(2);
+                Vector2D dirn = p2 - g;
+                gaurd_vec[i].getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                gaurd_vec[i].getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+            }
+            else
+            {
+                if (gaurd_vec[i].getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((gaurd_vec[i].getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((gaurd_vec[i].getComponent<PositionComponent>().position.x + gaurd_vec[i].getComponent<PositionComponent>().velocity.x * gaurd_vec[i].getComponent<PositionComponent>().speed + 16) / (16 * 5))] == 1)
+                {
+                    gaurd_vec[i].getComponent<PositionComponent>().velocity.x = 0;
+                    gaurd_vec[i].getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1 : 1;
+                }
+                else if (gaurd_vec[i].getComponent<PositionComponent>().velocity.y != 0 && iit_bound[(int)((gaurd_vec[i].getComponent<PositionComponent>().position.y + gaurd_vec[i].getComponent<PositionComponent>().velocity.y * gaurd_vec[i].getComponent<PositionComponent>().speed + 16) / (16 * 5))][(int)((gaurd_vec[i].getComponent<PositionComponent>().position.x + 16) / (16 * 5))] == 1)
+                {
+                    gaurd_vec[i].getComponent<PositionComponent>().velocity.y = 0;
+                    gaurd_vec[i].getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1 : 1;
+                }
+            }
+
+            // Animating Guard
+            if (gaurd_vec[i].getComponent<PositionComponent>().velocity.x > 0)
+            {
+                gaurd_vec[i].getComponent<SpriteComponent>().Play(3);
+            }
+            else if (gaurd_vec[i].getComponent<PositionComponent>().velocity.x < 0)
+            {
+                gaurd_vec[i].getComponent<SpriteComponent>().Play(4);
+            }
+            else
+            {
+                if (gaurd_vec[i].getComponent<PositionComponent>().velocity.y > 0)
+                {
+                    gaurd_vec[i].getComponent<SpriteComponent>().Play(1);
+                }
+                else if (gaurd_vec[i].getComponent<PositionComponent>().velocity.y < 0)
+                {
+                    gaurd_vec[i].getComponent<SpriteComponent>().Play(2);
+                }
             }
         }
     }
 
-    if (am_i_server)
+
+
+    player_gaurd_packet packet_to_send;
+    packet_to_send.p2 = {
+        player1.getComponent<PositionComponent>().position.x,
+        player1.getComponent<PositionComponent>().position.y,
+        player1.getComponent<SpriteComponent>().animationInd,
+        player1.getComponent<SpriteComponent>().frames};
+
+    for (int i = 0; i < 3; i++)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            pack guard1Data = {2,
-                               guard1.getComponent<PositionComponent>().position.x,
-                               guard1.getComponent<PositionComponent>().position.y,
-                               0,
-                               guard1.getComponent<SpriteComponent>().animationInd,
-                               guard1.getComponent<SpriteComponent>().frames};
-            ENetPacket *packet = enet_packet_create(&guard1Data, sizeof(guard1Data), 0);
-            enet_peer_send(peer, 0, packet);
-        }
+        packet_to_send.gaurd[i] = {
+            guard_vec[i].getComponent<PositionComponent>().position.x,
+            guard_vec[i].getComponent<PositionComponent>().position.y,
+            guard_vec[i].getComponent<SpriteComponent>().animationInd,
+            guard_vec[i].getComponent<SpriteComponent>().frames};
     }
+    ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
+    enet_peer_send(peer, 0, packet);
 
     manager.refresh();
     manager.update();
 }
 
-// auto &mapTile(manager.getGroup(gMap));
 auto &playerTile(manager.getGroup(gPlayer));
 auto &entTile(manager.getGroup(gEntities));
 
