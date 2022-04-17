@@ -158,21 +158,21 @@ std::vector<std::pair<std::string, int>> objectives{
 
 // For GeoGuesser
 std::vector<std::pair<std::string, std::pair<float, float>>> questions{
-    {"The unofficial pizza \n place of IIT Delhi", {72, 48}},
-    {"Your first photo was \n probably taken here ", {150, 20}},
-    {"The department where you \n will see fancy suits", {72, 75}},
-    {"People sitting outside, cant find a spot.\n But the seats are empty inside and you got no money", {143, 25}},
-    {"Married to the idea of staying \n on campus a bit more. Or in general", {55, 52}},
+    {"The unofficial pizza place of IIT Delhi", {72, 48}},
+    {"Your first photo was probably taken here ", {150, 20}},
+    {"The department where you will see fancy suits", {72, 75}},
+    {"People sitting outside, and the seats are empty inside but you got no money", {143, 25}},
+    {"Married to the idea of staying on campus a bit more. Or in general", {55, 52}},
     {"The coolest building in town", {131, 59}},
-    {"Finally, I can hope \n for an empty court", {112, 43}},
+    {"Finally, I can hope for an empty court", {112, 43}},
     {"Highest yet youngest of the 13", {92, 11}},
     {"Shakes ?", {42, 15}},
     {"Weaving dreams into reality", {66, 27}},
-    {"IC", {41, 36}},
+    {"Who is the IC?", {41, 36}},
     {"The vintage car that everyone loves", {136, 23}},
     {"Guests stay here. New faculty doesn't", {200, 21}},
     {"Got hurt ?", {101, 28}},
-    {"Where do these young kids study?\n They can barely speak, let alone give JEE!", {95, 18}}};
+    {"Where do these young kids study? They can barely speak, let alone give JEE!", {95, 18}}};
 
 std::vector<std::string> instrPgText;
 
@@ -186,7 +186,6 @@ SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
 SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
 SDL_Texture *easterEggTex = Texture::LoadTexture("assets/emojialien.png");
 SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
-
 
 SDL_Texture *baseTex, *buildTex;
 
@@ -250,17 +249,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
     easterEggTex = Texture::LoadTexture("assets/emojialien.png");
-    if (gameMode == 1)
-    {
-        instrPgText.push_back("Your goal is simple");
-        instrPgText.push_back("Look at the hints below and try locating these famous locations on campus");
-        instrPgText.push_back("Press i to place the flag for q1 and o to place flag for q2.");
-        instrPgText.push_back("Once you are satisfied, press Enter to finish your attempt");
-    }
-    else if (gameMode == 2)
-    {
-        instrPgText.push_back("GAME MODE 2");
-    }
 
     strtsrc = {0, 0, gameW, gameH};
 
@@ -330,8 +318,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
             ENetPacket *packet = enet_packet_create(&tr_locs, sizeof(tr_locs), 0);
             enet_peer_send(peer, 0, packet);
-            instrPgText.push_back(questions[find1].first);
-            instrPgText.push_back(questions[find2].first);
+
         }
         else
         {
@@ -344,6 +331,23 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
             ENetPacket *packet = enet_packet_create(&tr_locs, sizeof(tr_locs), 0);
             enet_peer_send(peer, 0, packet);
+        }
+    }
+
+    if (am_i_server)
+    {
+        if (gameMode == 1)
+        {
+            instrPgText.push_back("Your goal is simple");
+            instrPgText.push_back("Look at the hints below and try locating these famous locations on campus");
+            instrPgText.push_back("Press i to place the flag for q1 and o to place flag for q2.");
+            instrPgText.push_back("Once you are satisfied, press Enter to finish your attempt");
+            instrPgText.push_back(questions[find1].first);
+            instrPgText.push_back(questions[find2].first);
+        }
+        else if (gameMode == 2)
+        {
+            instrPgText.push_back("GAME MODE 2");
         }
     }
 
@@ -361,7 +365,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     guard_vec[2] = &guard3;
     guard1.addComponent<PositionComponent>(182 * 16 * TileScale + 8 * TileScale, 16 * 16 * TileScale + 8 * TileScale);
     guard2.addComponent<PositionComponent>(64 * 16 * TileScale + 8 * TileScale, 32 * 16 * TileScale + 8 * TileScale);
-    guard3.addComponent<PositionComponent>(88 * 16 * TileScale + 8 * TileScale, 47 * 16 * TileScale + 8 * TileScale);
+    guard3.addComponent<PositionComponent>(87 * 16 * TileScale + 8 * TileScale, 46 * 16 * TileScale + 8 * TileScale);
 
     for (int i = 0; i < 3; i++)
     {
@@ -389,7 +393,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     }
     player1.addComponent<Controller>();
 
-    baseTex = Texture::LoadTexture("map/base.png");
+    baseTex = Texture::LoadTexture("map/baselayer.png");
     buildTex = Texture::LoadTexture("map/build.png");
 
     myState = 0;
@@ -621,7 +625,7 @@ void Maze::recievePackets()
             }
             else if (enet_event.packet->dataLength == 68)
             {
-                pgp = ((player_guard_packet*)(enet_event.packet->data));
+                pgp = ((player_guard_packet *)(enet_event.packet->data));
                 player2.getComponent<PositionComponent>().position.x = pgp->p2.packet_x;
                 player2.getComponent<PositionComponent>().position.y = pgp->p2.packet_y;
                 player2.getComponent<SpriteComponent>().animationInd = pgp->p2.packet_anim_ind;
@@ -656,6 +660,10 @@ void Maze::recievePackets()
                     gameMode = 1;
                     find1 = (int)(pack_data->packet_x);
                     find2 = (int)(pack_data->packet_y);
+                    instrPgText.push_back("Your goal is simple");
+                    instrPgText.push_back("Look at the hints below and try locating these famous locations on campus");
+                    instrPgText.push_back("Press i to place the flag for q1 and o to place flag for q2.");
+                    instrPgText.push_back("Once you are satisfied, press Enter to finish your attempt");
                     instrPgText.push_back(questions[find1].first);
                     instrPgText.push_back(questions[find2].first);
                 }
@@ -816,8 +824,6 @@ void Maze::update()
             }
         }
     }
-
-
 
     player_guard_packet packet_to_send;
     packet_to_send.id = 0;

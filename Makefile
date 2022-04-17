@@ -23,7 +23,7 @@ all:
 	@echo "Compiling"
 	@make clean
 	@make run
-	./$(OBJ_NAME) 2
+	./$(OBJ_NAME) 1
 
 host:
 	@echo "Compiling"
