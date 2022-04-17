@@ -3,6 +3,6 @@ make: Entering directory '/home/jsr/Codes/IITDMAZE'
 echo "Compiling"
 make clean
 make run
-./game.out
+./game.out 2
 make: Leaving directory '/home/jsr/Codes/IITDMAZE'
  
