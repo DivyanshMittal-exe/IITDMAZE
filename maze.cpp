@@ -91,11 +91,7 @@ ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
-SDL_Texture *testing = Texture::LoadTexture("assets/maze.png");
-SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
-SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
-SDL_Texture *infoPage = Texture::LoadTexture("assets/info.png");
+SDL_Texture *w8page,*testing,*mazePage,*instrPage,*infoPage,*gnrlPage;
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -144,8 +140,7 @@ std::map <const char*, int> Loc = {
     {"tennis", 12},
     {"food", 28},
     {"water", 71},
-    {"easteregg", 31}
-};
+    {"easteregg", 31}};
 
 
 
@@ -164,7 +159,6 @@ std::vector<std::pair<std::string, int>> allObjectives{
 
 
 std::vector<std::pair<std::string, int>> objectives;
-
 
 // For GeoGuesser
 std::vector<std::pair<std::string, std::pair<float, float>>> questions{
@@ -187,15 +181,9 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
 std::vector<std::string> instrPgText;
 
 Mix_Music *bgm;
-Mix_Chunk *sound;
+Mix_Chunk * Maze::walk;
 
-SDL_Texture *coin = Texture::LoadTexture("assets/coin.png");
-SDL_Texture *heart = Texture::LoadTexture("assets/heart.png");
-SDL_Texture *trim = Texture::LoadTexture("assets/trim.png");
-SDL_Texture *coin_bar = Texture::LoadTexture("assets/money.png");
-SDL_Texture *stamina_bar = Texture::LoadTexture("assets/stamina.png");
-SDL_Texture *easterEggTex = Texture::LoadTexture("assets/emojialien.png");
-SDL_Texture *overlay_map = Texture::LoadTexture("map/layer1.png");
+SDL_Texture *coin ,*heart ,*trim,*coin_bar,*stamina_bar ,*easterEggTex,*overlay_map ;
 
 SDL_Texture *baseTex, *buildTex;
 
@@ -251,7 +239,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
-    infoPage = Texture::LoadTexture("assets/info.png");
+    infoPage = Texture::LoadTexture("assets/Info_Screen.png");
+    gnrlPage = Texture::LoadTexture("assets/general_image.png");
 
 
     // Reloading some more assets, not sure why this is required
@@ -261,7 +250,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
     easterEggTex = Texture::LoadTexture("assets/emojialien.png");
-
+    walk = Mix_LoadWAV("sound/walk.wav");
     strtsrc = {0, 0, gameW, gameH};
 
     if (!am_i_server)
@@ -364,17 +353,19 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     }
 
     //Randomly assigning few objectives to each player
-    while (objectives.size() < game2lastStage) {
+    while (objectives.size() < game2lastStage) 
+    {
         int objtemp = rand() % (allObjectives.size());
         bool t = false;
-        for(int i = 0; i < objectives.size(); i++)
+        for (int i = 0; i < objectives.size(); i++)
         {
             if (objectives[i].second == allObjectives[objtemp].second)
             {
                 t = true;
             }
         }
-        if (t == false) {
+        if (t == false) 
+        {
             objectives.push_back(allObjectives[objtemp]);
         }
     }
@@ -431,6 +422,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     myState = 0;
     opState = 0;
+
+    bgm = Mix_LoadMUS("sound/Waiting_Music.wav");
+    // Mix_PlayMusic(bgm,-1);
 }
 
 float calcuatePoint()
@@ -833,7 +827,7 @@ void Maze::update()
 
             }
         }
-
+    }
 
     if (am_i_server)
     {
@@ -955,7 +949,6 @@ void Maze::update()
     }
     manager.refresh();
     manager.update();
-    }
 }
 
 auto &playerTile(manager.getGroup(gPlayer));
@@ -1022,6 +1015,7 @@ void Maze::render()
             DisplayParameters(player1.getComponent<SpriteComponent>().stamina, player1.getComponent<SpriteComponent>().money / 1000);
 
             if (displayInfo) {
+                Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
                 Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             }
         }
@@ -1099,6 +1093,7 @@ void Maze::render()
             }
 
             if (displayInfo) {
+                Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
                 Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             }
 
@@ -1163,7 +1158,7 @@ void Maze::render()
 }
 void Maze::clean()
 {
-    Mix_FreeChunk(sound);
+    Mix_FreeChunk(walk);
     Mix_FreeMusic(bgm);
 
     Mix_Quit();

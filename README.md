@@ -8,6 +8,9 @@ The game is built using SDL2 library and the game logic is written in C++. ENet 
 
 
 Currently we have 2 game modes - 
+1. GeoGuesser - There are 2 hints one for each place you need to guess. You can make your guess by placing a flag there. Closest to the answer wins.  
+
+2. You need to complete the objectives on the screen until none remain. Fastest one to complete all wins.
 
 
 
@@ -23,3 +26,4 @@ Currently we have 2 game modes -
 *The instructions mentioned above for various installations were used on Ubuntu 20.04.*
 
 ## References 
+https://www.youtube.com/playlist?list=PLhfAbcv9cehhkG7ZQK0nfIGJC_C-wSLrx
