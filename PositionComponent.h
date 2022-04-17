@@ -42,10 +42,10 @@ class PositionComponent: public Component
     }
 
     void update() override{
-        if (bound[(int) ((position.y + velocity.y *speed + 16)/ (16 * 5))][(int)((position.x + 16) / (16 * 5))] != 1) {
+        if (bound[(int) ((position.y + velocity.y *speed + 24)/ (16 * 5))][(int)((position.x + 24) / (16 * 5))] != 1) {
             position.y += velocity.y *speed;
         }
-        if (bound[(int) ((position.y + 16) / (16 * 5))][(int)((position.x + velocity.x *speed + 16)/ (16 * 5))] != 1) {
+        if (bound[(int) ((position.y + 24) / (16 * 5))][(int)((position.x + velocity.x *speed + 24)/ (16 * 5))] != 1) {
             position.x += velocity.x *speed;
         }
 
