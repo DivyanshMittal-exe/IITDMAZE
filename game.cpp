@@ -9,38 +9,41 @@
 using namespace std;
 
 const int FPS = 60;
-const int frameDelay = 1000/FPS;
+const int frameDelay = 1000 / FPS;
 
 int frameTime;
 
 Maze *maze = nullptr;
 
-int main(int argc, char* argv[]){
+int main(int argc, char *argv[])
+{
 
     maze = new Maze();
-    if(!(strcmp(argv[1],"1")&&strcmp(argv[1],"2"))){
+    if (!(strcmp(argv[1], "1") && strcmp(argv[1], "2")))
+    {
 
         maze->am_i_server = true;
-        maze->gameMode  = atoi(argv[1]);
+        maze->gameMode = atoi(argv[1]);
     }
-    else {
+    else
+    {
         maze->am_i_server = false;
         maze->Server_IP = argv[1];
     }
 
-    maze -> init("IITD Maze",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,gameW,gameH,false);
+    maze->init("IITD Maze", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gameW, gameH, false);
 
-    
-
-    while(maze->running()){
+    while (maze->running())
+    {
         frameTime = SDL_GetTicks();
         maze->handleEvents();
         maze->recievePackets();
         maze->update();
         maze->render();
-        frameTime = SDL_GetTicks() - frameTime ;
+        frameTime = SDL_GetTicks() - frameTime;
 
-        if(frameDelay > frameTime){
+        if (frameDelay > frameTime)
+        {
             SDL_Delay(frameDelay - frameTime);
         }
     }
