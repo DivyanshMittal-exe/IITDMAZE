@@ -95,7 +95,7 @@ SDL_Texture *w8page = Texture::LoadTexture("assets/Waiting.png");
 SDL_Texture *testing = Texture::LoadTexture("assets/maze.png");
 SDL_Texture *mazePage = Texture::LoadTexture("assets/maze.png");
 SDL_Texture *instrPage = Texture::LoadTexture("assets/general_image.png");
-SDL_Texture *infoPage = Texture::LoadTexture("assets/general_image.png");
+SDL_Texture *infoPage = Texture::LoadTexture("assets/info.png");
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -107,6 +107,9 @@ TTF_Font *abd, *blx, *krm, *prt;
 int game2state = 0;
 //Set number of stages
 int game2lastStage = 3;
+
+const char* playerHostel = "zanskar";
+bool displayInfo = false;
 bool game2over = false;
 bool easterEgg = false;
 bool objectiveComplete = false;
@@ -248,7 +251,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
-    infoPage = Texture::LoadTexture("assets/general_image.png");
+    infoPage = Texture::LoadTexture("assets/info.png");
 
 
     // Reloading some more assets, not sure why this is required
@@ -569,8 +572,8 @@ void Maze::handleEvents()
             xpos = (cam.x + gameW / 2) / (16 * TileScale);
             if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
             {
-                std::cout << iit_bound[ypos][xpos] << std::endl;
-                std::cout << "obj " << objectives[game2state].second << std::endl;
+                //std::cout << iit_bound[ypos][xpos] << std::endl;
+                //std::cout << "obj " << objectives[game2state].second << std::endl;
                 if (iit_bound[ypos][xpos] == 2)
                 {
                     // Yulu Stands
@@ -585,6 +588,13 @@ void Maze::handleEvents()
                     player1.getComponent<SpriteComponent>().stamina = 1;
                     player1.getComponent<SpriteComponent>().money -= 50;
                 }
+                else if (iit_bound[ypos][xpos] == Loc[playerHostel] && (gameMode != 2 || Loc[playerHostel] != objectives[game2state].second))
+                {
+                    // Eating in Mess
+                    std::cout << "ColEatMess " << std::endl;
+                    player1.getComponent<SpriteComponent>().stamina = 1;
+                    player1.getComponent<SpriteComponent>().money -= 20;
+                }
 
                 else if (gameMode == 2 && iit_bound[ypos][xpos] == objectives[game2state].second)
                 {
@@ -593,7 +603,7 @@ void Maze::handleEvents()
                     game2state += 1;
                     std::cout << "game2state " << game2state << std::endl;
                     if (game2state == game2lastStage) {
-                        //Game Finished
+                        //Game Finished, send packet
                         gameState g = {(char)1};
                         ENetPacket *packet = enet_packet_create(&g, sizeof(g), 0);
                         enet_peer_send(peer, 0, packet);
@@ -619,12 +629,22 @@ void Maze::handleEvents()
             }
 
             break;
-
+        case SDLK_p:
+            displayInfo = true;
+            break;
         default:
             break;
         }
         break;
-
+    case SDL_KEYUP:
+        switch (Maze::event.key.keysym.sym)
+        {
+        case SDLK_p:
+            displayInfo = false;
+            break;
+        default:
+            break;
+        }
     default:
         break;
     }
@@ -778,7 +798,16 @@ void Maze::update()
             // in Water
             //std::cout << "ColWater " << std::endl;
             player1.getComponent<SpriteComponent>().inWater = true;
-            player1.getComponent<SpriteComponent>().hasyulu = false;
+            if (player1.getComponent<SpriteComponent>().hasyulu) {
+                player1.getComponent<SpriteComponent>().hasyulu = false;
+                if (player1.getComponent<SpriteComponent>().money > 500) {
+                    player1.getComponent<SpriteComponent>().money -= 500;
+                }
+                else {
+                    player1.getComponent<SpriteComponent>().money = 0;
+                }
+            }
+            
 
         } else {
             player1.getComponent<SpriteComponent>().inWater = false;
@@ -1012,6 +1041,11 @@ void Maze::render()
                 SDL_Rect eggdest = {32, 32, 32, 32};
                 Texture::Draw(easterEggTex, eggsrc, eggdest, SDL_FLIP_NONE);
             }
+
+            if (displayInfo) {
+                Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+            }
+
         } else {
             Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             if (game2state == game2lastStage)
