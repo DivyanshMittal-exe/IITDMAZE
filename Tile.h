@@ -23,15 +23,11 @@ public:
     // int tileID;
 
     Tile(){}
-    ~Tile(){SDL_DestroyTexture(tex);}
-    Tile(int x, int y,int w,int h, int id,int type = 0){
+    // ~Tile(){SDL_DestroyTexture(tex);} // As global texture
+    ~Tile(){}
+    Tile(int x, int y,int w,int h, int id,SDL_Texture* tex_inp){
 
-        if(type == 0){
-            tex = Texture::LoadTexture("map/base.png");
-        }else{
-            tex = Texture::LoadTexture("map/build.png");
-
-        }
+        tex = tex_inp;
         srcRect.x = (id % 20)*16;
         srcRect.y = (id / 20)*16;
         srcRect.w = srcRect.h = 16;

@@ -18,13 +18,14 @@ Maze *maze = nullptr;
 int main(int argc, char* argv[]){
 
     maze = new Maze();
-    if(argc == 1){
+    if((argv[1] == "1") || (argv[1] == "2")){
 
         maze->am_i_server = true;
+        maze->gameMode  = atoi(argv[1]);
+
     }
     else {
         maze->am_i_server = false;
-        std::string ip = argv[1];
         maze->Server_IP = argv[1];
     }
 
