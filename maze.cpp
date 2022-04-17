@@ -298,6 +298,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     //Guard
     guard1.addComponent<PositionComponent>();
+    //guard1.getComponent<PositionComponent>().speed = 1;
     guard1.addComponent<SpriteComponent>("assets/player1animated.png", true);
     guard1.addComponent<Collider>("Guard");
     guard1.addGroup(gPlayer);
@@ -682,6 +683,14 @@ void Maze::update()
             Vector2D dirn = p2 - g;
             guard1.getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
             guard1.getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x*dirn.x + dirn.y*dirn.y);
+        } else {
+            if(guard1.getComponent<PositionComponent>().velocity.x != 0 &&  iit_bound[(int) ((guard1.getComponent<PositionComponent>().position.y + 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + guard1.getComponent<PositionComponent>().velocity.x *guard1.getComponent<PositionComponent>().speed + 16)/ (16 * 5))] == 1){
+                guard1.getComponent<PositionComponent>().velocity.x = 0;
+                guard1.getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1: 1;
+            }else if (guard1.getComponent<PositionComponent>().velocity.y != 0 &&  iit_bound[(int) ((guard1.getComponent<PositionComponent>().position.y + guard1.getComponent<PositionComponent>().velocity.y*guard1.getComponent<PositionComponent>().speed+ 16) / (16 * 5))][(int)((guard1.getComponent<PositionComponent>().position.x + 16)/ (16 * 5))] == 1){
+                guard1.getComponent<PositionComponent>().velocity.y = 0;
+                guard1.getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1: 1;
+            }
         }
 
         //Animating Guard
@@ -700,65 +709,21 @@ void Maze::update()
             }
         }
     }
-    //Logic for Collision
-    for (int j = -1; j <= 1; j++)
-    {
-        for (int i = -1; i <= 1; i++)
-        {
-            // int ypos = (player1.getComponent<PositionComponent>().position.y ) / (16 * TileScale) + j;
-            // int xpos = (player1.getComponent<PositionComponent>().position.x ) / (16 * TileScale) + i;
-            // if (xpos < 225 && ypos < 84 && xpos >= 0 && ypos >= 0)
-            // {
 
-            //     if (iit_bound[ypos][xpos] == 1)
-            //     {
-            //         bool col = Collision::AABB(xpos, ypos, player1.getComponent<Collider>());
-            //         // std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
-            //         if (col)
-            //         {
-            //             // player1.getComponent<PositionComponent>().position.x += -1 * i * abs(player1.getComponent<PositionComponent>().velocity.x * player1.getComponent<PositionComponent>().speed);
-            //             // player1.getComponent<PositionComponent>().position.y += -1 * j * abs(player1.getComponent<PositionComponent>().velocity.y * player1.getComponent<PositionComponent>().speed);
-            //         }
-            //     }
-            // }
-            if (am_i_server)
-            {
-                int gypos = (guard1.getComponent<PositionComponent>().position.y) / (16 * TileScale) + j;
-                int gxpos = (guard1.getComponent<PositionComponent>().position.x) / (16 * TileScale) + i;
-
-                if (gxpos < 225 && gypos < 84 && gxpos >= 0 && gypos >= 0)
-                {
-
-                    if (iit_bound[gypos][gxpos] == 1)
-                    {
-                        bool col = Collision::AABB(gxpos, gypos, guard1.getComponent<Collider>());
-                        // std::cout << "Col " << i << " " << j << " " <<  col << std::endl;
-                        if (col)
-                        {
-                            guard1.getComponent<PositionComponent>().position.x += -1 * i * abs(guard1.getComponent<PositionComponent>().velocity.x * guard1.getComponent<PositionComponent>().speed);
-                            guard1.getComponent<PositionComponent>().position.y += -1 * j * abs(guard1.getComponent<PositionComponent>().velocity.y * guard1.getComponent<PositionComponent>().speed);
-                            if(abs(guard1.getComponent<PositionComponent>().velocity.x)>abs(guard1.getComponent<PositionComponent>().velocity.y)){
-                                guard1.getComponent<PositionComponent>().velocity.x = 0;
-                                guard1.getComponent<PositionComponent>().velocity.y = std::rand() % 2 ? -1: 1;
-                            }else{
-                                guard1.getComponent<PositionComponent>().velocity.y = 0;
-                                guard1.getComponent<PositionComponent>().velocity.x = std::rand() % 2 ? -1: 1;
-                            }
-                        }
-                    }
-                }
-                //std::cout << "sending " << guard1.getComponent<SpriteComponent>().animationInd << " " << guard1.getComponent<SpriteComponent>().frames << " " << guard1.getComponent<SpriteComponent>().speed << " " << guard1.getComponent<SpriteComponent>().animated<< std::endl;
-                pack guard1Data = {2,
-                                   guard1.getComponent<PositionComponent>().position.x,
-                                   guard1.getComponent<PositionComponent>().position.y,
-                                   0,
-                                   guard1.getComponent<SpriteComponent>().animationInd,
-                                   guard1.getComponent<SpriteComponent>().frames};
-                ENetPacket *packet = enet_packet_create(&guard1Data, sizeof(guard1Data), 0);
-                enet_peer_send(peer, 0, packet);
-            }
+    if (am_i_server) {
+        for(int i = 0; i < 4; i++) {
+            pack guard1Data = {2,
+                            guard1.getComponent<PositionComponent>().position.x,
+                            guard1.getComponent<PositionComponent>().position.y,
+                            0,
+                            guard1.getComponent<SpriteComponent>().animationInd,
+                            guard1.getComponent<SpriteComponent>().frames};
+            ENetPacket *packet = enet_packet_create(&guard1Data, sizeof(guard1Data), 0);
+            enet_peer_send(peer, 0, packet);
         }
     }
+
+
 
     manager.refresh();
     manager.update();
