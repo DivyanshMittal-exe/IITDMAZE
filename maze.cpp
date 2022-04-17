@@ -827,6 +827,13 @@ void Maze::update()
         else {
             easterEgg = false;
         }
+        if (iit_bound[ypos][xpos] == Loc["garden"] || iit_bound[ypos][xpos] == Loc["football"] || iit_bound[ypos][xpos] == Loc["basketball"] || iit_bound[ypos][xpos] == Loc["tennis"]){
+            if (player1.getComponent<SpriteComponent>().hasyulu) {
+                player1.getComponent<SpriteComponent>().money -= 0.5;
+
+            }
+        }
+
 
     if (am_i_server)
     {
@@ -842,22 +849,41 @@ void Maze::update()
             //std::cout << "guard" << i+1 << " distance1 " << dist1 << " distance2 " << dist2 << " 1\n";
             if (dist1 < dist2 && dist1 < 20000)
             {
-                std::cout << "guard" << i+1 <<" distance1 " << dist1 << " distance2 " << dist2 << " 1\n";
-                Vector2D dirn = p1 - g;
-                if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
-                {
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                //If Guard catches player
+                if (dist1 < 5000) {
+                    if (player1.getComponent<SpriteComponent>().money > 200) {
+                        player1.getComponent<SpriteComponent>().money -= 200;
+                    } else {
+                        player1.getComponent<SpriteComponent>().money = 0;
+                    }
+                    guard_vec[i]->getComponent<PositionComponent>().position = {167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale};
+                    guard_vec[i]->getComponent<PositionComponent>().velocity = {0,0};
+                } else {
+                    Vector2D dirn = p1 - g;
+                    if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
+                    {
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                    }
                 }
             }
             else if (dist2 < dist1 && dist2 < 20000)
             {
-                std::cout << "guard" << i+1 << " distance1 " << dist1 << " distance2 " << dist2 << " 2\n";
-                Vector2D dirn = p2 - g;
-                if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
-                {
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
-                    guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                if (dist2 < 5000) {
+                    if (player2.getComponent<SpriteComponent>().money > 200) {
+                        player2.getComponent<SpriteComponent>().money -= 200;
+                    } else {
+                        player2.getComponent<SpriteComponent>().money = 0;
+                    }
+                    guard_vec[i]->getComponent<PositionComponent>().position = {167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale};
+                    guard_vec[i]->getComponent<PositionComponent>().velocity = {0,1};
+                } else {
+                    Vector2D dirn = p2 - g;
+                    if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
+                    {
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.x = dirn.x / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                        guard_vec[i]->getComponent<PositionComponent>().velocity.y = dirn.y / sqrt(dirn.x * dirn.x + dirn.y * dirn.y);
+                    }
                 }
             }
             else
