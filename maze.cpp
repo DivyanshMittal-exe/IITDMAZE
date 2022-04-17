@@ -101,6 +101,8 @@ Tile *map_tiles[84][225];
 Tile *build_tiles[84][225];
 
 TTF_Font *abd, *blx, *krm, *prt;
+TTF_Font *abdL, *blxL, *krmL, *prtL;
+TTF_Font *abdXL, *blxXL, *krmXL, *prtXL;
 
 bool am_i_walking;
 int game2state = 0;
@@ -237,6 +239,16 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     blx = TTF_OpenFont("fonts/Blox.ttf", 16);
     krm = TTF_OpenFont("fonts/Karma.ttf", 16);
     prt = TTF_OpenFont("fonts/Prototype.ttf", 16);
+
+    abdL = TTF_OpenFont("fonts/abduct.ttf", 32);
+    blxL = TTF_OpenFont("fonts/Blox.ttf", 32);
+    krmL = TTF_OpenFont("fonts/Karma.ttf", 32);
+    prtL = TTF_OpenFont("fonts/Prototype.ttf", 32);
+
+    abdXL = TTF_OpenFont("fonts/abduct.ttf", 32);
+    blxXL = TTF_OpenFont("fonts/Blox.ttf", 32);
+    krmXL = TTF_OpenFont("fonts/Karma.ttf", 32);
+    prtXL = TTF_OpenFont("fonts/Prototype.ttf", 32);
 
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
@@ -1010,15 +1022,15 @@ void Maze::render()
 
             if (myMarks > oppMarks)
             {
-                Texture::render_text(blx, "You won!", 50, 255, 255, 255);
+                Texture::render_text(blxXL, "You won!", 50, 255, 255, 255);
             }
             else if (myMarks == oppMarks)
             {
-                Texture::render_text(blx, "Its a tie!", 50, 255, 255, 255);
+                Texture::render_text(blxXL, "Its a tie!", 50, 255, 255, 255);
             }
             else
             {
-                Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
+                Texture::render_text(blxXL, "You lost,better luck next time", 50, 255, 255, 255);
             }
         }
     }
@@ -1084,11 +1096,11 @@ void Maze::render()
             Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
             if (game2state == game2lastStage)
             {
-                Texture::render_text(blx, "You won!", 50, 255, 255, 255);
+                Texture::render_text(blxXL, "You won!", 50, 255, 255, 255);
             }
             else
             {
-                Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
+                Texture::render_text(blxXL, "You lost better luck next time", 50, 255, 255, 255);
             }
         }
     }

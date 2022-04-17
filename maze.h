@@ -16,7 +16,7 @@
 #define TileScale 5
 #define gameH 600
 #define gameW 800
-#define PORT 6667
+#define PORT 6666
 
 class Maze
 {

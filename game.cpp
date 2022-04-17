@@ -18,6 +18,10 @@ Maze *maze = nullptr;
 int main(int argc, char* argv[]){
 
     maze = new Maze();
+    if(argc != 2){
+        std::cout <<"Incorrect arguments"<< std::endl;
+        return EXIT_FAILURE;
+    }
     if(!(strcmp(argv[1],"1")&&strcmp(argv[1],"2"))){
 
         maze->am_i_server = true;
@@ -47,5 +51,5 @@ int main(int argc, char* argv[]){
 
     maze->clean();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
