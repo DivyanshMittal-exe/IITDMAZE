@@ -1168,10 +1168,10 @@ void Maze::render()
             }
         }
     }
-    else if (gameMode == 2 && countFrames < 30) {
+    else if (gameMode == 2 && countFrames < 240) {
         Texture::Draw(mazePage2, strtsrc, strtsrc, SDL_FLIP_NONE);
     }
-    else if (gameMode == 2 && countFrames < 60) {
+    else if (gameMode == 2 && countFrames < 480) {
         Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
         Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
     }

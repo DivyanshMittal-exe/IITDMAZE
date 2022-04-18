@@ -1,0 +1,4 @@
+Status of our Game as of 18th April 2022
+1. Game compiles and runs without crashing.
+2. Online 2 player is working in localhost.
+3. Online 2 player is working over wifi but we weren't able to test it over IITD-wifi because we were not in campus. We have tested it over the wifi at home.
