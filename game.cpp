@@ -18,6 +18,10 @@ Maze *maze = nullptr;
 int main(int argc, char *argv[])
 {
 
+    if(argc != 2){
+        std::cout << "Incorrect input";
+        return EXIT_FAILURE;
+    }
     maze = new Maze();
     if (!(strcmp(argv[1], "1") && strcmp(argv[1], "2")))
     {

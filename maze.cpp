@@ -101,6 +101,8 @@ Tile *build_tiles[84][225];
 
 TTF_Font *abd, *blx, *krm, *prt;
 
+Mix_Chunk *yuluSound,*foodSound,*objSound;
+
 int game2state = 0;
 // Set number of stages
 int game2lastStage = 3;
@@ -183,7 +185,6 @@ std::vector<std::pair<std::string, std::pair<float, float>>> questions{
 std::vector<std::string> instrPgText;
 
 Mix_Music *bgm;
-Mix_Chunk *Maze::walk;
 
 SDL_Texture *coin, *bolt, *trim, *coin_bar, *stamina_bar, *easterEggTex, *overlay_map;
 
@@ -224,7 +225,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         std::cout << "Initialization failed" << std::endl;
     }
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 16, 2048) < 0)
     {
         std::cout << "Mixer not made" << std::endl;
     }
@@ -252,8 +253,15 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
     easterEggTex = Texture::LoadTexture("assets/emojialien.png");
-    walk = Mix_LoadWAV("sound/walk.wav");
+    yuluSound = Mix_LoadWAV("sound/yulu.wav");
+    foodSound = Mix_LoadWAV("sound/food.wav");
+    objSound = Mix_LoadWAV("sound/obj.wav");
     strtsrc = {0, 0, gameW, gameH};
+
+
+    bgm = Mix_LoadMUS("sound/Waiting_Music.wav");
+    Mix_PlayMusic(bgm,-1);
+    Mix_VolumeMusic(MIX_MAX_VOLUME/4);
 
     if (!am_i_server)
     {
@@ -424,8 +432,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     myState = 0;
     opState = 0;
 
-    bgm = Mix_LoadMUS("sound/Waiting_Music.wav");
-    // Mix_PlayMusic(bgm,-1);
+
 }
 
 float calcuatePoint()
@@ -599,12 +606,15 @@ void Maze::handleEvents()
                 if (iit_bound[ypos][xpos] == 2)
                 {
                     // Yulu Stands
+                    Mix_PlayChannel(-1,yuluSound,0);
                     std::cout << "ColYulu " << std::endl;
                     player1.getComponent<SpriteComponent>().hasyulu = true;
                 }
                 else if (iit_bound[ypos][xpos] == Loc["food"])
                 {
                     // Eating Shops
+                    Mix_PlayChannel(-1,foodSound,0);
+
                     std::cout << "ColEat " << std::endl;
                     player1.getComponent<SpriteComponent>().stamina = 1;
                     player1.getComponent<SpriteComponent>().money -= 50;
@@ -612,6 +622,8 @@ void Maze::handleEvents()
                 else if (iit_bound[ypos][xpos] == Loc[playerHostel] && (gameMode != 2 || Loc[playerHostel] != objectives[game2state].second))
                 {
                     // Eating in Mess
+                    Mix_PlayChannel(-1,foodSound,0);
+
                     std::cout << "ColEatMess " << std::endl;
                     player1.getComponent<SpriteComponent>().stamina = 1;
                     player1.getComponent<SpriteComponent>().money -= 20;
@@ -619,6 +631,9 @@ void Maze::handleEvents()
 
                 else if (gameMode == 2 && iit_bound[ypos][xpos] == objectives[game2state].second)
                 {
+
+                    Mix_PlayChannel(-1,objSound,0);
+
                     // Game Mode 2 objectives
                     std::cout << "ColObjective " << std::endl;
                     game2state += 1;
@@ -645,6 +660,8 @@ void Maze::handleEvents()
                     std::cout << "ColYulu " << col << std::endl;
                     if (col)
                     {
+                        Mix_PlayChannel(-1,yuluSound,0);
+
                         player1.getComponent<SpriteComponent>().hasyulu = false;
                     }
                 }
@@ -1278,7 +1295,6 @@ void Maze::render()
 }
 void Maze::clean()
 {
-    Mix_FreeChunk(walk);
     Mix_FreeMusic(bgm);
 
     Mix_Quit();
