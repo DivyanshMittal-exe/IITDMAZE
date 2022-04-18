@@ -30,6 +30,7 @@ public:
     bool hasyulu = false;
     bool inWater = false;
     int animationInd = 0;
+    bool guardAngry = false;
 
     std::map<int, Animation> animations;
 
@@ -146,6 +147,8 @@ public:
         else if (inWater)
         {
             animationInd += 8;
+        } else if (guardAngry) {
+            animationInd += 4;
         }
     }
 };

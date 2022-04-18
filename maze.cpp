@@ -70,6 +70,7 @@ struct player_guard_packet
     int id;
     playerPacket p2;
     playerPacket guard[3];
+    bool p2caught;
 };
 
 Manager manager;
@@ -104,7 +105,9 @@ int game2state = 0;
 // Set number of stages
 int game2lastStage = 3;
 
+
 const char *playerHostel = "zanskar";
+bool player2caught = false;
 bool displayInfo = false;
 bool game2over = false;
 bool easterEgg = false;
@@ -379,6 +382,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     guard_vec[1] = &guard2;
     guard_vec[2] = &guard3;
     guard1.addComponent<PositionComponent>(182 * 16 * TileScale + 8 * TileScale, 16 * 16 * TileScale + 8 * TileScale);
+    //guard1.addComponent<PositionComponent>(167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale);
     guard2.addComponent<PositionComponent>(64 * 16 * TileScale + 8 * TileScale, 32 * 16 * TileScale + 8 * TileScale);
     guard3.addComponent<PositionComponent>(87 * 16 * TileScale + 8 * TileScale, 46 * 16 * TileScale + 8 * TileScale);
     // guard1.getComponent<PositionComponent>().speed = 1;
@@ -387,7 +391,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     for (int i = 0; i < 3; i++)
     {
-        guard_vec[i]->addComponent<SpriteComponent>("assets/player1animated.png", true);
+        guard_vec[i]->addComponent<SpriteComponent>("assets/guard.png", true);
         guard_vec[i]->addComponent<Collider>("Guard");
         guard_vec[i]->addGroup(gPlayer);
 
@@ -676,7 +680,7 @@ void Maze::recievePackets()
         switch (enet_event.type)
         {
         case ENET_EVENT_TYPE_RECEIVE:
-
+            //std::cout << "Hello  " << enet_event.packet->dataLength << std::endl;
             if (enet_event.packet->dataLength == 1)
             {
                 if (gameMode == 2)
@@ -685,7 +689,7 @@ void Maze::recievePackets()
                 }
                 opState = ((gameState *)(enet_event.packet->data))->gameS;
             }
-            else if (enet_event.packet->dataLength == 68)
+            else if (enet_event.packet->dataLength == 72)
             {
                 pgp = ((player_guard_packet *)(enet_event.packet->data));
                 player2.getComponent<PositionComponent>().position.x = pgp->p2.packet_x;
@@ -694,6 +698,18 @@ void Maze::recievePackets()
                 player2.getComponent<SpriteComponent>().frames = pgp->p2.packet_anim_frames;
                 player2.getComponent<SpriteComponent>().animated = true;
                 player2.getComponent<SpriteComponent>().speed = 100;
+
+                if (pgp->p2caught) {
+                    //std::cout << "Player Caught \n";
+                    if (player1.getComponent<SpriteComponent>().money > 200)
+                    {
+                        player1.getComponent<SpriteComponent>().money -= 200;
+                    }
+                    else
+                    {
+                        player1.getComponent<SpriteComponent>().money = 0;
+                    }
+                }
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -852,6 +868,47 @@ void Maze::update()
         }
     }
 
+    // if (! am_i_server) {
+    //     Vector2D p1 = player1.getComponent<PositionComponent>().position;
+    //     Vector2D p2 = player2.getComponent<PositionComponent>().position;
+    //     float dist1, dist2;
+    //     Vector2D g;
+    //     for (int i = 0; i < 3; i++)
+    //     {
+    //         g = guard_vec[i]->getComponent<PositionComponent>().position;
+    //         dist1 = getDist(p1, g);
+    //         dist2 = getDist(p2, g);
+    //         // std::cout << "guard" << i+1 << " distance1 " << dist1 << " distance2 " << dist2 << " 1\n";
+    //         if (dist1 < dist2 && dist1 < 20000)
+    //         {
+    //             guard_vec[i]->getComponent<SpriteComponent>().guardAngry = true;
+    //             // If Guard catches player
+    //             if (dist1 < 5000)
+    //             {
+    //                 if (player1.getComponent<SpriteComponent>().money > 200)
+    //                 {
+    //                     player1.getComponent<SpriteComponent>().money -= 200;
+    //                 }
+    //                 else
+    //                 {
+    //                     player1.getComponent<SpriteComponent>().money = 0;
+    //                 }
+    //                 guard_vec[i]->getComponent<PositionComponent>().position = {167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale};
+    //                 guard_vec[i]->getComponent<PositionComponent>().velocity = {0, 0};
+    //             }
+    //         }
+    //         else if (dist2 < dist1 && dist2 < 20000)
+    //         {
+    //             guard_vec[i]->getComponent<SpriteComponent>().guardAngry = true;                
+    //         }
+    //         else
+    //         {
+    //             guard_vec[i]->getComponent<SpriteComponent>().guardAngry = false;
+    //         }
+    //     }
+    // }
+
+
     if (am_i_server)
     {
         Vector2D p1 = player1.getComponent<PositionComponent>().position;
@@ -866,6 +923,7 @@ void Maze::update()
             // std::cout << "guard" << i+1 << " distance1 " << dist1 << " distance2 " << dist2 << " 1\n";
             if (dist1 < dist2 && dist1 < 20000)
             {
+                guard_vec[i]->getComponent<SpriteComponent>().guardAngry = true;
                 // If Guard catches player
                 if (dist1 < 5000)
                 {
@@ -892,21 +950,25 @@ void Maze::update()
             }
             else if (dist2 < dist1 && dist2 < 20000)
             {
+                guard_vec[i]->getComponent<SpriteComponent>().guardAngry = true;
                 if (dist2 < 5000)
                 {
-                    if (player2.getComponent<SpriteComponent>().money > 200)
-                    {
-                        player2.getComponent<SpriteComponent>().money -= 200;
-                    }
-                    else
-                    {
-                        player2.getComponent<SpriteComponent>().money = 0;
-                    }
+                    player2caught = true;
+                    
+                    // if (player2.getComponent<SpriteComponent>().money > 200)
+                    // {
+                    //     player2.getComponent<SpriteComponent>().money -= 200;
+                    // }
+                    // else
+                    // {
+                    //     player2.getComponent<SpriteComponent>().money = 0;
+                    // }
                     guard_vec[i]->getComponent<PositionComponent>().position = {167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale};
                     guard_vec[i]->getComponent<PositionComponent>().velocity = {0, 1};
                 }
                 else
                 {
+                    
                     Vector2D dirn = p2 - g;
                     if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
                     {
@@ -917,6 +979,7 @@ void Maze::update()
             }
             else
             {
+                guard_vec[i]->getComponent<SpriteComponent>().guardAngry = false;
                 if (guard_vec[i]->getComponent<PositionComponent>().velocity.x != 0 && iit_bound[(int)((guard_vec[i]->getComponent<PositionComponent>().position.y + 24) / (16 * 5))][(int)((guard_vec[i]->getComponent<PositionComponent>().position.x + guard_vec[i]->getComponent<PositionComponent>().velocity.x * guard_vec[i]->getComponent<PositionComponent>().speed + 24) / (16 * 5))] == 1)
                 {
                     guard_vec[i]->getComponent<PositionComponent>().velocity.x = 0;
@@ -970,6 +1033,9 @@ void Maze::update()
                 guard_vec[i]->getComponent<SpriteComponent>().animationInd,
                 guard_vec[i]->getComponent<SpriteComponent>().frames};
         }
+        packet_to_send.p2caught = player2caught;
+        player2caught = false;
+        
 
         ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
         enet_peer_send(peer, 0, packet);
