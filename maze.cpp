@@ -92,7 +92,7 @@ ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-SDL_Texture *w8page, *testing, *mazePage, *mazePage2, *instrPage, *infoPage, *gnrlPage;
+SDL_Texture *w8page, *testing, *mazePage, *mazePage2, *instrPage, *infoPage, *gnrlPage, *gnrlwithinfo;
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -101,12 +101,11 @@ Tile *build_tiles[84][225];
 
 TTF_Font *abd, *blx, *krm, *prt;
 
-Mix_Chunk *yuluSound,*foodSound,*objSound;
+Mix_Chunk *yuluSound, *foodSound, *objSound;
 
 int game2state = 0;
 // Set number of stages
 int game2lastStage = 3;
-
 
 const char *playerHostel = "zanskar";
 int countFrames = 0;
@@ -245,6 +244,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     instrPage = Texture::LoadTexture("assets/general_image.png");
     infoPage = Texture::LoadTexture("assets/Info_Screen.png");
     gnrlPage = Texture::LoadTexture("assets/general_image.png");
+    gnrlwithinfo = Texture::LoadTexture("assets/gnrlwithinfo.png");
 
     // Reloading some more assets, not sure why this is required
     coin = Texture::LoadTexture("assets/coin.png");
@@ -258,10 +258,9 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     objSound = Mix_LoadWAV("sound/obj.wav");
     strtsrc = {0, 0, gameW, gameH};
 
-
     bgm = Mix_LoadMUS("sound/Waiting_Music.wav");
-    Mix_PlayMusic(bgm,-1);
-    Mix_VolumeMusic(MIX_MAX_VOLUME/4);
+    Mix_PlayMusic(bgm, -1);
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 4);
 
     if (!am_i_server)
     {
@@ -354,6 +353,8 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
             instrPgText.push_back("Once you are satisfied, press Enter to finish your attempt");
             instrPgText.push_back(questions[find1].first);
             instrPgText.push_back(questions[find2].first);
+            instrPgText.push_back("");
+            instrPgText.push_back("Press TAB to continue");
         }
         else if (gameMode == 2)
         {
@@ -393,7 +394,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     guard_vec[1] = &guard2;
     guard_vec[2] = &guard3;
     guard1.addComponent<PositionComponent>(182 * 16 * TileScale + 8 * TileScale, 16 * 16 * TileScale + 8 * TileScale);
-    //guard1.addComponent<PositionComponent>(167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale);
+    // guard1.addComponent<PositionComponent>(167 * 16 * TileScale + 8 * TileScale, 6 * 16 * TileScale + 8 * TileScale);
     guard2.addComponent<PositionComponent>(64 * 16 * TileScale + 8 * TileScale, 32 * 16 * TileScale + 8 * TileScale);
     guard3.addComponent<PositionComponent>(87 * 16 * TileScale + 8 * TileScale, 46 * 16 * TileScale + 8 * TileScale);
     // guard1.getComponent<PositionComponent>().speed = 1;
@@ -431,8 +432,6 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     myState = 0;
     opState = 0;
-
-
 }
 
 float calcuatePoint()
@@ -486,10 +485,9 @@ void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y
     SDL_Rect bolt_dest = {x - 20 - 4, y - 4, 24, 24};
     SDL_Rect coin_dest = {x - 28, y + 25 - 8, 32, 32};
 
-    SDL_Texture *c = Texture::TextTexture(abd, std::to_string((int)(100*money)), 255, 255, 255);
-    SDL_Texture *s = Texture::TextTexture(abd, std::to_string((int)(100*stamina)), 255, 255, 255);
+    SDL_Texture *c = Texture::TextTexture(abd, std::to_string((int)(100 * money)), 255, 255, 255);
+    SDL_Texture *s = Texture::TextTexture(abd, std::to_string((int)(100 * stamina)), 255, 255, 255);
     int w, h;
-
 
     // icons
     Texture::Draw(bolt, bolt_src, bolt_dest, SDL_FLIP_NONE);
@@ -513,7 +511,6 @@ void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y
         SDL_Rect c_t1_dest = {x, y + 26, (16 * w) / h, 16};
         SDL_RenderCopy(Maze::renderer, c, NULL, &c_t1_dest);
     }
-
 }
 
 void DrawOverLayMap()
@@ -606,14 +603,14 @@ void Maze::handleEvents()
                 if (iit_bound[ypos][xpos] == 2)
                 {
                     // Yulu Stands
-                    Mix_PlayChannel(-1,yuluSound,0);
+                    Mix_PlayChannel(-1, yuluSound, 0);
                     std::cout << "ColYulu " << std::endl;
                     player1.getComponent<SpriteComponent>().hasyulu = true;
                 }
                 else if (iit_bound[ypos][xpos] == Loc["food"])
                 {
                     // Eating Shops
-                    Mix_PlayChannel(-1,foodSound,0);
+                    Mix_PlayChannel(-1, foodSound, 0);
 
                     std::cout << "ColEat " << std::endl;
                     player1.getComponent<SpriteComponent>().stamina = 1;
@@ -622,7 +619,7 @@ void Maze::handleEvents()
                 else if (iit_bound[ypos][xpos] == Loc[playerHostel] && (gameMode != 2 || Loc[playerHostel] != objectives[game2state].second))
                 {
                     // Eating in Mess
-                    Mix_PlayChannel(-1,foodSound,0);
+                    Mix_PlayChannel(-1, foodSound, 0);
 
                     std::cout << "ColEatMess " << std::endl;
                     player1.getComponent<SpriteComponent>().stamina = 1;
@@ -632,7 +629,7 @@ void Maze::handleEvents()
                 else if (gameMode == 2 && iit_bound[ypos][xpos] == objectives[game2state].second)
                 {
 
-                    Mix_PlayChannel(-1,objSound,0);
+                    Mix_PlayChannel(-1, objSound, 0);
 
                     // Game Mode 2 objectives
                     std::cout << "ColObjective " << std::endl;
@@ -660,7 +657,7 @@ void Maze::handleEvents()
                     std::cout << "ColYulu " << col << std::endl;
                     if (col)
                     {
-                        Mix_PlayChannel(-1,yuluSound,0);
+                        Mix_PlayChannel(-1, yuluSound, 0);
 
                         player1.getComponent<SpriteComponent>().hasyulu = false;
                     }
@@ -700,7 +697,7 @@ void Maze::recievePackets()
         switch (enet_event.type)
         {
         case ENET_EVENT_TYPE_RECEIVE:
-            //std::cout << "Hello  " << enet_event.packet->dataLength << std::endl;
+            // std::cout << "Hello  " << enet_event.packet->dataLength << std::endl;
             if (enet_event.packet->dataLength == 1)
             {
                 if (gameMode == 2)
@@ -719,8 +716,9 @@ void Maze::recievePackets()
                 player2.getComponent<SpriteComponent>().animated = true;
                 player2.getComponent<SpriteComponent>().speed = 100;
 
-                if (pgp->p2caught) {
-                    //std::cout << "Player Caught \n";
+                if (pgp->p2caught)
+                {
+                    // std::cout << "Player Caught \n";
                     if (player1.getComponent<SpriteComponent>().money > 200)
                     {
                         player1.getComponent<SpriteComponent>().money -= 200;
@@ -765,6 +763,8 @@ void Maze::recievePackets()
                     instrPgText.push_back("Once you are satisfied, press Enter to finish your attempt");
                     instrPgText.push_back(questions[find1].first);
                     instrPgText.push_back(questions[find2].first);
+                    instrPgText.push_back("");
+                    instrPgText.push_back("Press TAB to continue");
                 }
                 else if (pack_data->type == -2)
                 {
@@ -822,7 +822,7 @@ void Maze::recievePackets()
 void Maze::update()
 {
 
-    countFrames ++;
+    countFrames++;
     // Scrolling
 
     cam.x = player1.getComponent<PositionComponent>().position.x - gameW / 2;
@@ -921,7 +921,7 @@ void Maze::update()
     //         }
     //         else if (dist2 < dist1 && dist2 < 20000)
     //         {
-    //             guard_vec[i]->getComponent<SpriteComponent>().guardAngry = true;                
+    //             guard_vec[i]->getComponent<SpriteComponent>().guardAngry = true;
     //         }
     //         else
     //         {
@@ -929,7 +929,6 @@ void Maze::update()
     //         }
     //     }
     // }
-
 
     if (am_i_server)
     {
@@ -976,7 +975,7 @@ void Maze::update()
                 if (dist2 < 5000)
                 {
                     player2caught = true;
-                    
+
                     // if (player2.getComponent<SpriteComponent>().money > 200)
                     // {
                     //     player2.getComponent<SpriteComponent>().money -= 200;
@@ -990,7 +989,7 @@ void Maze::update()
                 }
                 else
                 {
-                    
+
                     Vector2D dirn = p2 - g;
                     if (dirn.x * dirn.x + dirn.y * dirn.y != 0)
                     {
@@ -1057,7 +1056,6 @@ void Maze::update()
         }
         packet_to_send.p2caught = player2caught;
         player2caught = false;
-        
 
         ENetPacket *packet = enet_packet_create(&packet_to_send, sizeof(packet_to_send), 0);
         enet_peer_send(peer, 0, packet);
@@ -1091,7 +1089,7 @@ void Maze::render()
         }
         else if (myState == 1)
         {
-            Texture::Draw(instrPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+            Texture::Draw(gnrlwithinfo, strtsrc, strtsrc, SDL_FLIP_NONE);
             Texture::render_text(prt, instrPgText, 30, 255, 255, 255);
         }
         else if (opState == 0 || opState == 1)
@@ -1168,10 +1166,12 @@ void Maze::render()
             }
         }
     }
-    else if (gameMode == 2 && countFrames < 240) {
+    else if (gameMode == 2 && countFrames < 240)
+    {
         Texture::Draw(mazePage2, strtsrc, strtsrc, SDL_FLIP_NONE);
     }
-    else if (gameMode == 2 && countFrames < 480) {
+    else if (gameMode == 2 && countFrames < 480)
+    {
         Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
         Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
     }
