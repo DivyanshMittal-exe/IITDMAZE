@@ -83,7 +83,7 @@ public:
     }
 
     bool isActive() const { return active; }
-    bool destroy() { active = false; }
+    void destroy() { active = false; }
 
     bool hasGroup(Group g)
     {

@@ -1,18 +1,18 @@
 # COP290 Task 2: The IITD Maze
 ## About
 The game is built using SDL2 library and the game logic is written in C++. ENet is used for networking.
-## How to play Treasure Raid?
+## How to play?
 1. Clone the repo.
-2. run ```make```.
-3. run ```make host```.
+2. run ```make one``` or ```make two``` based on whatever mode you want to play.
+3. run ``` make``` and ```./game.out IP ADDRESS``` to connect to the server.
 
 
 Currently we have 2 game modes - 
-1. GeoGuesser - There are 2 hints one for each place you need to guess. You can make your guess by placing a flag there. Closest to the answer wins.  
+1. Game mode 1 tests you knowledge on how well you know the nooks and crannies of the campus. It is similar to a treasure hunt accross the campus. You will be given 2 hints and you objective is to place 2 flags as close to the correct location possible. The one who overall places the flags closer wins !.
 
-2. You need to complete the objectives on the screen until none remain. Fastest one to complete all wins.
+2. Game mode 2 is a time based mode. The one who is faster wins. You have 3 objectives and your goal is to complete them as fast as possible. The one who gets them done first is declared the winner.
 
-
+Check out the pdf for detailed instructions.
 
 ## Instructions to install SDL2 and other libraries
 1. Run `sudo apt-get install libsdl2-dev` to install SDL2.
