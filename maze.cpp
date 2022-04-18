@@ -107,6 +107,7 @@ int game2lastStage = 3;
 
 
 const char *playerHostel = "zanskar";
+int countFrames = 0;
 bool player2caught = false;
 bool displayInfo = false;
 bool game2over = false;
@@ -801,6 +802,8 @@ void Maze::recievePackets()
 
 void Maze::update()
 {
+
+    countFrames ++;
     // Scrolling
 
     cam.x = player1.getComponent<PositionComponent>().position.x - gameW / 2;
@@ -1145,6 +1148,10 @@ void Maze::render()
                 Texture::render_text(blx, "You lost,better luck next time", 50, 255, 255, 255);
             }
         }
+    }
+    else if (gameMode == 2 && countFrames < 300) {
+        Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
+        Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
     }
     else if (gameMode == 2)
     {
