@@ -261,7 +261,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
     strtsrc = {0, 0, gameW, gameH};
 
 
-    bgm = Mix_LoadMUS("sound/Waiting_Music.wav");
+    bgm = Mix_LoadMUS("sound/bgm_action_4.mp3");
     Mix_PlayMusic(bgm,-1);
     Mix_VolumeMusic(MIX_MAX_VOLUME/4);
 
