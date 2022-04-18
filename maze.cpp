@@ -92,7 +92,7 @@ ENetPeer *Maze::peer;
 
 SDL_Rect Maze::cam = {0, 0, gameW, gameH};
 
-SDL_Texture *w8page, *testing, *mazePage, *instrPage, *infoPage, *gnrlPage;
+SDL_Texture *w8page, *testing, *mazePage, *mazePage2, *instrPage, *infoPage, *gnrlPage;
 
 SDL_Rect strtsrc = {0, 0, gameW, gameH};
 
@@ -150,9 +150,10 @@ std::map<const char *, int> Loc = {
 // Objective and the number corresponding to the location in .h file
 std::vector<std::pair<std::string, int>> allObjectives{
     {"Go to the BasketBall Court!", Loc["basketball"]},
-    {"Go to Shivalik to meet Divyanis!", Loc["shiva"]},
+    {"Go to Shivalik to discuss COP project with Divyansh!", Loc["shiva"]},
     {"Collect a Rose from the garden near tennis court", Loc["garden"]},
     {"Go to Nilgiri to meet a friend!", Loc["nilgiri"]},
+    {"Go to Girnar to see off a friend!", Loc["girnar"]},
     {"Go to Himadri to meet your friend!", Loc["himadri"]},
     {"Go to Tennis Court", Loc["tennis"]},
     {"You are not feeling well, Go to Hospital", Loc["hospital"]},
@@ -239,6 +240,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     w8page = Texture::LoadTexture("assets/Waiting.png");
     mazePage = Texture::LoadTexture("assets/maze.png");
+    mazePage2 = Texture::LoadTexture("assets/maze2.png");
     instrPage = Texture::LoadTexture("assets/general_image.png");
     infoPage = Texture::LoadTexture("assets/Info_Screen.png");
     gnrlPage = Texture::LoadTexture("assets/general_image.png");
@@ -1149,7 +1151,10 @@ void Maze::render()
             }
         }
     }
-    else if (gameMode == 2 && countFrames < 300) {
+    else if (gameMode == 2 && countFrames < 30) {
+        Texture::Draw(mazePage2, strtsrc, strtsrc, SDL_FLIP_NONE);
+    }
+    else if (gameMode == 2 && countFrames < 60) {
         Texture::Draw(gnrlPage, strtsrc, strtsrc, SDL_FLIP_NONE);
         Texture::Draw(infoPage, strtsrc, strtsrc, SDL_FLIP_NONE);
     }
