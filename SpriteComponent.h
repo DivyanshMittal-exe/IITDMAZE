@@ -90,9 +90,10 @@ public:
         destRect.x = position->position.x - Maze::cam.x;
         destRect.y = position->position.y - Maze::cam.y;
 
-        // Decreasing stamina with time
-        if (stamina > 0)
+        // Decreasing stamina with time if sprite is moving
+        if (stamina > 0 and (position->velocity.x != 0 || position->velocity.y != 0) )
         {
+            //Increase rate?
             stamina -= 0.0002;
         }
 
@@ -113,6 +114,18 @@ public:
         else
         {
             speedFactor = 0.5 * stamina + 0.5;
+        }
+
+        if (position->velocity.x > 0) {
+            Play(3);
+        } else if (position->velocity.x < 0) {
+            Play(4);
+        } else if (position->velocity.y > 0) {
+            Play(1);
+        } else if (position->velocity.y < 0) {
+            Play(2);
+        } else {
+            frames = 1;
         }
     }
     void draw() override

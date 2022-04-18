@@ -180,7 +180,7 @@ std::vector<std::string> instrPgText;
 Mix_Music *bgm;
 Mix_Chunk *Maze::walk;
 
-SDL_Texture *coin, *heart, *trim, *coin_bar, *stamina_bar, *easterEggTex, *overlay_map;
+SDL_Texture *coin, *bolt, *trim, *coin_bar, *stamina_bar, *easterEggTex, *overlay_map;
 
 SDL_Texture *baseTex, *buildTex;
 
@@ -241,7 +241,7 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
 
     // Reloading some more assets, not sure why this is required
     coin = Texture::LoadTexture("assets/coin.png");
-    heart = Texture::LoadTexture("assets/heart.png");
+    bolt = Texture::LoadTexture("assets/staminaicon.png");
     trim = Texture::LoadTexture("assets/trim.png");
     coin_bar = Texture::LoadTexture("assets/money.png");
     stamina_bar = Texture::LoadTexture("assets/stamina.png");
@@ -467,9 +467,9 @@ void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y
     SDL_Rect cdest = {x + gameH / 40 + 16, y + 25, 100, 16};
     SDL_Rect hdest2 = {x + gameH / 40 + 16, y, 100 * stamina, 16};
     SDL_Rect cdest2 = {x + gameH / 40 + 16, y + 25, 100 * money, 16};
-    SDL_Rect heart_src = {0, 0, 64, 64};
+    SDL_Rect bolt_src = {0, 0, 160, 160};
     SDL_Rect coin_src = {0, 0, 32, 32};
-    SDL_Rect heart_dest = {x - 20, y, 16, 16};
+    SDL_Rect bolt_dest = {x - 20 - 4, y - 4, 24, 24};
     SDL_Rect coin_dest = {x - 28, y + 25 - 8, 32, 32};
 
     SDL_Texture *c = Texture::TextTexture(abd, std::to_string((int)(100*money)), 255, 255, 255);
@@ -478,7 +478,7 @@ void DisplayParameters(float stamina, float money, int x = 8 * gameW / 10, int y
 
 
     // icons
-    Texture::Draw(heart, heart_src, heart_dest, SDL_FLIP_NONE);
+    Texture::Draw(bolt, bolt_src, bolt_dest, SDL_FLIP_NONE);
     Texture::Draw(coin, coin_src, coin_dest, SDL_FLIP_NONE);
     // bar
     Texture::Draw(stamina_bar, src, hdest2, SDL_FLIP_NONE);

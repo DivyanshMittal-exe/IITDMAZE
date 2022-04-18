@@ -25,22 +25,22 @@ public:
             case SDLK_w:
                 pos->velocity.y = -1 * (sprite->speedFactor);
                 // North
-                sprite->Play(2);
+                //sprite->Play(2);
                 break;
             case SDLK_a:
                 pos->velocity.x = -1 * (sprite->speedFactor);
                 // West
-                sprite->Play(4);
+                //sprite->Play(4);
                 break;
             case SDLK_s:
                 pos->velocity.y = 1 * (sprite->speedFactor);
                 // South
-                sprite->Play(1);
+                //sprite->Play(1);
                 break;
             case SDLK_d:
                 pos->velocity.x = 1 * (sprite->speedFactor);
                 // East
-                sprite->Play(3);
+                //sprite->Play(3);
                 break;
             // Picking yulu
 
@@ -61,22 +61,22 @@ public:
             case SDLK_w:
                 pos->velocity.y = 0;
                 // sprite-> Play(0);
-                sprite->frames = 1;
+                //sprite->frames = 1;
                 break;
             case SDLK_a:
                 pos->velocity.x = 0;
                 // sprite-> Play(0);
-                sprite->frames = 1;
+                //sprite->frames = 1;
                 break;
             case SDLK_s:
                 pos->velocity.y = 0;
                 // sprite-> Play(0);
-                sprite->frames = 1;
+                //sprite->frames = 1;
                 break;
             case SDLK_d:
                 pos->velocity.x = 0;
                 // sprite-> Play(0);
-                sprite->frames = 1;
+                //sprite->frames = 1;
                 break;
 
             default:

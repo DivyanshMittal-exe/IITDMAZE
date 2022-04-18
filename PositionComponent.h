@@ -17,6 +17,7 @@ public:
     Vector2D velocity;
     float speed = 5;
 
+
     void SetPosition(float x, float y)
     {
         position.x = x;
@@ -54,15 +55,5 @@ public:
         {
             position.x += velocity.x * speed;
         }
-
-        // position.x += velocity.x *speed;
-
-        // if (bound[(int) (position.y / (16 * 5))][(int)(position.x / (16 * 5))] == 1) {
-        //     std::cout << "C\n";
-        //     position.x -= velocity.x *speed;
-        //     position.y -= velocity.y *speed;
-        //     // velocity.x = 0;
-        //     // velocity.y = 0;
-        // }
     }
 };
