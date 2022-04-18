@@ -225,9 +225,11 @@ void Maze::init(const char *title, int xpos, int ypos, int w, int h, bool fs)
         std::cout << "Initialization failed" << std::endl;
     }
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 16, 2048) < 0)
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
     {
         std::cout << "Mixer not made" << std::endl;
+    } else {
+        std::cout << "Mixer Made" << std::endl;
     }
 
     // bgm   = Mix_LoadMUS("");
