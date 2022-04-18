@@ -1,4 +1,6 @@
 # COP290 Task 2: The IITD Maze
+Divyansh Mittal 2020CS10342  
+Vaibhav Agarwal 2020CS10447
 ## About
 The game is built using SDL2 library and the game logic is written in C++. ENet is used for networking.
 ## How to play?
@@ -32,5 +34,11 @@ Check out the pdf for detailed instructions.
 
 *The instructions mentioned above for various installations were used on Ubuntu 20.04.*
 
-## References 
-https://www.youtube.com/playlist?list=PLhfAbcv9cehhkG7ZQK0nfIGJC_C-wSLrx
+## Acknowledgements 
+1. Pyxel Edit Software  
+2.  https://www.youtube.com/playlist?list=PLhfAbcv9cehhkG7ZQK0nfIGJC_C-wSLrx  
+3. https://github.com/zpl-c/enet  
+4. https://www.libsdl.org/  
+5. https://in.pinterest.com/  
+6. https://www.deviantart.com/davian-art  
+7. https://opengameart.org/  
