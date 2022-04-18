@@ -14,6 +14,13 @@ Currently we have 2 game modes -
 
 Check out the pdf for detailed instructions.
 
+## Glimpses of our game
+
+![alt text](assets/maze.png "Start Screen" )
+![alt text](ss/6.png "Game Screen")
+![alt text](ss/2.png "Game Screen")
+![alt text](ss/4.png "Game Screen")
+
 ## Instructions to install SDL2 and other libraries
 1. Run `sudo apt-get install libsdl2-dev` to install SDL2.
 2. In order to run the game successfully, the following extra libraries are needed: SDL_image, SDL_ttf and SDL_mixer.
