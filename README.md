@@ -3,9 +3,8 @@
 The game is built using SDL2 library and the game logic is written in C++. ENet is used for networking.
 ## How to play?
 1. Clone the repo.
-2. run ```make```.
-3. Start the server with "./game.out 1" and the client with "./game.out IP\_ADDR" for Game mode 1
-4. Start the server with "./game.out 2" and the client with "./game.out IP\_ADDR" for Game mode 2
+2. run ```make one``` or ```make two``` based on whatever mode you want to play.
+3. run ``` make``` and ```./game.out IP ADDRESS``` to connect to the server.
 
 
 Currently we have 2 game modes - 

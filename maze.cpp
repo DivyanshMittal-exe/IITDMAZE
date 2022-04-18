@@ -1,5 +1,3 @@
-#pragma once
-
 #include "maze.h"
 #include "SDL2/SDL_mixer.h"
 #include "SDL2/SDL_image.h"

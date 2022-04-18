@@ -1,51 +1,29 @@
-#OBJS specifies which files to compile as part of the project
 OBJS =  game.cpp  
 
 AUX_OBJS =  ECS.o maze.o Vector2D.o Texture.o 
 AUX_OBJS_cpp = ECS.cpp maze.cpp  Vector2D.cpp  Texture.cpp 
 
-#CC specifies which compiler we're using
-CC = g++
 
-#COMPILER_FLAGS specifies the additional compilation options we're using
-# -w suppresses all warnings
-COMPILER_FLAGS = -w
-
-#LINKER_FLAGS specifies the libraries we're linking against
+COMPILER_FLAGS = -O3 -w
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lenet -lSDL2_ttf -lSDL2_mixer
 
-#OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = game.out
 
-#This is the target that compiles our executable
-
-all:
-	@echo "Compiling"
-	@make clean
-	@make run
-	./$(OBJ_NAME) 2
-
-host:
-	@echo "Compiling"
-	@make clean
-	@make run
-	./$(OBJ_NAME) 127.0.0.1
-
-run : $(OBJS)
-	$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c -g $(AUX_OBJS_cpp)
-	$(CC) $(AUX_OBJS) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -g -o $(OBJ_NAME)
+all: ./game.out
 	
 
+host:./game.out
+	./game.out 127.0.0.1
 
-# maze.o: maze.cpp
-# 		$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c maze.cpp
+one: ./game.out
+	./game.out 1
 
-# Texture.o: Texture.cpp
-# 		$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c Texture.cpp
+two:./game.out
+	./game.out 2
 
-# gameObject.o: gameObject.cpp
-# 		$(CC) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c gameObject.cpp
-
+./game.out : $(OBJS)
+	g++ $(COMPILER_FLAGS) $(LINKER_FLAGS) -c $(AUX_OBJS_cpp)
+	g++ $(AUX_OBJS) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o game.out
+	
 
 clean:
 	@rm -rf *.o *.out
